@@ -1,5 +1,7 @@
 import OurWork from "../components/OurWork";
 import SignatureCreations from "../components/SignatureCreations";
+import Benefits from '../components/Benefits'
+import Reviews from '../components/Reviews'
 import "../styles/Home.css";
 
 export default function Home() {
@@ -31,6 +33,12 @@ export default function Home() {
       <OurWork />
       <span className="ceperate"></span>
       <SignatureCreations />
+
+      <span className="ceperate"></span>
+      <Benefits />
+
+      <span className="ceperate"></span>
+      <Reviews />
     </>
   );
 }

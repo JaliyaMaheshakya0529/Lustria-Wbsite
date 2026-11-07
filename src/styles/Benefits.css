@@ -1,0 +1,190 @@
+/* =========================================
+   BENEFITS BENTO (LUXURY EDITORIAL)
+   Harmonized with Signature & Reviews UI
+   ========================================= */
+
+.benefits-section {
+  padding: 3rem;
+  background-color: var(--color-bg, #fdfbf7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+/* Section Header (Mirrored from Reviews & Signatures) */
+.benefits-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3.5rem auto;
+  width: 100%;
+}
+
+.benefits-heading {
+  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text, #121212);
+  margin: 0 0 0.8rem 0;
+  line-height: 1.1;
+}
+
+.benefits-sub {
+  font-family: var(--font-main, system-ui, -apple-system, sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-muted, #5a5752);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* 6-Column Bento Grid Container */
+.benefits-container {
+  max-width: var(--max-width, 1200px);
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.6rem;
+}
+
+/* Bento Card Shell (Aligned with .review-card & .signature-card) */
+.bento-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.4rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(176, 141, 72, 0.28);
+  box-shadow: 0 14px 34px rgba(176, 141, 72, 0.08);
+}
+
+/* Featured Card Subtle Surface Variation */
+.bento-card.card-featured {
+  background: linear-gradient(160deg, #ffffff 0%, #fbf9f5 100%);
+  border-color: rgba(176, 141, 72, 0.2);
+}
+
+/* Eyebrow Tag (Aligned with .signature-metal & .review-item) */
+.bento-tag {
+  font-family: var(--font-main, system-ui, -apple-system, sans-serif);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold, #b08d48);
+  margin-bottom: 0.85rem;
+  display: block;
+}
+
+/* Card Titles */
+.bento-title {
+  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
+  font-size: clamp(1.4rem, 2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text, #121212);
+  margin: 0 0 0.85rem 0;
+  line-height: 1.25;
+}
+
+/* Body Copy */
+.bento-desc {
+  font-family: var(--font-main, system-ui, -apple-system, sans-serif);
+  font-size: 0.94rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-muted, #5a5752);
+  margin: 0;
+  max-width: 480px;
+}
+
+/* Star Rating (Aligned with .review-stars) */
+.bento-stars {
+  color: var(--color-gold, #b08d48);
+  font-size: 1.05rem;
+  letter-spacing: 0.18rem;
+  line-height: 1;
+  margin-top: 1.4rem;
+  display: inline-block;
+}
+
+/* Bento Asymmetry */
+.card-half {
+  grid-column: span 3;
+}
+
+.card-wide {
+  grid-column: span 4;
+}
+
+.card-compact {
+  grid-column: span 2;
+}
+
+/* Optional Bottom Badge Row Inside Wide Cards */
+.bento-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bento-badge-text {
+  font-family: var(--font-main, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted, #5a5752);
+}
+
+/* =========================================
+   RESPONSIVENESS
+   ========================================= */
+@media (max-width: 992px) {
+  .benefits-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+
+  .card-half,
+  .card-wide,
+  .card-compact {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .benefits-section {
+    padding: 4rem 1.25rem 4.5rem;
+  }
+
+  .benefits-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .benefits-container {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .bento-card {
+    padding: 2rem 1.6rem;
+  }
+}

@@ -2,8 +2,9 @@
    SIGNATURE CREATIONS (4-COLUMN 1:1 GRID)
    ========================================= */
 .signatures-section {
-  padding: 3rem 3rem;
+  padding: 3rem;
   background-color: var(--color-bg, #fdfbf7);
+  margin-bottom: 3rem;
 }
 
 .signatures-container {
