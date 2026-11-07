@@ -1,10 +1,5 @@
-/* =========================================
-   BENEFITS BENTO (LUXURY EDITORIAL)
-   Harmonized with Signature & Reviews UI
-   ========================================= */
-
 .benefits-section {
-  padding: 3rem;
+  padding: 3rem 2rem;
   background-color: var(--color-bg, #fdfbf7);
   display: flex;
   flex-direction: column;
@@ -13,7 +8,6 @@
   margin-bottom: 3rem;
 }
 
-/* Section Header (Mirrored from Reviews & Signatures) */
 .benefits-header {
   text-align: center;
   max-width: 680px;
@@ -22,8 +16,8 @@
 }
 
 .benefits-heading {
-  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
-  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -41,7 +35,6 @@
   margin: 0;
 }
 
-/* 6-Column Bento Grid Container */
 .benefits-container {
   max-width: var(--max-width, 1200px);
   width: 100%;
@@ -50,7 +43,6 @@
   gap: 1.6rem;
 }
 
-/* Bento Card Shell (Aligned with .review-card & .signature-card) */
 .bento-card {
   background: #ffffff;
   border-radius: 16px;
@@ -72,13 +64,6 @@
   box-shadow: 0 14px 34px rgba(176, 141, 72, 0.08);
 }
 
-/* Featured Card Subtle Surface Variation */
-.bento-card.card-featured {
-  background: linear-gradient(160deg, #ffffff 0%, #fbf9f5 100%);
-  border-color: rgba(176, 141, 72, 0.2);
-}
-
-/* Eyebrow Tag (Aligned with .signature-metal & .review-item) */
 .bento-tag {
   font-family: var(--font-main, system-ui, -apple-system, sans-serif);
   font-size: 0.74rem;
@@ -90,10 +75,9 @@
   display: block;
 }
 
-/* Card Titles */
 .bento-title {
-  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
-  font-size: clamp(1.4rem, 2vw, 1.85rem);
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-text, #121212);
@@ -101,7 +85,6 @@
   line-height: 1.25;
 }
 
-/* Body Copy */
 .bento-desc {
   font-family: var(--font-main, system-ui, -apple-system, sans-serif);
   font-size: 0.94rem;
@@ -112,7 +95,6 @@
   max-width: 480px;
 }
 
-/* Star Rating (Aligned with .review-stars) */
 .bento-stars {
   color: var(--color-gold, #b08d48);
   font-size: 1.05rem;
@@ -122,7 +104,6 @@
   display: inline-block;
 }
 
-/* Bento Asymmetry */
 .card-half {
   grid-column: span 3;
 }
@@ -135,29 +116,11 @@
   grid-column: span 2;
 }
 
-/* Optional Bottom Badge Row Inside Wide Cards */
-.bento-badges {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  margin-top: 1.5rem;
-  padding-top: 1.2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.bento-badge-text {
-  font-family: var(--font-main, sans-serif);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-muted, #5a5752);
-}
-
-/* =========================================
-   RESPONSIVENESS
-   ========================================= */
 @media (max-width: 992px) {
+  .benefits-section {
+    padding: 3rem 1.5rem;
+  }
+
   .benefits-container {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.4rem;
@@ -172,7 +135,8 @@
 
 @media (max-width: 640px) {
   .benefits-section {
-    padding: 4rem 1.25rem 4.5rem;
+    padding: 3.5rem 1.25rem 4rem;
+    margin-bottom: 2rem;
   }
 
   .benefits-header {
@@ -185,6 +149,6 @@
   }
 
   .bento-card {
-    padding: 2rem 1.6rem;
+    padding: 1.85rem 1.5rem;
   }
 }

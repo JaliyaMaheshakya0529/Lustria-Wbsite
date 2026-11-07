@@ -1,6 +1,3 @@
-/* =========================================
-   MINIMAL LUXURY HERO
-   ========================================= */
 .hero-minimal {
   min-height: calc(100vh - var(--nav-height, 92px));
   min-height: calc(100dvh - var(--nav-height, 92px));
@@ -20,10 +17,9 @@
   align-items: center;
 }
 
-/* Primary Brand Heading */
 .hero-brand-name {
   font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
-  font-size: clamp(2.2rem, 6vw, 4.8rem);
+  font-size: clamp(2.1rem, 6vw, 4.8rem);
   font-weight: 500;
   letter-spacing: 0.06em;
   line-height: 1.1;
@@ -33,10 +29,9 @@
   word-break: break-word;
 }
 
-/* Signature Script Tagline */
 .hero-script-tagline {
   font-family: var(--font-script, 'Alex Brush', cursive);
-  font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+  font-size: clamp(1.85rem, 4.5vw, 3.2rem);
   font-weight: 400;
   color: var(--color-gold, #b08d48);
   line-height: 1.15;
@@ -44,7 +39,6 @@
   margin-bottom: 1.4rem;
 }
 
-/* Descriptive Subtext */
 .hero-subtext {
   font-family: var(--font-main, system-ui, -apple-system, sans-serif);
   font-size: clamp(0.88rem, 2vw, 0.98rem);
@@ -57,15 +51,13 @@
   padding: 0 0.5rem;
 }
 
-/* =========================================
-   ACTION BUTTONS
-   ========================================= */
 .hero-actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .btn-primary,
@@ -110,10 +102,15 @@
   transform: translateY(-2px);
 }
 
-/* Mobile adjustments (<= 640px) */
+@media (max-width: 868px) {
+  .hero-minimal {
+    min-height: calc(100vh - var(--nav-height-mobile, 68px));
+    min-height: calc(100dvh - var(--nav-height-mobile, 68px));
+  }
+}
+
 @media (max-width: 640px) {
   .hero-minimal {
-    min-height: calc(100dvh - var(--nav-height-mobile, 68px));
     padding: 2rem 1.25rem 3rem;
   }
 
@@ -128,5 +125,12 @@
   .btn-outline {
     width: 100%;
     padding: 0.8rem 1.5rem;
+  }
+}
+
+@media (max-height: 540px) and (orientation: landscape) {
+  .hero-minimal {
+    min-height: auto;
+    padding: 3rem 1.5rem;
   }
 }

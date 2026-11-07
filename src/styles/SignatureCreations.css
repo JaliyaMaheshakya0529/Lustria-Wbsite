@@ -1,8 +1,5 @@
-/* =========================================
-   SIGNATURE CREATIONS (4-COLUMN 1:1 GRID)
-   ========================================= */
 .signatures-section {
-  padding: 3rem;
+  padding: 3rem 2rem;
   background-color: var(--color-bg, #fdfbf7);
   margin-bottom: 3rem;
 }
@@ -13,7 +10,6 @@
   width: 100%;
 }
 
-/* Header */
 .signatures-header {
   text-align: center;
   max-width: 600px;
@@ -21,8 +17,8 @@
 }
 
 .signatures-heading {
-  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
-  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -40,7 +36,6 @@
   margin: 0;
 }
 
-/* 4-Column Grid */
 .signatures-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -48,7 +43,6 @@
   margin-bottom: 3.5rem;
 }
 
-/* Product Card */
 .signature-card {
   display: flex;
   flex-direction: column;
@@ -61,7 +55,6 @@
   transform: translateY(-3px);
 }
 
-/* 1:1 Aspect Ratio Image Frame */
 .signature-image-box {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -83,9 +76,6 @@
   transform: scale(1.04);
 }
 
-/* =========================================
-   CLEAN SANS-SERIF PRODUCT META
-   ========================================= */
 .signature-info {
   display: flex;
   flex-direction: column;
@@ -93,7 +83,6 @@
   text-align: left;
 }
 
-/* Subtle, clean metal label */
 .signature-metal {
   font-family: var(--font-main, system-ui, -apple-system, sans-serif);
   font-size: 0.74rem;
@@ -104,17 +93,8 @@
   margin-bottom: 0.3rem;
 }
 
-/* Simple, highly readable product title */
 .signature-title {
-  font-family: var(
-    --font-main,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif
-  );
+  font-family: var(--font-main, system-ui, -apple-system, sans-serif);
   font-size: 1rem;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -123,26 +103,14 @@
   margin: 0 0 0.45rem 0;
 }
 
-/* Price tag */
 .signature-price {
-  font-family: var(
-    --font-main,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif
-  );
+  font-family: var(--font-main, system-ui, -apple-system, sans-serif);
   font-size: 0.92rem;
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--color-muted, #121212);
 }
 
-/* =========================================
-   ACTION BUTTON
-   ========================================= */
 .signatures-action {
   display: flex;
   justify-content: center;
@@ -173,9 +141,6 @@
   transform: translateY(-2px);
 }
 
-/* =========================================
-   RESPONSIVENESS
-   ========================================= */
 @media (max-width: 1024px) {
   .signatures-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -185,16 +150,17 @@
 
 @media (max-width: 600px) {
   .signatures-section {
-    padding: 4rem 1.25rem 5rem;
+    padding: 3rem 1.25rem 4rem;
+    margin-bottom: 2rem;
   }
 
   .signatures-header {
-    margin-bottom: 2.5rem;
+    margin-bottom: 2.25rem;
   }
 
   .signatures-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem 1rem;
+    margin-bottom: 2.5rem;
   }
 
   .signature-metal {
@@ -213,5 +179,12 @@
   .btn-signatures-view {
     width: 100%;
     max-width: 260px;
+  }
+}
+
+@media (max-width: 380px) {
+  .signatures-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
   }
 }

@@ -56,11 +56,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   font-size: 0.85rem;
   color: var(--color-muted, #5a5752);
 }
 
-/* Tablet & Mobile Breakpoints (<= 768px) */
+@media (max-width: 992px) {
+  .footer-content {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .footer {
     padding: 3rem 1.25rem 1.5rem;

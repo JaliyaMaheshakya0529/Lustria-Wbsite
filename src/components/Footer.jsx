@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-col">
-          <h4>Lustria Gem & Jewellery</h4>
+          <h4>Lustria Gem &amp; Jewellery</h4>
           <p>Handcrafted natural gemstones and bespoke sterling silver jewelry designed with precision and elegance.</p>
         </div>
 
@@ -16,7 +16,7 @@ export default function Footer() {
           <ul>
             <li><a href="#catalog">Natural Sapphires</a></li>
             <li><a href="#catalog">Custom Rings</a></li>
-            <li><a href="#catalog">Pendants & Bands</a></li>
+            <li><a href="#catalog">Pendants &amp; Bands</a></li>
           </ul>
         </div>
 

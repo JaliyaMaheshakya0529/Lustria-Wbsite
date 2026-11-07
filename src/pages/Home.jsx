@@ -1,8 +1,8 @@
-import OurWork from "../components/OurWork";
-import SignatureCreations from "../components/SignatureCreations";
+import OurWork from '../components/OurWork'
+import SignatureCreations from '../components/SignatureCreations'
 import Benefits from '../components/Benefits'
 import Reviews from '../components/Reviews'
-import "../styles/Home.css";
+import '../styles/Home.css'
 
 export default function Home() {
   return (
@@ -10,13 +10,10 @@ export default function Home() {
       <section className="hero-minimal">
         <div className="hero-content">
           <h1 className="hero-brand-name">Lustria Gem &amp; Jewellery</h1>
-
           <p className="hero-script-tagline">A gem for everyone</p>
-
           <p className="hero-subtext">
             Authentic natural gemstones, handcrafted in solid sterling silver.
           </p>
-
           <div className="hero-actions">
             <a href="#collection" className="btn-primary">
               Explore Collection
@@ -28,17 +25,17 @@ export default function Home() {
         </div>
       </section>
 
-      <span className="ceperate"></span>
-      {/* Modern Atelier Work Section */}
+      <span className="ceperate" aria-hidden="true" />
       <OurWork />
-      <span className="ceperate"></span>
+
+      <span className="ceperate" aria-hidden="true" />
       <SignatureCreations />
 
-      <span className="ceperate"></span>
+      <span className="ceperate" aria-hidden="true" />
       <Benefits />
 
-      <span className="ceperate"></span>
+      <span className="ceperate" aria-hidden="true" />
       <Reviews />
     </>
-  );
+  )
 }
