@@ -1,36 +1,70 @@
-/* Frosted Glass Header */
+/* =========================================
+   NAVBAR (Dynamic Sizing & Frosted Glass)
+   ========================================= */
 .navbar {
   position: sticky;
   top: 0;
-  height: var(--nav-height, 72px);
+  height: var(--nav-height, 92px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2.5rem;
+  padding: 0 3rem;
   z-index: 1000;
+  transition:
+    height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.35s ease;
+}
 
-  /* Frosted Glass Effect */
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+/* Background blur layer */
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fdfbf7;
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  z-index: -1;
+  pointer-events: none;
+  transition: all 0.35s ease;
+}
+
+/* Scrolled state */
+.navbar.is-scrolled {
+  height: 64px;
+  padding: 0 2.5rem;
+}
+
+.navbar.is-scrolled::before {
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(18px) saturate(190%);
+  -webkit-backdrop-filter: blur(18px) saturate(190%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
 }
 
 /* Brand Logo */
 .nav-brand {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text, #111111);
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  text-decoration: none;
+  filter: invert(1);
 }
 
-/* Navigation Links */
+.nav-brand-logo {
+  height: 72px;
+  width: auto;
+  transition: height 0.35s ease;
+}
+
+.navbar.is-scrolled .nav-brand-logo {
+  height: 48px;
+}
+
+/* =========================================
+   NAVIGATION LINKS (DESKTOP)
+   ========================================= */
 .nav-links {
   display: flex;
   align-items: center;
@@ -44,74 +78,79 @@
   position: relative;
   display: flex;
   align-items: center;
-  height: var(--nav-height, 72px);
+  padding: 0.5rem 0;
 }
 
 .nav-link {
   font-size: 0.92rem;
   font-weight: 500;
-  letter-spacing: 0.03em;
-  color: var(--color-muted, #444444);
+  letter-spacing: 0.02em;
+  color: #333333;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   transition: color 0.25s ease;
   cursor: pointer;
 }
 
 .nav-link:hover {
-  color: var(--color-accent, #b89758);
+  color: var(--color-gold, #b89758);
 }
 
-/* Dropdown Arrow */
+/* Dropdown Arrow Icon */
 .dropdown-chevron {
-  width: 13px;
-  height: 13px;
-  transition: transform 0.25s ease;
+  width: 12px;
+  height: 12px;
   stroke: currentColor;
+  transition: transform 0.25s ease;
 }
 
 .dropdown-item:hover .dropdown-chevron {
   transform: rotate(180deg);
 }
 
-/* Frosted Dropdown Menu */
+/* =========================================
+   FROSTED GLASS DROPDOWN MENU
+   ========================================= */
 .dropdown-menu {
   position: absolute;
-  top: calc(var(--nav-height, 72px) - 6px);
+  top: calc(100% + 14px);
   left: 50%;
   transform: translateX(-50%) translateY(8px);
-  min-width: 200px;
-  list-style: none;
+  min-width: 190px;
   padding: 0.6rem;
   margin: 0;
+  list-style: none;
 
-  /* Frosted Glass Dropdown Styling */
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(18px) saturate(190%);
-  -webkit-backdrop-filter: blur(18px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 12px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 14px;
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 
-  /* Animation states */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.2s ease;
 }
 
-/* Invisible bridge so mouse hover doesn't drop between nav link and menu */
 .dropdown-menu::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: -12px;
+  top: -18px;
   left: 0;
   width: 100%;
-  height: 12px;
+  height: 18px;
 }
 
-/* Reveal Dropdown on Hover */
 .dropdown-item:hover .dropdown-menu {
   opacity: 1;
   visibility: visible;
@@ -119,48 +158,182 @@
   transform: translateX(-50%) translateY(0);
 }
 
-/* Dropdown Link Items */
 .dropdown-menu li {
   margin: 0;
+  padding: 0;
 }
 
 .dropdown-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 1rem;
+  display: block;
+  padding: 0.65rem 1rem;
   font-size: 0.88rem;
   font-weight: 500;
-  color: var(--color-text, #222222);
+  color: #222222;
+  text-decoration: none;
   border-radius: 8px;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .dropdown-link:hover {
-  background: rgba(184, 151, 88, 0.1);
-  color: var(--color-accent, #b89758);
-  transform: translateX(4px);
+  color: var(--color-gold, #b89758);
+  transform: translateX(3px);
 }
 
-/* Action Button */
+/* =========================================
+   ACTION BUTTON & HAMBURGER
+   ========================================= */
 .nav-actions {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .nav-cta {
-  padding: 0.6rem 1.35rem;
+  padding: 0.6rem 1.5rem;
   border-radius: 50px;
   font-size: 0.88rem;
   font-weight: 500;
-  background-color: var(--color-text, #111111);
+  background-color: #111111;
   color: #ffffff;
-  border: 1px solid transparent;
+  text-decoration: none;
   transition: all 0.25s ease;
 }
 
+.navbar.is-scrolled .nav-cta {
+  padding: 0.5rem 1.3rem;
+  font-size: 0.85rem;
+}
+
 .nav-cta:hover {
-  background-color: var(--color-accent, #b89758);
+  background-color: var(--color-gold, #b89758);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(184, 151, 88, 0.28);
+  box-shadow: 0 4px 14px rgba(184, 151, 88, 0.3);
+}
+
+/* Hamburger button (Hidden on desktop) */
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  color: var(--color-text, #121212);
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-toggle svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* =========================================
+   MOBILE & TABLET RESPONSIVENESS (<= 868px)
+   ========================================= */
+@media (max-width: 868px) {
+  .navbar {
+    height: var(--nav-height-mobile, 68px);
+    padding: 0 1.25rem;
+  }
+
+  .navbar.is-scrolled {
+    height: 58px;
+    padding: 0 1.25rem;
+  }
+
+  .nav-brand-logo {
+    height: 48px;
+  }
+
+  .navbar.is-scrolled .nav-brand-logo {
+    height: 40px;
+  }
+
+  .mobile-toggle {
+    display: inline-flex;
+  }
+
+  .nav-cta {
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  /* Frosted Fullscreen/Slide-Down Menu */
+  .nav-links {
+    position: fixed;
+    top: var(--nav-height-mobile, 68px);
+    left: 0;
+    right: 0;
+    background: rgba(253, 251, 247, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem 2rem 2.5rem;
+    gap: 1.25rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .navbar.is-scrolled .nav-links {
+    top: 58px;
+  }
+
+  .nav-links.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .nav-item {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+
+  /* Mobile Dropdown Inline Expansion */
+  .dropdown-menu {
+    position: static;
+    transform: none !important;
+    width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.25rem 0 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-menu::before {
+    display: none;
+  }
+
+  .dropdown-chevron {
+    display: none;
+  }
+
+  .dropdown-link {
+    font-size: 0.95rem;
+    color: var(--color-muted);
+    padding: 0.4rem 0;
+  }
 }

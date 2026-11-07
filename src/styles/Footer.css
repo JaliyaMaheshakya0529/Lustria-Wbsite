@@ -1,12 +1,12 @@
 .footer {
-  background-color: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  padding: 3.5rem 2rem 2rem;
+  background-color: var(--color-surface, #f9f6f0);
+  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  padding: 4rem 2rem 2rem;
   margin-top: auto;
 }
 
 .footer-content {
-  max-width: var(--max-width);
+  max-width: var(--max-width, 1200px);
   margin: 0 auto;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -14,41 +14,71 @@
 }
 
 .footer-col h4 {
-  font-size: 1rem;
+  font-size: 0.95rem;
   margin-bottom: 1rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--color-text, #121212);
 }
 
 .footer-col p {
-  color: var(--color-muted);
+  color: var(--color-muted, #5a5752);
   font-size: 0.9rem;
-  max-width: 320px;
+  line-height: 1.6;
+  max-width: 340px;
 }
 
 .footer-col ul {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.65rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .footer-col a {
-  color: var(--color-muted);
+  color: var(--color-muted, #5a5752);
   font-size: 0.9rem;
-  transition: var(--transition);
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .footer-col a:hover {
-  color: var(--color-accent);
+  color: var(--color-gold, #b08d48);
 }
 
 .footer-bottom {
-  max-width: var(--max-width);
-  margin: 2.5rem auto 0;
+  max-width: var(--max-width, 1200px);
+  margin: 3rem auto 0;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.85rem;
-  color: var(--color-muted);
+  color: var(--color-muted, #5a5752);
+}
+
+/* Tablet & Mobile Breakpoints (<= 768px) */
+@media (max-width: 768px) {
+  .footer {
+    padding: 3rem 1.25rem 1.5rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2.2rem;
+  }
+
+  .footer-col p {
+    max-width: 100%;
+  }
+
+  .footer-bottom {
+    margin-top: 2.2rem;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+    text-align: center;
+  }
 }

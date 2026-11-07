@@ -1,0 +1,194 @@
+/* =========================================
+   OUR WORK SECTION
+   ========================================= */
+.work-section {
+  padding: 3rem 2rem;
+  background-color: var(--color-bg, #fdfbf7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+.ceperate {
+  display: block;
+  width: 80%;
+  max-width: 760px;
+  height: 1px;
+  background-color: rgba(176, 141, 72, 0.25);
+  margin: 0 auto 3rem auto;
+}
+
+.work-container {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Section Title */
+.work-heading {
+  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
+  font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text, #121212);
+  margin: 0 0 2rem 0;
+  line-height: 1.05;
+}
+
+/* Clean Editorial Text with Breathing Room */
+.work-paragraph {
+  font-family: var(
+    --font-main,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif
+  );
+  font-size: clamp(1.02rem, 1.8vw, 1.3rem);
+  font-weight: 400;
+  line-height: 2.2;
+  letter-spacing: 0.015em;
+  color: var(--color-muted, #44413b);
+  margin: 0 0 3rem 0;
+  max-width: 780px;
+  padding: 0 0.5rem;
+}
+
+/* Prominent, Crisp Inline Image Pills */
+.inline-img-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 3.4rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 0.4rem;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.inline-img-pill img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================================
+   SMOOTH CURSOR POPUP PREVIEW (NO BORDERS / TEXT)
+   ========================================= */
+.pill-cursor-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.preview-card {
+  width: 160px;
+  height: 160px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+
+  /* Progressive smooth blur and scale fade */
+  opacity: 0;
+  transform: scale(0.85);
+  filter: blur(14px);
+  transition:
+    opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pill-cursor-preview.is-visible .preview-card {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+}
+
+.preview-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================================
+   BOTTOM BADGES
+   ========================================= */
+.work-badges {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 580px;
+}
+
+.work-badge {
+  font-family: var(--font-main, sans-serif);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #55514a;
+  white-space: nowrap;
+}
+
+.work-badge-dot {
+  font-size: 0.75rem;
+  color: var(--color-gold, #b08d48);
+}
+
+/* Mobile adjustments (<= 680px) */
+@media (max-width: 680px) {
+  .pill-cursor-preview {
+    display: none !important;
+  }
+
+  .work-section {
+    padding: 3.5rem 1.25rem;
+  }
+
+  .ceperate {
+    width: 90%;
+    margin-bottom: 2rem;
+  }
+
+  .work-paragraph {
+    line-height: 2;
+  }
+
+  .inline-img-pill {
+    height: 1.75rem;
+    width: 2.6rem;
+    margin: 0 0.25rem;
+  }
+
+  .work-badges {
+    gap: 0.6rem 0.9rem;
+  }
+
+  .work-badge {
+    font-size: 0.7rem;
+  }
+}
