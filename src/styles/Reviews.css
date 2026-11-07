@@ -29,13 +29,13 @@
 
 .reviews-heading {
   font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  font-weight: 600;
+  font-size: clamp(2.1rem, 4.5vw, 3.8rem);
+  font-weight: 500;
   letter-spacing: 0.1em;
+  line-height: 1.1;
   text-transform: uppercase;
   color: var(--color-text, #121212);
-  margin: 0 0 0.85rem 0;
-  line-height: 1.15;
+  margin: 0;
 }
 
 .reviews-sub {

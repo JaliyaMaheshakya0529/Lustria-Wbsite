@@ -1,11 +1,11 @@
 .hero-minimal {
-  min-height: calc(100vh - var(--nav-height, 92px));
-  min-height: calc(100dvh - var(--nav-height, 92px));
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 3rem 1.5rem;
+  padding: calc(var(--nav-height, 92px) + 2rem) 1.5rem 3.5rem;
   background-color: var(--color-bg, #fdfbf7);
 }
 
@@ -104,14 +104,13 @@
 
 @media (max-width: 868px) {
   .hero-minimal {
-    min-height: calc(100vh - var(--nav-height-mobile, 68px));
-    min-height: calc(100dvh - var(--nav-height-mobile, 68px));
+    padding-top: calc(var(--nav-height-mobile, 68px) + 2rem);
   }
 }
 
 @media (max-width: 640px) {
   .hero-minimal {
-    padding: 2rem 1.25rem 3rem;
+    padding: calc(var(--nav-height-mobile, 68px) + 1.5rem) 1.25rem 3rem;
   }
 
   .hero-actions {
@@ -131,6 +130,7 @@
 @media (max-height: 540px) and (orientation: landscape) {
   .hero-minimal {
     min-height: auto;
-    padding: 3rem 1.5rem;
+    padding-top: calc(var(--nav-height-mobile, 68px) + 1rem);
+    padding-bottom: 2rem;
   }
 }

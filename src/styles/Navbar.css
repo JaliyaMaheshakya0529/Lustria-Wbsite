@@ -1,6 +1,8 @@
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   height: var(--nav-height, 92px);
   display: flex;
   align-items: center;

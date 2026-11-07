@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import '../styles/Navbar.css'
 
 const categories = [
-  { name: 'Rings', path: '#rings' },
-  { name: 'Earrings', path: '#earrings' },
-  { name: 'Necklaces', path: '#necklaces' },
-  { name: 'Gemstones', path: '#gemstones' }
+  { name: 'Rings', filter: 'Rings' },
+  { name: 'Earrings', filter: 'Earrings' },
+  { name: 'Necklaces', filter: 'Necklaces' },
+  { name: 'Gemstones', filter: 'Gemstones' }
 ]
 
-export default function Navbar() {
+export default function Navbar({ onNavigate }) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -20,20 +20,50 @@ export default function Navbar() {
 
   const closeMenu = () => setMobileMenuOpen(false)
 
+  const handleNavigate = (path, category = null) => {
+    closeMenu()
+    if (onNavigate) {
+      onNavigate(path, category)
+    }
+  }
+
   return (
     <header className={`navbar ${isScrolled ? 'is-scrolled' : ''}`}>
-      <a href="/" className="nav-brand" onClick={closeMenu}>
+      <a
+        href="/"
+        className="nav-brand"
+        onClick={(e) => {
+          e.preventDefault()
+          handleNavigate('/')
+        }}
+      >
         <img src="./public/logo.png" alt="Lustria Logo" className="nav-brand-logo" />
       </a>
 
       <nav>
         <ul className={`nav-links ${mobileMenuOpen ? 'is-open' : ''}`}>
           <li className="nav-item">
-            <a href="#home" className="nav-link" onClick={closeMenu}>Home</a>
+            <a
+              href="/"
+              className="nav-link"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNavigate('/')
+              }}
+            >
+              Home
+            </a>
           </li>
 
           <li className="nav-item dropdown-item">
-            <a href="#collection" className="nav-link" onClick={closeMenu}>
+            <a
+              href="/collection"
+              className="nav-link"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNavigate('/collection', 'All')
+              }}
+            >
               Collection
               <svg
                 className="dropdown-chevron"
@@ -50,7 +80,14 @@ export default function Navbar() {
             <ul className="dropdown-menu">
               {categories.map((item) => (
                 <li key={item.name}>
-                  <a href={item.path} className="dropdown-link" onClick={closeMenu}>
+                  <a
+                    href={`/collection?category=${encodeURIComponent(item.filter)}`}
+                    className="dropdown-link"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleNavigate('/collection', item.filter)
+                    }}
+                  >
                     {item.name}
                   </a>
                 </li>
@@ -59,13 +96,17 @@ export default function Navbar() {
           </li>
 
           <li className="nav-item">
-            <a href="#about" className="nav-link" onClick={closeMenu}>About</a>
+            <a href="#about" className="nav-link" onClick={closeMenu}>
+              About
+            </a>
           </li>
         </ul>
       </nav>
 
       <div className="nav-actions">
-        <a href="#contact" className="nav-cta" onClick={closeMenu}>Inquire</a>
+        <a href="#contact" className="nav-cta" onClick={closeMenu}>
+          Inquire
+        </a>
 
         <button
           className="mobile-toggle"
