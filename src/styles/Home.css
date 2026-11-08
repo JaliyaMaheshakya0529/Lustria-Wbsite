@@ -6,7 +6,7 @@
   justify-content: center;
   text-align: center;
   padding: calc(var(--nav-height, 92px) + 2rem) 1.5rem 3.5rem;
-  background-image: url('./public/bg-img.png');
+  background-image: url('/bg-img.png');
   background-size: cover;
   /* background-color: var(--color-bg, #fdfbf7); */
 }

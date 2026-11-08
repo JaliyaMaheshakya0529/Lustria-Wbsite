@@ -65,7 +65,7 @@ html.lenis body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #c4a768 #fbf9f5;
+  scrollbar-color: #c4a768 #FDFBF7;
 }
 
 ::-webkit-scrollbar {
@@ -74,7 +74,7 @@ html.lenis body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #fbf9f5;
+  background: #FDFBF7;
 }
 
 ::-webkit-scrollbar-thumb {
