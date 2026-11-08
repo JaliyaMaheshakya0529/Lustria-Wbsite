@@ -45,13 +45,12 @@ const EMPTY_PRODUCT = {
   featured: false,
 };
 
-function formatPrice(price) {
-  return `LKR ${Number(price).toLocaleString("en-LK")}`;
-}
+const formatPrice = (value) =>
+  `LKR ${Number(value).toLocaleString("en-LK")}`;
 
 function Icon({ name, size = 20 }) {
-  const paths = {
-    dashboard: (
+  const icons = {
+    grid: (
       <>
         <rect x="3" y="3" width="7" height="7" rx="1" />
         <rect x="14" y="3" width="7" height="7" rx="1" />
@@ -59,7 +58,7 @@ function Icon({ name, size = 20 }) {
         <rect x="14" y="14" width="7" height="7" rx="1" />
       </>
     ),
-    box: (
+    package: (
       <>
         <path d="m12 3 9 5-9 5-9-5 9-5Z" />
         <path d="M3 8v9l9 5 9-5V8" />
@@ -86,16 +85,16 @@ function Icon({ name, size = 20 }) {
       </>
     ),
     close: <path d="M18 6 6 18M6 6l12 12" />,
-    logout: (
-      <>
-        <path d="M10 17l5-5-5-5M15 12H3" />
-        <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
-      </>
-    ),
     upload: (
       <>
         <path d="M12 16V3m-5 5 5-5 5 5" />
         <path d="M4 16v4h16v-4" />
+      </>
+    ),
+    logout: (
+      <>
+        <path d="M10 17l5-5-5-5M15 12H3" />
+        <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
       </>
     ),
   };
@@ -107,62 +106,68 @@ function Icon({ name, size = 20 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.7"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {paths[name]}
+      {icons[name]}
     </svg>
   );
 }
 
-// ---------------------------------------
-// AUTHENTICATION
-// ---------------------------------------
+// ==========================================
+// LOGIN
+// ==========================================
 
 function Login() {
   const { signIn } = useAuthActions();
 
-  const [isSignup, setIsSignup] = useState(false);
+  const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setLoading(true);
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setBusy(true);
     setError("");
 
     try {
       const form = new FormData();
-      form.set("email", email);
+      form.set("email", email.trim());
       form.set("password", password);
-      form.set("flow", isSignup ? "signUp" : "signIn");
+      form.set("flow", signup ? "signUp" : "signIn");
 
       await signIn("password", form);
     } catch (err) {
       setError(err.message || "Authentication failed.");
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   }
 
   return (
-    <div className="ladmin-auth-page">
-      <div className="ladmin-auth-card">
-        <div className="ladmin-auth-brand">
+    <div className="ladmin-auth">
+      <div className="ladmin-login-card">
+        <div className="ladmin-brand">
           <h1>LUSTRIA</h1>
           <span>ADMINISTRATION</span>
         </div>
 
-        <h2>{isSignup ? "Create Account" : "Welcome Back"}</h2>
-        <p>Sign in to manage your jewellery collection.</p>
+        <div className="ladmin-login-heading">
+          <span className="ladmin-eyebrow">PRIVATE ACCESS</span>
+          <h2>{signup ? "Create Account" : "Welcome Back"}</h2>
+          <p>
+            Sign in to manage your jewellery collection.
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <label>Email Address</label>
+        <form onSubmit={handleSubmit} className="ladmin-login-form">
+          <label htmlFor="admin-email">Email Address</label>
           <input
+            id="admin-email"
             type="email"
             required
             autoComplete="email"
@@ -171,33 +176,28 @@ function Login() {
             placeholder="admin@example.com"
           />
 
-          <label>Password</label>
+          <label htmlFor="admin-password">Password</label>
           <input
+            id="admin-password"
             type="password"
             required
             minLength={8}
-            autoComplete={
-              isSignup ? "new-password" : "current-password"
-            }
+            autoComplete={signup ? "new-password" : "current-password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
+            placeholder="Enter your password"
           />
 
-          {error && (
-            <p className="ladmin-error" role="alert">
-              {error}
-            </p>
-          )}
+          {error && <p className="ladmin-error">{error}</p>}
 
           <button
             type="submit"
-            className="ladmin-btn-primary"
-            disabled={loading}
+            className="ladmin-primary"
+            disabled={busy}
           >
-            {loading
+            {busy
               ? "Please wait..."
-              : isSignup
+              : signup
                 ? "Create Account"
                 : "Sign In"}
           </button>
@@ -205,45 +205,55 @@ function Login() {
 
         <button
           type="button"
-          className="ladmin-auth-switch"
+          className="ladmin-link-button"
           onClick={() => {
-            setIsSignup(!isSignup);
+            setSignup(!signup);
             setError("");
           }}
         >
-          {isSignup
+          {signup
             ? "Already have an account? Sign in"
-            : "First-time setup? Create account"}
+            : "First time? Create an account"}
         </button>
 
-        <a href="/" className="ladmin-back-link">
-          Return to Lustria
+        <a href="/" className="ladmin-return">
+          Return to Website
         </a>
       </div>
     </div>
   );
 }
 
+// ==========================================
+// ACCESS DENIED
+// ==========================================
+
 function AccessDenied() {
   const { signOut } = useAuthActions();
 
   return (
-    <div className="ladmin-auth-page">
-      <div className="ladmin-auth-card">
-        <div className="ladmin-auth-brand">
+    <div className="ladmin-auth">
+      <div className="ladmin-login-card">
+        <div className="ladmin-brand">
           <h1>LUSTRIA</h1>
           <span>ADMINISTRATION</span>
         </div>
 
-        <h2>Access Restricted</h2>
-        <p>
-          Your account is not approved as a Lustria administrator.
-          An existing administrator must add your user ID to the
-          Convex admins table.
-        </p>
+        <div className="ladmin-login-heading">
+          <span className="ladmin-eyebrow">ACCOUNT PENDING</span>
+          <h2>Access Restricted</h2>
+          <p>
+            Your account is authenticated, but it has not been
+            approved as a Lustria administrator.
+          </p>
+          <p>
+            Open Convex Dashboard, find your account in the
+            users table, and add its ID to the admins table.
+          </p>
+        </div>
 
         <button
-          className="ladmin-btn-primary"
+          className="ladmin-primary"
           onClick={() => signOut()}
         >
           Sign Out
@@ -253,11 +263,55 @@ function AccessDenied() {
   );
 }
 
-// ---------------------------------------
-// MAIN ADMIN ENTRY
-// ---------------------------------------
+// ==========================================
+// ERROR BOUNDARY
+// ==========================================
 
-export default function Admin() {
+class AdminErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="ladmin-auth">
+          <div className="ladmin-login-card">
+            <div className="ladmin-brand">
+              <h1>LUSTRIA</h1>
+              <span>ADMINISTRATION</span>
+            </div>
+
+            <h2>Admin Service Unavailable</h2>
+            <p className="ladmin-error">
+              {this.state.error.message}
+            </p>
+
+            <button
+              className="ladmin-primary"
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// ==========================================
+// ADMIN ACCESS
+// ==========================================
+
+function AdminAccess() {
   const { isLoading, isAuthenticated } = useConvexAuth();
 
   const isAdmin = useQuery(
@@ -278,7 +332,7 @@ export default function Admin() {
   if (isAdmin === undefined) {
     return (
       <div className="ladmin-loading">
-        Verifying administrator permissions...
+        Checking administrator permissions...
       </div>
     );
   }
@@ -288,9 +342,9 @@ export default function Admin() {
   return <Dashboard />;
 }
 
-// ---------------------------------------
-// DASHBOARD
-// ---------------------------------------
+// ==========================================
+// MAIN DASHBOARD
+// ==========================================
 
 function Dashboard() {
   const { signOut } = useAuthActions();
@@ -310,19 +364,23 @@ function Dashboard() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ ...EMPTY_PRODUCT });
+
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
+  const [preview, setPreview] = useState("");
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  const closeButtonRef = useRef(null);
+  const closeRef = useRef(null);
+  const savingRef = useRef(false);
+
+  savingRef.current = saving;
 
   const allProducts = products || [];
 
   const filteredProducts = useMemo(() => {
-    return allProducts
+    return [...(products || [])]
       .filter((product) => {
         const matchesSearch = [
           product.name,
@@ -350,7 +408,10 @@ function Dashboard() {
     (p) => p.featured
   ).length;
 
-  // Lock background scrolling only while editor is open.
+  // ========================================
+  // MODAL SCROLL LOCK AND FOCUS
+  // ========================================
+
   useEffect(() => {
     if (!editorOpen) return;
 
@@ -358,14 +419,18 @@ function Dashboard() {
     const previousFocus = document.activeElement;
 
     document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
 
-    const handleKeydown = (e) => {
-      if (e.key === "Escape" && !saving) {
-        setEditorOpen(false);
+    closeRef.current?.focus({ preventScroll: true });
+
+    function handleKeydown(event) {
+      if (event.key === "Escape") {
+        if (!savingRef.current) {
+          setEditorOpen(false);
+        }
+        return;
       }
 
-      if (e.key !== "Tab") return;
+      if (event.key !== "Tab") return;
 
       const dialog = document.querySelector(".ladmin-editor");
       if (!dialog) return;
@@ -374,24 +439,24 @@ function Dashboard() {
         dialog.querySelectorAll(
           'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)'
         )
-      ).filter((element) => element.getClientRects().length > 0);
+      ).filter((el) => el.getClientRects().length > 0);
 
       if (!elements.length) return;
 
       const first = elements[0];
       const last = elements[elements.length - 1];
 
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
         last.focus();
       } else if (
-        !e.shiftKey &&
+        !event.shiftKey &&
         document.activeElement === last
       ) {
-        e.preventDefault();
+        event.preventDefault();
         first.focus();
       }
-    };
+    }
 
     document.addEventListener("keydown", handleKeydown);
 
@@ -400,26 +465,33 @@ function Dashboard() {
       document.removeEventListener("keydown", handleKeydown);
 
       if (previousFocus?.isConnected) {
-        previousFocus.focus();
+        previousFocus.focus({ preventScroll: true });
       }
     };
-  }, [editorOpen, saving]);
+  }, [editorOpen]);
 
-  // Generate and clean up local image previews.
+  // ========================================
+  // IMAGE PREVIEW
+  // ========================================
+
   useEffect(() => {
     if (!imageFile) return;
 
     const url = URL.createObjectURL(imageFile);
-    setImagePreview(url);
+    setPreview(url);
 
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
+
+  // ========================================
+  // EDITOR HANDLERS
+  // ========================================
 
   function openNew() {
     setEditingId(null);
     setForm({ ...EMPTY_PRODUCT });
     setImageFile(null);
-    setImagePreview("");
+    setPreview("");
     setError("");
     setEditorOpen(true);
   }
@@ -440,22 +512,28 @@ function Dashboard() {
     });
 
     setImageFile(null);
-    setImagePreview(product.imageUrl || "");
+    setPreview(product.imageUrl || "");
     setError("");
     setEditorOpen(true);
   }
 
   function closeEditor() {
-    if (saving) return;
+    if (savingRef.current) return;
+
     setEditorOpen(false);
     setImageFile(null);
   }
 
-  async function handleSave(e) {
-    e.preventDefault();
+  // ========================================
+  // SAVE PRODUCT
+  // ========================================
 
-    if (saving) return;
+  async function handleSave(event) {
+    event.preventDefault();
 
+    if (savingRef.current) return;
+
+    savingRef.current = true;
     setSaving(true);
     setError("");
 
@@ -468,24 +546,24 @@ function Dashboard() {
         !Number.isFinite(price) ||
         price < 0
       ) {
-        throw new Error("Enter a valid product name and price.");
+        throw new Error("Enter a valid name and price.");
       }
 
       let imageId = form.imageId;
 
       if (imageFile) {
-        const allowedTypes = [
+        const allowed = [
           "image/jpeg",
           "image/png",
           "image/webp",
         ];
 
-        if (!allowedTypes.includes(imageFile.type)) {
+        if (!allowed.includes(imageFile.type)) {
           throw new Error("Only JPG, PNG and WebP images are allowed.");
         }
 
         if (imageFile.size > 5 * 1024 * 1024) {
-          throw new Error("Image must be smaller than 5 MB.");
+          throw new Error("Maximum image size is 5 MB.");
         }
 
         const uploadUrl = await generateUploadUrl();
@@ -499,7 +577,7 @@ function Dashboard() {
         });
 
         if (!response.ok) {
-          throw new Error("Unable to upload image.");
+          throw new Error("Image upload failed.");
         }
 
         const uploaded = await response.json();
@@ -507,7 +585,7 @@ function Dashboard() {
       }
 
       if (!imageId) {
-        throw new Error("Please select a product image.");
+        throw new Error("Please upload a product image.");
       }
 
       const payload = {
@@ -530,7 +608,7 @@ function Dashboard() {
         setNotice("Product updated successfully.");
       } else {
         await createProduct(payload);
-        setNotice("New product added successfully.");
+        setNotice("Product added successfully.");
       }
 
       setEditorOpen(false);
@@ -538,14 +616,19 @@ function Dashboard() {
     } catch (err) {
       setError(err.message || "Unable to save product.");
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
 
+  // ========================================
+  // DELETE PRODUCT
+  // ========================================
+
   async function handleDelete(product) {
     if (
       !window.confirm(
-        `Are you sure you want to delete "${product.name}"?`
+        `Delete "${product.name}" permanently?`
       )
     ) {
       return;
@@ -568,17 +651,17 @@ function Dashboard() {
           <a href="/" className="ladmin-logo">
             LUSTRIA
           </a>
-          <span>ADMIN PANEL</span>
+          <span>ADMINISTRATION</span>
         </div>
 
         <nav className="ladmin-navigation">
           <div className="ladmin-nav-item active">
-            <Icon name="dashboard" />
+            <Icon name="grid" />
             <span>Dashboard</span>
           </div>
 
           <div className="ladmin-nav-item">
-            <Icon name="box" />
+            <Icon name="package" />
             <span>Products</span>
           </div>
         </nav>
@@ -588,7 +671,7 @@ function Dashboard() {
             View Website
           </a>
 
-          <button onClick={() => signOut()}>
+          <button type="button" onClick={() => signOut()}>
             <Icon name="logout" size={17} />
             Sign Out
           </button>
@@ -600,7 +683,7 @@ function Dashboard() {
       <main className="ladmin-main">
         <header className="ladmin-header">
           <div>
-            <span className="ladmin-overline">
+            <span className="ladmin-eyebrow">
               LUSTRIA MANAGEMENT
             </span>
 
@@ -609,7 +692,8 @@ function Dashboard() {
           </div>
 
           <button
-            className="ladmin-btn-primary ladmin-add-btn"
+            type="button"
+            className="ladmin-primary ladmin-add-button"
             onClick={openNew}
           >
             <Icon name="plus" size={17} />
@@ -617,49 +701,51 @@ function Dashboard() {
           </button>
         </header>
 
-        {/* STATISTICS */}
+        {/* STATS */}
 
         <div className="ladmin-stats">
-          <div className="ladmin-stat-card">
+          <div className="ladmin-stat">
             <span>Total Products</span>
             <strong>{allProducts.length}</strong>
-            <small>Jewellery catalogue</small>
+            <small>All jewellery pieces</small>
           </div>
 
-          <div className="ladmin-stat-card">
-            <span>Available Products</span>
+          <div className="ladmin-stat">
+            <span>Available</span>
             <strong>{availableCount}</strong>
             <small>Visible to customers</small>
           </div>
 
-          <div className="ladmin-stat-card">
-            <span>Featured Products</span>
+          <div className="ladmin-stat">
+            <span>Featured</span>
             <strong>{featuredCount}</strong>
-            <small>Homepage highlights</small>
+            <small>Highlighted products</small>
           </div>
         </div>
 
+        {/* NOTICE */}
+
         {notice && (
           <div className="ladmin-notice" role="status">
-            {notice}
+            <span>{notice}</span>
+
             <button
+              type="button"
               onClick={() => setNotice("")}
-              aria-label="Dismiss notification"
+              aria-label="Dismiss"
             >
               <Icon name="close" size={16} />
             </button>
           </div>
         )}
 
-        {/* PRODUCTS */}
+        {/* PRODUCT COLLECTION */}
 
         <section className="ladmin-panel">
           <div className="ladmin-panel-header">
             <div>
               <h2>Product Collection</h2>
-              <p>
-                {filteredProducts.length} products found
-              </p>
+              <p>{filteredProducts.length} products</p>
             </div>
 
             <div className="ladmin-filters">
@@ -668,7 +754,7 @@ function Dashboard() {
 
                 <input
                   type="search"
-                  placeholder="Search products..."
+                  placeholder="Search jewellery..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -696,22 +782,20 @@ function Dashboard() {
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="ladmin-empty">
-              <Icon name="box" size={34} />
+              <Icon name="package" size={34} />
               <h3>No Products Found</h3>
-              <p>
-                Add your first jewellery product or
-                change your search filters.
-              </p>
+              <p>Add your first product to get started.</p>
 
               <button
-                className="ladmin-btn-primary"
+                type="button"
+                className="ladmin-primary"
                 onClick={openNew}
               >
                 Add Product
               </button>
             </div>
           ) : (
-            <div className="ladmin-product-list">
+            <div className="ladmin-products">
               {filteredProducts.map((product) => (
                 <article
                   className="ladmin-product"
@@ -726,7 +810,7 @@ function Dashboard() {
                     )}
                   </div>
 
-                  <div className="ladmin-product-details">
+                  <div className="ladmin-product-info">
                     <h3>{product.name}</h3>
 
                     <p>
@@ -738,7 +822,7 @@ function Dashboard() {
                     </strong>
                   </div>
 
-                  <div className="ladmin-product-badges">
+                  <div className="ladmin-product-status">
                     <span
                       className={`ladmin-badge ${
                         product.available
@@ -760,17 +844,17 @@ function Dashboard() {
 
                   <div className="ladmin-product-actions">
                     <button
+                      type="button"
                       onClick={() => openEdit(product)}
-                      aria-label={`Edit ${product.name}`}
                     >
                       <Icon name="edit" size={16} />
                       Edit
                     </button>
 
                     <button
-                      className="delete"
+                      type="button"
+                      className="danger"
                       onClick={() => handleDelete(product)}
-                      aria-label={`Delete ${product.name}`}
                     >
                       <Icon name="trash" size={16} />
                       Delete
@@ -783,13 +867,13 @@ function Dashboard() {
         </section>
       </main>
 
-      {/* PRODUCT EDITOR */}
+      {/* EDITOR MODAL */}
 
       {editorOpen && (
         <div
           className="ladmin-overlay"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) {
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
               closeEditor();
             }
           }}
@@ -799,10 +883,11 @@ function Dashboard() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="ladmin-editor-title"
+            data-lenis-prevent
           >
             <div className="ladmin-editor-header">
               <div>
-                <span className="ladmin-overline">
+                <span className="ladmin-eyebrow">
                   PRODUCT MANAGEMENT
                 </span>
 
@@ -816,7 +901,7 @@ function Dashboard() {
               <button
                 type="button"
                 className="ladmin-close"
-                ref={closeButtonRef}
+                ref={closeRef}
                 disabled={saving}
                 onClick={closeEditor}
                 aria-label="Close editor"
@@ -832,16 +917,13 @@ function Dashboard() {
               <label>Product Image</label>
 
               <label className="ladmin-image-upload">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Product preview"
-                  />
+                {preview ? (
+                  <img src={preview} alt="Product preview" />
                 ) : (
                   <div className="ladmin-upload-placeholder">
                     <Icon name="upload" size={28} />
-                    <span>Click to upload image</span>
-                    <small>JPG, PNG or WebP · Max 5 MB</small>
+                    <span>Click to upload an image</span>
+                    <small>JPG, PNG, WebP · Max 5 MB</small>
                   </div>
                 )}
 
@@ -854,12 +936,12 @@ function Dashboard() {
                 />
               </label>
 
-              <label htmlFor="ladmin-name">
+              <label htmlFor="admin-product-name">
                 Product Name
               </label>
 
               <input
-                id="ladmin-name"
+                id="admin-product-name"
                 required
                 value={form.name}
                 placeholder="Natural Blue Sapphire Ring"
@@ -873,12 +955,12 @@ function Dashboard() {
 
               <div className="ladmin-form-row">
                 <div>
-                  <label htmlFor="ladmin-category">
+                  <label htmlFor="admin-category">
                     Category
                   </label>
 
                   <select
-                    id="ladmin-category"
+                    id="admin-category"
                     value={form.category}
                     onChange={(e) =>
                       setForm({
@@ -888,20 +970,18 @@ function Dashboard() {
                     }
                   >
                     {CATEGORIES.map((item) => (
-                      <option key={item}>
-                        {item}
-                      </option>
+                      <option key={item}>{item}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="ladmin-gemstone">
+                  <label htmlFor="admin-gemstone">
                     Gemstone
                   </label>
 
                   <select
-                    id="ladmin-gemstone"
+                    id="admin-gemstone"
                     value={form.gemstone}
                     onChange={(e) =>
                       setForm({
@@ -911,20 +991,16 @@ function Dashboard() {
                     }
                   >
                     {GEMSTONES.map((item) => (
-                      <option key={item}>
-                        {item}
-                      </option>
+                      <option key={item}>{item}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <label htmlFor="ladmin-metal">
-                Metal
-              </label>
+              <label htmlFor="admin-metal">Metal</label>
 
               <select
-                id="ladmin-metal"
+                id="admin-metal"
                 value={form.metal}
                 onChange={(e) =>
                   setForm({
@@ -938,12 +1014,10 @@ function Dashboard() {
                 <option>Loose Natural Gemstone</option>
               </select>
 
-              <label htmlFor="ladmin-price">
-                Price (LKR)
-              </label>
+              <label htmlFor="admin-price">Price (LKR)</label>
 
               <input
-                id="ladmin-price"
+                id="admin-price"
                 type="number"
                 min="0"
                 step="0.01"
@@ -958,12 +1032,12 @@ function Dashboard() {
                 }
               />
 
-              <label htmlFor="ladmin-description">
+              <label htmlFor="admin-description">
                 Description
               </label>
 
               <textarea
-                id="ladmin-description"
+                id="admin-description"
                 rows={4}
                 value={form.description}
                 placeholder="Describe this jewellery piece..."
@@ -975,11 +1049,11 @@ function Dashboard() {
                 }
               />
 
-              <div className="ladmin-toggle-row">
-                <div>
+              <label className="ladmin-toggle">
+                <span>
                   <strong>Available</strong>
-                  <small>Visible in the public collection</small>
-                </div>
+                  <small>Show product in the collection</small>
+                </span>
 
                 <input
                   type="checkbox"
@@ -991,13 +1065,13 @@ function Dashboard() {
                     })
                   }
                 />
-              </div>
+              </label>
 
-              <div className="ladmin-toggle-row">
-                <div>
+              <label className="ladmin-toggle">
+                <span>
                   <strong>Featured Product</strong>
-                  <small>Highlight on the homepage</small>
-                </div>
+                  <small>Highlight this product</small>
+                </span>
 
                 <input
                   type="checkbox"
@@ -1009,7 +1083,7 @@ function Dashboard() {
                     })
                   }
                 />
-              </div>
+              </label>
 
               {error && (
                 <p className="ladmin-error" role="alert">
@@ -1020,7 +1094,7 @@ function Dashboard() {
               <div className="ladmin-form-footer">
                 <button
                   type="button"
-                  className="ladmin-btn-secondary"
+                  className="ladmin-secondary"
                   disabled={saving}
                   onClick={closeEditor}
                 >
@@ -1029,7 +1103,7 @@ function Dashboard() {
 
                 <button
                   type="submit"
-                  className="ladmin-btn-primary"
+                  className="ladmin-primary"
                   disabled={saving}
                 >
                   {saving
@@ -1046,4 +1120,11 @@ function Dashboard() {
     </div>
   );
 }
-Y
+
+export default function Admin() {
+  return (
+    <AdminErrorBoundary>
+      <AdminAccess />
+    </AdminErrorBoundary>
+  );
+}

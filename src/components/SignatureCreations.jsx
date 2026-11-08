@@ -1,37 +1,22 @@
 import '../styles/SignatureCreations.css'
 
-const signaturePieces = [
-  {
-    id: 1,
-    title: 'Ceylon Blue Sapphire Ring',
-    metal: 'Solid 925 Sterling Silver',
-    price: 'LKR 48,000',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=700&q=80'
-  },
-  {
-    id: 2,
-    title: 'Padparadscha Halo Solitaire',
-    metal: 'Solid 925 Sterling Silver',
-    price: 'LKR 54,000',
-    image: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=700&q=80'
-  },
-  {
-    id: 3,
-    title: 'Cushion Cut Citrine Pendant',
-    metal: 'Solid 925 Sterling Silver',
-    price: 'LKR 32,500',
-    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=700&q=80'
-  },
-  {
-    id: 4,
-    title: 'Emerald Cut Topaz Band',
-    metal: 'Solid 925 Sterling Silver',
-    price: 'LKR 28,000',
-    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=700&q=80'
-  }
-]
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function SignatureCreations({ onExplore }) {
+  const products = useQuery(api.products.list)
+  const signaturePieces = (products || [])
+    .filter((product) => product.featured)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, 4)
+    .map((product) => ({
+      id: product._id,
+      title: product.name,
+      metal: product.metal,
+      price: `LKR ${product.price.toLocaleString('en-LK')}`,
+      image: product.imageUrl
+    }))
+
   return (
     <section className="signatures-section" id="collection">
       <div className="signatures-container">

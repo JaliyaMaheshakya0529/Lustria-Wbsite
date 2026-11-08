@@ -1,14 +1,14 @@
 
 import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
+import { v } from "convex/values";
 
 export default defineSchema({
   ...authTables,
 
   admins: defineTable({
     userId: v.id("users"),
-  }).index("by_user", ["userId"]),
+  }).index("by_userId", ["userId"]),
 
   products: defineTable({
     name: v.string(),
@@ -17,11 +17,9 @@ export default defineSchema({
     metal: v.string(),
     description: v.string(),
     price: v.number(),
-    imageId: v.optional(v.id("_storage")),
+    imageId: v.id("_storage"),
     available: v.boolean(),
     featured: v.boolean(),
     createdAt: v.number(),
-  })
-    .index("by_category", ["category"])
-    .index("by_featured", ["featured"]),
+  }),
 });
