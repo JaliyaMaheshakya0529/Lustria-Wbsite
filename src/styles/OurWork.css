@@ -18,7 +18,7 @@
 }
 
 .work-heading {
-  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-family: var(--font-serif, "Cormorant Garamond", Georgia, serif);
   font-size: clamp(2.1rem, 4.5vw, 3.8rem);
   font-weight: 500;
   letter-spacing: 0.1em;
@@ -54,6 +54,7 @@
 }
 
 .work-badges {
+  margin: 0 2rem 0 2rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -67,7 +68,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #2b2823;
+  color: var(--color-gold, #b08d48);
 }
 
 .work-badge-sep {
@@ -90,6 +91,10 @@
 @media (max-width: 600px) {
   .work-section {
     padding: 3rem 1.25rem;
+  }
+
+  .work-badge-sep {
+    display: none;
   }
 
   .work-paragraph {

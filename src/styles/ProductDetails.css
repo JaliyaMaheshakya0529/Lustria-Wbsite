@@ -1,0 +1,226 @@
+/* Scoped product details styles — no changes to public card/navbar styles. */
+.lpd-page {
+  min-height: 75vh;
+  background: #faf8f4;
+  color: #28251f;
+  padding: clamp(100px, 11vw, 150px) 24px 85px;
+}
+.lpd-page * {
+  box-sizing: border-box;
+}
+.lpd-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.lpd-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 34px;
+  color: #8c8377;
+  font-size: 13px;
+}
+.lpd-breadcrumb button {
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.lpd-breadcrumb button:hover {
+  color: #a88751;
+}
+.lpd-breadcrumb span:last-child {
+  color: #39352e;
+  overflow-wrap: anywhere;
+}
+.lpd-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+  align-items: start;
+  gap: clamp(32px, 6vw, 92px);
+}
+.lpd-image-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  background: #fff;
+  border: 1px solid #eee8de;
+  border-radius: 15px;
+  overflow: hidden;
+}
+.lpd-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.lpd-no-image {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #898177;
+}
+.lpd-content {
+  padding-top: 12px;
+  min-width: 0;
+}
+.lpd-eyebrow {
+  display: block;
+  color: #a3834f;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+.lpd-content h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 3.4vw, 52px);
+  font-weight: 400;
+  line-height: 1.16;
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+.lpd-price {
+  font-size: clamp(19px, 2vw, 25px);
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.lpd-availability {
+  display: inline-block;
+  background: #eaf3e9;
+  color: #41714b;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 7px 11px;
+}
+.lpd-description {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #70685e;
+  white-space: pre-line;
+  margin: 26px 0;
+}
+.lpd-specs {
+  margin: 28px 0;
+  border-top: 1px solid #e7e0d5;
+  padding-top: 22px;
+}
+.lpd-specs h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 18px;
+}
+.lpd-specs dl {
+  margin: 0;
+}
+.lpd-specs dl > div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee8df;
+  font-size: 14px;
+}
+.lpd-specs dt {
+  color: #898075;
+}
+.lpd-specs dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.lpd-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  width: 100%;
+  background: #25251f;
+  color: #fff;
+  border-radius: 7px;
+  padding: 14px 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.lpd-whatsapp:hover {
+  background: #927345;
+  transform: translateY(-1px);
+}
+.lpd-whatsapp svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.lpd-help {
+  font-size: 12px;
+  color: #8d857a;
+  text-align: center;
+  margin-top: 12px;
+}
+.lpd-setup-note {
+  border: 1px solid #e8d9b5;
+  background: #fff8e9;
+  color: #806435;
+  padding: 15px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.lpd-state {
+  max-width: 700px;
+  margin: 50px auto;
+  text-align: center;
+  color: #6c655a;
+}
+.lpd-state h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 36px;
+  color: #2a2823;
+}
+.lpd-back-button {
+  border: none;
+  background: #25251f;
+  color: #fff;
+  padding: 13px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.lustria-clickable-product {
+  cursor: pointer;
+}
+.lustria-clickable-product:focus-visible {
+  outline: 2px solid #b28e56;
+  outline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .lpd-page {
+    padding: 96px 17px 60px;
+  }
+  .lpd-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+  .lpd-image-wrap {
+    aspect-ratio: 1 / 1;
+  }
+  .lpd-content {
+    padding-top: 0;
+  }
+  .lpd-breadcrumb {
+    margin-bottom: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lpd-whatsapp {
+    transition: none;
+  }
+}

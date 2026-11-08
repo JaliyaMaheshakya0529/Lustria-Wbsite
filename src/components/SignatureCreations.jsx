@@ -3,7 +3,7 @@ import '../styles/SignatureCreations.css'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 
-export default function SignatureCreations({ onExplore }) {
+export default function SignatureCreations({ onExplore, onProductSelect }) {
   const products = useQuery(api.products.list)
   const signaturePieces = (products || [])
     .filter((product) => product.featured)
@@ -29,7 +29,20 @@ export default function SignatureCreations({ onExplore }) {
 
         <div className="signatures-grid">
           {signaturePieces.map((piece) => (
-            <article key={piece.id} className="signature-card">
+            <article
+              key={piece.id}
+              className="signature-card lustria-clickable-product"
+              role="link"
+              tabIndex={0}
+              aria-label={`View details for ${piece.title}`}
+              onClick={() => onProductSelect?.(piece.id)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  onProductSelect?.(piece.id)
+                }
+              }}
+            >
               <div className="signature-image-box">
                 <img src={piece.image} alt={piece.title} loading="lazy" />
               </div>

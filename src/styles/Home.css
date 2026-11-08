@@ -23,7 +23,7 @@
 
 .hero-brand-name {
   font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
-  font-size: clamp(2.1rem, 6vw, 4.8rem);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
   font-weight: 500;
   letter-spacing: 0.06em;
   line-height: 1.1;
@@ -35,7 +35,7 @@
 
 .hero-script-tagline {
   font-family: var(--font-script, 'Alex Brush', cursive);
-  font-size: clamp(1.85rem, 4.5vw, 3.2rem);
+  font-size: clamp(1.5rem, 4.5vw, 3.2rem);
   font-weight: 400;
   color: var(--color-gold, #b08d48);
   line-height: 1.15;

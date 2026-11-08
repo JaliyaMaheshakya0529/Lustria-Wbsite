@@ -14,7 +14,7 @@ export default function OurWork() {
           <span className="work-badge-sep">&bull;</span>
           <span className="work-badge">Natural Certified Gems</span>
           <span className="work-badge-sep">&bull;</span>
-          <span className="work-badge">Solid 925 Silver</span>
+          <span className="work-badge">Pure Sterling silver</span>
         </div>
       </div>
     </section>

@@ -5,7 +5,7 @@ import Reviews from '../components/Reviews'
 import useScrollReveal from '../hooks/useScrollReveal'
 import '../styles/Home.css'
 
-export default function Home({ onExplore }) {
+export default function Home({ onExplore, onProductSelect }) {
   useScrollReveal()
 
   return (
@@ -45,7 +45,7 @@ export default function Home({ onExplore }) {
       </div>
 
       <div className="reveal-on-scroll">
-        <SignatureCreations onExplore={onExplore} />
+        <SignatureCreations onExplore={onExplore} onProductSelect={onProductSelect} />
       </div>
 
       <div className="reveal-on-scroll">

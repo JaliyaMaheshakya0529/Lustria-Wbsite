@@ -13,7 +13,7 @@ const sortOptions = [
   { value: 'price-high', label: 'Price: High to Low' }
 ]
 
-export default function Collection({ initialCategory = 'All', onFilterChange }) {
+export default function Collection({ initialCategory = 'All', onFilterChange, onProductSelect }) {
   const dbProducts = useQuery(api.products.list)
   const products = useMemo(() => (dbProducts || []).map((product) => ({
     id: product._id,
@@ -278,7 +278,20 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
           ) : (
             <div className="shop-grid">
               {filteredProducts.map((piece) => (
-                <article key={piece.id} className="signature-card reveal-on-scroll">
+                <article
+                  key={piece.id}
+                  className="signature-card reveal-on-scroll lustria-clickable-product"
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`View details for ${piece.title}`}
+                  onClick={() => onProductSelect?.(piece.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      onProductSelect?.(piece.id)
+                    }
+                  }}
+                >
                   <div className="signature-image-box">
                     <img src={piece.image} alt={piece.title} loading="lazy" />
                   </div>
