@@ -47,7 +47,8 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  filter: invert(1);
+  /* filter: invert(1); */
+  /* mix-blend-mode: multiply; */
   text-decoration: none;
 }
 .nav-brand-logo {
