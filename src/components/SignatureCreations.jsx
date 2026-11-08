@@ -31,7 +31,7 @@ const signaturePieces = [
   }
 ]
 
-export default function SignatureCreations() {
+export default function SignatureCreations({ onExplore }) {
   return (
     <section className="signatures-section" id="collection">
       <div className="signatures-container">
@@ -59,7 +59,7 @@ export default function SignatureCreations() {
         </div>
 
         <div className="signatures-action">
-          <a href="#all" className="btn-signatures-view">
+          <a href="/collection" className="btn-signatures-view" onClick={(event) => { event.preventDefault(); onExplore?.() }}>
             View All Pieces
           </a>
         </div>

@@ -19,13 +19,27 @@ export default function Navbar({ onNavigate }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined
+    const handleKeydown = (event) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false)
+    }
+    const handleResize = () => {
+      if (window.innerWidth > 868) setMobileMenuOpen(false)
+    }
+    window.addEventListener('keydown', handleKeydown)
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [mobileMenuOpen])
+
   const closeMenu = () => setMobileMenuOpen(false)
 
-  const handleNavigate = (path, category = null) => {
+  const handleNavigate = (path, category = null, section = null) => {
     closeMenu()
-    if (onNavigate) {
-      onNavigate(path, category)
-    }
+    onNavigate?.(path, category, section)
   }
 
   return (
@@ -41,8 +55,16 @@ export default function Navbar({ onNavigate }) {
         <img src="/Logo.png" alt="Lustria Logo" className="nav-brand-logo" />
       </a>
 
-      <nav>
-        <ul className={`nav-links ${mobileMenuOpen ? 'is-open' : ''}`}>
+      <button
+        type="button"
+        className={`nav-menu-backdrop ${mobileMenuOpen ? 'is-open' : ''}`}
+        aria-label="Close navigation menu"
+        aria-hidden={!mobileMenuOpen}
+        tabIndex={mobileMenuOpen ? 0 : -1}
+        onClick={closeMenu}
+      />
+      <nav aria-label="Main navigation">
+        <ul id="mobile-nav-links" className={`nav-links ${mobileMenuOpen ? 'is-open' : ''}`}>
           <li className="nav-item">
             <a
               href="/"
@@ -97,7 +119,14 @@ export default function Navbar({ onNavigate }) {
           </li>
 
           <li className="nav-item">
-            <a href="#about" className="nav-link" onClick={closeMenu}>
+            <a
+              href="/#work"
+              className="nav-link"
+              onClick={(event) => {
+                event.preventDefault()
+                handleNavigate('/', null, 'work')
+              }}
+            >
               About
             </a>
           </li>
@@ -105,13 +134,22 @@ export default function Navbar({ onNavigate }) {
       </nav>
 
       <div className="nav-actions">
-        <a href="#contact" className="nav-cta" onClick={closeMenu}>
+        <a
+          href="#contact"
+          className="nav-cta"
+          onClick={(event) => {
+            event.preventDefault()
+            closeMenu()
+            document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+          }}
+        >
           Inquire
         </a>
 
         <button
           className="mobile-toggle"
           type="button"
+          aria-controls="mobile-nav-links"
           aria-label="Toggle Navigation"
           aria-expanded={mobileMenuOpen}
           onClick={() => setMobileMenuOpen((prev) => !prev)}

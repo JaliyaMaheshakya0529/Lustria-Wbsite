@@ -49,7 +49,7 @@
   font-weight: 400;
   letter-spacing: 0.03em;
   color: var(--color-muted, #5a5752);
-  max-width: 400px;
+  max-width: 460px;
   line-height: 1.65;
   margin: 0 0 2.4rem 0;
   padding: 0 0.5rem;
@@ -95,9 +95,7 @@
 }
 
 .btn-outline {
-  background-color: #ffffff72;
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  background-color: transparent;
   color: #121212;
   border: 1px solid rgba(18, 18, 18, 0.25);
 }

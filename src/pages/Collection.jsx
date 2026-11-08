@@ -108,47 +108,42 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [selectedGemstone, setSelectedGemstone] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
-  const [sortDropdownOpen, setSortDropdownOpen] = useState(false)
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
-  const sortRef = useRef(null)
-  const filterButtonRef = useRef(null)
+  const filterTriggerRef = useRef(null)
   const filterCloseRef = useRef(null)
 
   useEffect(() => {
     setSelectedCategory(initialCategory)
   }, [initialCategory])
 
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (sortRef.current && !sortRef.current.contains(e.target)) {
-        setSortDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleOutsideClick)
-    return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [])
-
+  // Lock the background while the mobile drawer is open. Support Esc and
+  // restore focus to the button that opened the drawer.
   useEffect(() => {
     if (!mobileFilterOpen) return undefined
 
-    const previousOverflow = document.body.style.overflow
+    const originalBodyOverflow = document.body.style.overflow
+    const originalHtmlOverflow = document.documentElement.style.overflow
     document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    window.dispatchEvent(new CustomEvent('lustria:scroll-lock', { detail: { locked: true } }))
     filterCloseRef.current?.focus({ preventScroll: true })
 
-    const handleEscape = (event) => {
+    const onEscape = (event) => {
       if (event.key === 'Escape') setMobileFilterOpen(false)
     }
-    const handleResize = () => {
+    const onResize = () => {
       if (window.innerWidth > 868) setMobileFilterOpen(false)
     }
-    document.addEventListener('keydown', handleEscape)
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('keydown', onEscape)
+    window.addEventListener('resize', onResize)
 
     return () => {
-      document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', handleEscape)
-      window.removeEventListener('resize', handleResize)
-      filterButtonRef.current?.focus({ preventScroll: true })
+      document.body.style.overflow = originalBodyOverflow
+      document.documentElement.style.overflow = originalHtmlOverflow
+      window.dispatchEvent(new CustomEvent('lustria:scroll-lock', { detail: { locked: false } }))
+      window.removeEventListener('keydown', onEscape)
+      window.removeEventListener('resize', onResize)
+      filterTriggerRef.current?.focus({ preventScroll: true })
     }
   }, [mobileFilterOpen])
 
@@ -179,7 +174,6 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
     setSortBy('featured')
   }
 
-  const activeSortLabel = sortOptions.find((opt) => opt.value === sortBy)?.label || 'Featured'
 
   return (
     <section className="shop-section">
@@ -190,12 +184,12 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
         </p>
       </header>
 
-      <div className="shop-controls-bar reveal-on-scroll">
+      <div className="shop-controls-bar">
         <button
           type="button"
           className="btn-filter-mobile"
-          ref={filterButtonRef}
-          aria-controls="collection-filter-panel"
+          ref={filterTriggerRef}
+          aria-controls="shop-filter-panel"
           onClick={() => setMobileFilterOpen((prev) => !prev)}
           aria-expanded={mobileFilterOpen}
         >
@@ -217,61 +211,37 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
           Showing <strong>{filteredProducts.length}</strong> creations
         </span>
 
-        <div className="shop-sort" ref={sortRef}>
-          <span className="shop-sort-label">Sort by:</span>
-          <div className="custom-sort-wrapper">
-            <button
-              type="button"
-              className={`custom-sort-trigger ${sortDropdownOpen ? 'is-active' : ''}`}
-              onClick={() => setSortDropdownOpen((prev) => !prev)}
-              aria-expanded={sortDropdownOpen}
+        <div className="shop-sort">
+          <label className="shop-sort-label" htmlFor="shop-sort-select">Sort by:</label>
+          <div className="shop-sort-select-wrap">
+            <select
+              id="shop-sort-select"
+              className="shop-sort-select"
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
             >
-              <span>{activeSortLabel}</span>
-              <svg
-                className={`custom-sort-chevron ${sortDropdownOpen ? 'is-open' : ''}`}
-                viewBox="0 0 24 24"
-                fill="none"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {sortDropdownOpen && (
-              <ul className="custom-sort-menu">
-                {sortOptions.map((opt) => (
-                  <li key={opt.value}>
-                    <button
-                      type="button"
-                      className={`custom-sort-option ${sortBy === opt.value ? 'is-selected' : ''}`}
-                      onClick={() => {
-                        setSortBy(opt.value)
-                        setSortDropdownOpen(false)
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </div>
         </div>
       </div>
 
       <div className="shop-layout">
         <button
-          type="button"
           className={`shop-filter-backdrop ${mobileFilterOpen ? 'is-open' : ''}`}
+          type="button"
           aria-label="Close filters"
           aria-hidden={!mobileFilterOpen}
           tabIndex={mobileFilterOpen ? 0 : -1}
           onClick={() => setMobileFilterOpen(false)}
         />
         <aside
-          id="collection-filter-panel"
+          id="shop-filter-panel"
           className={`shop-sidebar ${mobileFilterOpen ? 'is-open' : ''}`}
           aria-label="Collection filters"
           data-lenis-prevent
@@ -328,7 +298,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
           )}
         </aside>
 
-        <main className="shop-grid-area">
+        <div className="shop-grid-area">
           {filteredProducts.length === 0 ? (
             <div className="shop-empty reveal-on-scroll">
               <p className="shop-empty-text">No creations match the selected filters.</p>
@@ -353,7 +323,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
               ))}
             </div>
           )}
-        </main>
+        </div>
       </div>
     </section>
   )

@@ -36,25 +36,39 @@ export default function App() {
       setInitialCategory(params.get('category') || 'All')
     }
 
+    const handleScrollLock = (event) => {
+      if (event.detail?.locked) lenis.stop()
+      else lenis.start()
+    }
     window.addEventListener('popstate', handlePopState)
+    window.addEventListener('lustria:scroll-lock', handleScrollLock)
 
     return () => {
       cancelAnimationFrame(animationFrameId)
       window.removeEventListener('popstate', handlePopState)
+      window.removeEventListener('lustria:scroll-lock', handleScrollLock)
       lenis.destroy()
     }
   }, [])
 
-  const navigateTo = (path, category = null) => {
-    let url = path
-    if (category && category !== 'All') {
-      url += `?category=${encodeURIComponent(category)}`
-    }
+  const navigateTo = (path, category = null, section = null) => {
+    const url = category && category !== 'All'
+      ? `${path}?category=${encodeURIComponent(category)}`
+      : path
 
     window.history.pushState({}, '', url)
     setCurrentPath(path)
     setInitialCategory(category || 'All')
-    window.scrollTo({ top: 0, behavior: 'instant' })
+
+    if (section) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' })
+        })
+      })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    }
   }
 
   const isCollectionPage = currentPath.startsWith('/collection')
@@ -75,7 +89,7 @@ export default function App() {
           <Home onExplore={() => navigateTo('/collection', 'All')} />
         )}
       </main>
-      <Footer />
+      <Footer onNavigate={navigateTo} />
     </>
   )
 }

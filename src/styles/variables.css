@@ -113,3 +113,5 @@ html.lenis body {
     transition: none !important;
   }
 }
+/* Ensure in-page anchors are not hidden by the fixed navbar. */
+#work, #contact, #collection { scroll-margin-top: var(--nav-height, 92px); }

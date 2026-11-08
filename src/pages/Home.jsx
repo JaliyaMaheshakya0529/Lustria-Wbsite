@@ -45,7 +45,7 @@ export default function Home({ onExplore }) {
       </div>
 
       <div className="reveal-on-scroll">
-        <SignatureCreations />
+        <SignatureCreations onExplore={onExplore} />
       </div>
 
       <div className="reveal-on-scroll">

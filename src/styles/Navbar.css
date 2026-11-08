@@ -9,35 +9,23 @@
   justify-content: space-between;
   padding: 0 3rem;
   z-index: 1000;
+  background: rgba(253, 251, 247, 0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  backdrop-filter: blur(22px) saturate(165%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   transition:
+    background 0.25s ease,
     height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     padding 0.35s ease;
-}
-
-.navbar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(253, 251, 247, 0.901);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  z-index: -1;
-  pointer-events: none;
-  transition: all 0.35s ease;
 }
 
 .navbar.is-scrolled {
   height: 64px;
   padding: 0 2.5rem;
-}
-
-.navbar.is-scrolled::before {
-  background: rgba(253, 251, 247, 0.85);
-  backdrop-filter: blur(18px) saturate(190%);
-  -webkit-backdrop-filter: blur(18px) saturate(190%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  background: rgba(253, 251, 247, 0.76);
+  -webkit-backdrop-filter: blur(26px) saturate(185%);
+  backdrop-filter: blur(26px) saturate(185%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.035);
 }
 
 .nav-brand {
@@ -99,7 +87,8 @@
   transition: transform 0.25s ease;
 }
 
-.dropdown-item:hover .dropdown-chevron {
+.dropdown-item:hover .dropdown-chevron,
+.dropdown-item:focus-within .dropdown-chevron {
   transform: rotate(180deg);
 }
 
@@ -112,7 +101,7 @@
   padding: 0.6rem;
   margin: 0;
   list-style: none;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(253, 251, 247, 0.62);
   backdrop-filter: blur(20px) saturate(190%);
   -webkit-backdrop-filter: blur(20px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.85);
@@ -139,7 +128,8 @@
   height: 18px;
 }
 
-.dropdown-item:hover .dropdown-menu {
+.dropdown-item:hover .dropdown-menu,
+.dropdown-item:focus-within .dropdown-menu {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -198,6 +188,8 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(184, 151, 88, 0.3);
 }
+
+.nav-menu-backdrop { display: none; }
 
 .mobile-toggle {
   display: none;
@@ -264,9 +256,9 @@
     right: 0;
     max-height: calc(100dvh - var(--nav-height-mobile, 68px));
     overflow-y: auto;
-    background: rgba(253, 251, 247, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(253, 251, 247, 0.75);
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
     border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
     flex-direction: column;
     align-items: flex-start;
@@ -361,17 +353,49 @@
     padding: 1.25rem 1.25rem 2rem;
   }
 }
-/* Mobile browsers need a transparent surface for backdrop-filter to be visible. */
+/* The actual fixed header owns the backdrop filter, not an opaque pseudo layer. */
 @media (max-width: 868px) {
-  .navbar::before {
-    background: rgba(253, 251, 247, 0.64);
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
+  .navbar {
+    background: rgba(253, 251, 247, 0.66);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    backdrop-filter: blur(24px) saturate(170%);
   }
-  .navbar.is-scrolled::before {
-    background: rgba(253, 251, 247, 0.76);
-    backdrop-filter: blur(24px) saturate(185%);
-    -webkit-backdrop-filter: blur(24px) saturate(185%);
+  .navbar.is-scrolled {
+    background: rgba(253, 251, 247, 0.74);
+    -webkit-backdrop-filter: blur(26px) saturate(175%);
+    backdrop-filter: blur(26px) saturate(175%);
   }
-  .nav-links { background: rgba(253, 251, 247, 0.88); }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .navbar, .navbar.is-scrolled, .dropdown-menu, .nav-links {
+    background-color: rgba(253, 251, 247, 0.96);
+  }
+}
+
+@media (max-width: 868px) {
+  .nav-brand, .nav-actions { z-index: 2; }
+  .nav-links { z-index: 1; }
+  .nav-menu-backdrop {
+    display: block;
+    position: fixed;
+    inset: var(--nav-height-mobile, 68px) 0 0;
+    z-index: 0;
+    border: 0;
+    background: rgba(17, 14, 11, 0.32);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease, visibility .25s ease;
+  }
+  .navbar.is-scrolled .nav-menu-backdrop { top: 58px; }
+  .nav-menu-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links, .nav-menu-backdrop { transition: none !important; }
 }
