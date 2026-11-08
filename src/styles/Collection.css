@@ -369,3 +369,48 @@
     width: 100%;
   }
 }
+/* Filter drawer: it must never inherit scroll-reveal transforms. */
+.shop-filter-backdrop { display: none; }
+@media (max-width: 868px) {
+  .shop-filter-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    border: 0;
+    background: rgba(20, 17, 14, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.28s ease, visibility 0.28s ease;
+  }
+  .shop-filter-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .shop-sidebar {
+    z-index: 1101;
+    width: min(360px, 90vw);
+    max-width: 100%;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(105%, 0, 0);
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s;
+    padding-top: max(1.5rem, env(safe-area-inset-top));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+  .shop-sidebar.is-open {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+@media (max-width: 380px) {
+  .shop-sidebar { width: min(360px, 100vw); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shop-sidebar, .shop-filter-backdrop { transition: none !important; }
+}

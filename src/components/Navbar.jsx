@@ -14,6 +14,7 @@ export default function Navbar({ onNavigate }) {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -37,7 +38,7 @@ export default function Navbar({ onNavigate }) {
           handleNavigate('/')
         }}
       >
-        <img src="./public/logo.png" alt="Lustria Logo" className="nav-brand-logo" />
+        <img src="/Logo.png" alt="Lustria Logo" className="nav-brand-logo" />
       </a>
 
       <nav>

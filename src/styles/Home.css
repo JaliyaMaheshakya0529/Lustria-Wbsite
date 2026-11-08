@@ -6,9 +6,11 @@
   justify-content: center;
   text-align: center;
   padding: calc(var(--nav-height, 92px) + 2rem) 1.5rem 3.5rem;
-  background-image: url('/bg-img.png');
+  background-image: url('/bg-img.jpg');
   background-size: cover;
-  /* background-color: var(--color-bg, #fdfbf7); */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--color-bg, #fdfbf7);
 }
 
 .hero-content {
@@ -47,7 +49,7 @@
   font-weight: 400;
   letter-spacing: 0.03em;
   color: var(--color-muted, #5a5752);
-  max-width: 460px;
+  max-width: 400px;
   line-height: 1.65;
   margin: 0 0 2.4rem 0;
   padding: 0 0.5rem;
@@ -93,7 +95,9 @@
 }
 
 .btn-outline {
-  background-color: transparent;
+  background-color: #ffffff72;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   color: #121212;
   border: 1px solid rgba(18, 18, 18, 0.25);
 }

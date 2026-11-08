@@ -111,6 +111,8 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false)
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const sortRef = useRef(null)
+  const filterButtonRef = useRef(null)
+  const filterCloseRef = useRef(null)
 
   useEffect(() => {
     setSelectedCategory(initialCategory)
@@ -125,6 +127,30 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [])
+
+  useEffect(() => {
+    if (!mobileFilterOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    filterCloseRef.current?.focus({ preventScroll: true })
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setMobileFilterOpen(false)
+    }
+    const handleResize = () => {
+      if (window.innerWidth > 868) setMobileFilterOpen(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('resize', handleResize)
+      filterButtonRef.current?.focus({ preventScroll: true })
+    }
+  }, [mobileFilterOpen])
 
   const handleCategorySelect = (cat) => {
     setSelectedCategory(cat)
@@ -168,6 +194,8 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
         <button
           type="button"
           className="btn-filter-mobile"
+          ref={filterButtonRef}
+          aria-controls="collection-filter-panel"
           onClick={() => setMobileFilterOpen((prev) => !prev)}
           aria-expanded={mobileFilterOpen}
         >
@@ -234,12 +262,26 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
       </div>
 
       <div className="shop-layout">
-        <aside className={`shop-sidebar reveal-on-scroll ${mobileFilterOpen ? 'is-open' : ''}`}>
+        <button
+          type="button"
+          className={`shop-filter-backdrop ${mobileFilterOpen ? 'is-open' : ''}`}
+          aria-label="Close filters"
+          aria-hidden={!mobileFilterOpen}
+          tabIndex={mobileFilterOpen ? 0 : -1}
+          onClick={() => setMobileFilterOpen(false)}
+        />
+        <aside
+          id="collection-filter-panel"
+          className={`shop-sidebar ${mobileFilterOpen ? 'is-open' : ''}`}
+          aria-label="Collection filters"
+          data-lenis-prevent
+        >
           <div className="shop-sidebar-header">
             <h3>Filters</h3>
             <button
               type="button"
               className="shop-close-btn"
+              ref={filterCloseRef}
               onClick={() => setMobileFilterOpen(false)}
               aria-label="Close filters"
             >

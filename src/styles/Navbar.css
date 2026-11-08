@@ -18,9 +18,9 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: #fdfbf7;
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  background: rgba(253, 251, 247, 0.901);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   z-index: -1;
   pointer-events: none;
@@ -360,4 +360,18 @@
   .nav-links {
     padding: 1.25rem 1.25rem 2rem;
   }
+}
+/* Mobile browsers need a transparent surface for backdrop-filter to be visible. */
+@media (max-width: 868px) {
+  .navbar::before {
+    background: rgba(253, 251, 247, 0.64);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+  }
+  .navbar.is-scrolled::before {
+    background: rgba(253, 251, 247, 0.76);
+    backdrop-filter: blur(24px) saturate(185%);
+    -webkit-backdrop-filter: blur(24px) saturate(185%);
+  }
+  .nav-links { background: rgba(253, 251, 247, 0.88); }
 }
