@@ -108,6 +108,9 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [selectedGemstone, setSelectedGemstone] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
+  const [sortMenuOpen, setSortMenuOpen] = useState(false)
+  const sortMenuRef = useRef(null)
+  const sortTriggerRef = useRef(null)
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const filterTriggerRef = useRef(null)
   const filterCloseRef = useRef(null)
@@ -146,6 +149,25 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
       filterTriggerRef.current?.focus({ preventScroll: true })
     }
   }, [mobileFilterOpen])
+
+  useEffect(() => {
+    if (!sortMenuOpen) return undefined
+    const closeOnOutside = (event) => {
+      if (!sortMenuRef.current?.contains(event.target)) setSortMenuOpen(false)
+    }
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setSortMenuOpen(false)
+        sortTriggerRef.current?.focus()
+      }
+    }
+    document.addEventListener('pointerdown', closeOnOutside)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutside)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [sortMenuOpen])
 
   const handleCategorySelect = (cat) => {
     setSelectedCategory(cat)
@@ -212,21 +234,44 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
         </span>
 
         <div className="shop-sort">
-          <label className="shop-sort-label" htmlFor="shop-sort-select">Sort by:</label>
-          <div className="shop-sort-select-wrap">
-            <select
+          <span className="shop-sort-label" id="shop-sort-label">Sort by:</span>
+          <div className="shop-sort-select-wrap" ref={sortMenuRef}>
+            <button
+              type="button"
               id="shop-sort-select"
-              className="shop-sort-select"
-              value={sortBy}
-              onChange={(event) => setSortBy(event.target.value)}
+              ref={sortTriggerRef}
+              className={`shop-sort-select ${sortMenuOpen ? 'is-open' : ''}`}
+              aria-labelledby="shop-sort-label shop-sort-select"
+              aria-haspopup="true"
+              aria-expanded={sortMenuOpen}
+              aria-controls="shop-sort-options"
+              onClick={() => setSortMenuOpen(open => !open)}
             >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+              <span>{sortOptions.find(option => option.value === sortBy)?.label}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {sortMenuOpen && (
+              <div id="shop-sort-options" className="shop-sort-options" role="group" aria-label="Sort products">
+                {sortOptions.map(option => (
+                  <button
+                    type="button"
+                    key={option.value}
+                    className={`shop-sort-option ${sortBy === option.value ? 'is-selected' : ''}`}
+                    aria-pressed={sortBy === option.value}
+                    onClick={() => {
+                      setSortBy(option.value)
+                      setSortMenuOpen(false)
+                      sortTriggerRef.current?.focus()
+                    }}
+                  >
+                    {option.label}
+                    {sortBy === option.value && <span aria-hidden="true">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

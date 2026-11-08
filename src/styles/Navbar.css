@@ -399,3 +399,42 @@
 @media (prefers-reduced-motion: reduce) {
   .nav-links, .nav-menu-backdrop { transition: none !important; }
 }
+
+/* Frosted dropdown fix: backdrop-filter on a parent creates a backdrop root,
+   preventing a nested dropdown from blurring the page underneath. */
+.navbar,
+.navbar.is-scrolled {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  isolation: auto;
+}
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(253, 251, 247, 0.70);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  backdrop-filter: blur(22px) saturate(165%);
+}
+.navbar.is-scrolled::before {
+  background: rgba(253, 251, 247, 0.77);
+  -webkit-backdrop-filter: blur(26px) saturate(185%);
+  backdrop-filter: blur(26px) saturate(185%);
+}
+.dropdown-menu {
+  background: rgba(253, 251, 247, 0.38);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  backdrop-filter: blur(28px) saturate(170%);
+}
+@media (max-width: 868px) {
+  .navbar, .navbar.is-scrolled { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .navbar::before { background: rgba(253,251,247,0.68); }
+  .dropdown-menu { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .navbar::before, .navbar.is-scrolled::before { background: rgba(253,251,247,0.96); }
+  .dropdown-menu { background: rgba(253,251,247,0.96); }
+}

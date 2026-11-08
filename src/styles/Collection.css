@@ -395,3 +395,61 @@
 @media (prefers-reduced-motion: reduce) {
   .shop-sidebar, .shop-filter-backdrop { transition: none !important; }
 }
+
+/* Custom sorting popover: native <select> options cannot be reliably styled. */
+.shop-controls-bar { position: relative; z-index: 20; overflow: visible; }
+.shop-sort { z-index: 21; }
+.shop-sort-select-wrap { position: relative; }
+.shop-sort-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+.shop-sort-select svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  position: static;
+  transform: none;
+  transition: transform 180ms ease;
+}
+.shop-sort-select.is-open svg { transform: rotate(180deg); }
+.shop-sort-options {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: max(100%, 215px);
+  padding: 7px;
+  z-index: 100;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.8);
+  background: rgba(253,251,247,0.83);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: 0 14px 36px rgba(23,18,12,0.13);
+}
+.shop-sort-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: 500 0.84rem/1.4 var(--font-main, system-ui, sans-serif);
+  border-radius: 10px;
+  padding: 11px 13px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.shop-sort-option:hover,
+.shop-sort-option:focus-visible { background: rgba(176,141,72,0.13); outline: none; }
+.shop-sort-option.is-selected { background: #f3eee5; color: #8b6c32; }
+@media (max-width: 420px) {
+  .shop-sort-select { padding-right: 0.8rem; gap: 0.35rem; }
+  .shop-sort-options { min-width: 205px; }
+}
