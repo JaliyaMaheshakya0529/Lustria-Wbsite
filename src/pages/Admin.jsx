@@ -1,17 +1,10 @@
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
 import "../styles/Admin.css";
 
-const CATEGORIES = [
-  "Rings",
-  "Earrings",
-  "Necklaces",
-  "Bracelets",
-  "Gemstones",
-];
+const CATEGORIES = ["Rings", "Earrings", "Necklaces", "Bracelets", "Gemstones"];
 
 const GEMSTONES = [
   "Blue Sapphire",
@@ -45,8 +38,7 @@ const EMPTY_PRODUCT = {
   featured: false,
 };
 
-const formatPrice = (value) =>
-  `LKR ${Number(value).toLocaleString("en-LK")}`;
+const formatPrice = (value) => `LKR ${Number(value).toLocaleString("en-LK")}`;
 
 function Icon({ name, size = 20 }) {
   const icons = {
@@ -56,6 +48,12 @@ function Icon({ name, size = 20 }) {
         <rect x="14" y="3" width="7" height="7" rx="1" />
         <rect x="3" y="14" width="7" height="7" rx="1" />
         <rect x="14" y="14" width="7" height="7" rx="1" />
+      </>
+    ),
+    list: (
+      <>
+        <path d="M9 6h12M9 12h12M9 18h12" />
+        <path d="M3 6h2M3 12h2M3 18h2" />
       </>
     ),
     package: (
@@ -77,6 +75,9 @@ function Icon({ name, size = 20 }) {
         <path d="M12 20h9" />
         <path d="m16 4 4 4L9 19l-5 1 1-5L16 4Z" />
       </>
+    ),
+    star: (
+      <path d="m12 2 3.1 6.3 7 1-5.05 4.9 1.2 6.9L12 17.8l-6.25 3.3 1.2-6.9L1.9 9.3l7-1L12 2Z" />
     ),
     trash: (
       <>
@@ -159,9 +160,7 @@ function Login() {
         <div className="ladmin-login-heading">
           <span className="ladmin-eyebrow">PRIVATE ACCESS</span>
           <h2>{signup ? "Create Account" : "Welcome Back"}</h2>
-          <p>
-            Sign in to manage your jewellery collection.
-          </p>
+          <p>Sign in to manage your jewellery collection.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="ladmin-login-form">
@@ -190,16 +189,8 @@ function Login() {
 
           {error && <p className="ladmin-error">{error}</p>}
 
-          <button
-            type="submit"
-            className="ladmin-primary"
-            disabled={busy}
-          >
-            {busy
-              ? "Please wait..."
-              : signup
-                ? "Create Account"
-                : "Sign In"}
+          <button type="submit" className="ladmin-primary" disabled={busy}>
+            {busy ? "Please wait..." : signup ? "Create Account" : "Sign In"}
           </button>
         </form>
 
@@ -243,19 +234,16 @@ function AccessDenied() {
           <span className="ladmin-eyebrow">ACCOUNT PENDING</span>
           <h2>Access Restricted</h2>
           <p>
-            Your account is authenticated, but it has not been
-            approved as a Lustria administrator.
+            Your account is authenticated, but it has not been approved as a
+            Lustria administrator.
           </p>
           <p>
-            Open Convex Dashboard, find your account in the
-            users table, and add its ID to the admins table.
+            Open Convex Dashboard, find your account in the users table, and add
+            its ID to the admins table.
           </p>
         </div>
 
-        <button
-          className="ladmin-primary"
-          onClick={() => signOut()}
-        >
+        <button className="ladmin-primary" onClick={() => signOut()}>
           Sign Out
         </button>
       </div>
@@ -288,9 +276,7 @@ class AdminErrorBoundary extends React.Component {
             </div>
 
             <h2>Admin Service Unavailable</h2>
-            <p className="ladmin-error">
-              {this.state.error.message}
-            </p>
+            <p className="ladmin-error">{this.state.error.message}</p>
 
             <button
               className="ladmin-primary"
@@ -316,15 +302,11 @@ function AdminAccess() {
 
   const isAdmin = useQuery(
     api.products.adminStatus,
-    isAuthenticated ? {} : "skip"
+    isAuthenticated ? {} : "skip",
   );
 
   if (isLoading) {
-    return (
-      <div className="ladmin-loading">
-        Loading Lustria Admin...
-      </div>
-    );
+    return <div className="ladmin-loading">Loading Lustria Admin...</div>;
   }
 
   if (!isAuthenticated) return <Login />;
@@ -343,6 +325,169 @@ function AdminAccess() {
 }
 
 // ==========================================
+// ISOLATED ANALYTICS
+// Keep the existing dashboard layout, but prevent a missing backend
+// function from crashing the login, products or upload manager.
+// ==========================================
+
+class AnalyticsErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <section className="ladmin-analytics" aria-label="Website analytics">
+          <div className="ladmin-analytics-intro">
+            <div>
+              <h2>Site Analytics</h2>
+              <p>First-party page views · Last 30 days · UTC</p>
+            </div>
+          </div>
+          <div className="ladmin-analytics-placeholder">
+            <strong>Analytics is not connected to Convex yet.</strong>
+            <p>
+              Deploy convex/analytics.ts and convex/schema.ts to your current
+              Convex deployment. Products and uploads are still available in the
+              sidebar.
+            </p>
+            <button
+              type="button"
+              className="ladmin-primary"
+              onClick={() => this.setState({ error: null })}
+            >
+              Retry Analytics
+            </button>
+          </div>
+        </section>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function AnalyticsPanel() {
+  const analytics = useQuery(api.analytics.overview, {});
+  const chartMax = Math.max(
+    1,
+    ...(analytics?.daily || []).map((day) => day.views),
+  );
+  const topPageMax = Math.max(
+    1,
+    ...(analytics?.pages || []).map((item) => item.views),
+  );
+
+  return (
+    <section className="ladmin-analytics" aria-label="Website analytics">
+      <div className="ladmin-analytics-intro">
+        <div>
+          <h2>Site Analytics</h2>
+          <p>First-party page views · Last 30 days · UTC</p>
+        </div>
+        <span className="ladmin-analytics-live">Live from Convex</span>
+      </div>
+      {analytics === undefined ? (
+        <div className="ladmin-analytics-placeholder">
+          Loading website analytics…
+        </div>
+      ) : (
+        <>
+          <div className="ladmin-analytics-kpis">
+            {[
+              ["Today", analytics.todayViews, "Page views today"],
+              ["Last 7 days", analytics.weekViews, "Page views"],
+              ["Last 30 days", analytics.totalViews, "Page views"],
+              ["Visitors", analytics.uniqueSessions, "Approx. unique sessions"],
+            ].map(([label, value, hint]) => (
+              <article className="ladmin-analytics-kpi" key={label}>
+                <span>{label}</span>
+                <strong>{value.toLocaleString()}</strong>
+                <small>{hint}</small>
+              </article>
+            ))}
+          </div>
+          <div className="ladmin-analytics-bottom">
+            <section className="ladmin-analytics-card">
+              <div className="ladmin-analytics-card-head">
+                <h3>Traffic Overview</h3>
+                <span>Daily page views</span>
+              </div>
+              <div
+                className="ladmin-analytics-chart"
+                role="img"
+                aria-label="Daily website page views for the last 30 days"
+              >
+                {analytics.daily.map((day) => (
+                  <div
+                    className="ladmin-analytics-bar-column"
+                    key={day.date}
+                    title={`${day.date}: ${day.views} views`}
+                  >
+                    <span
+                      className="ladmin-analytics-bar"
+                      style={{
+                        height: `${Math.max(day.views ? 4 : 1, (day.views / chartMax) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="ladmin-analytics-chart-labels">
+                <span>{analytics.daily[0]?.date}</span>
+                <span>Today</span>
+              </div>
+            </section>
+            <section className="ladmin-analytics-card">
+              <div className="ladmin-analytics-card-head">
+                <h3>Most Visited Pages</h3>
+                <span>Last 30 days</span>
+              </div>
+              {analytics.pages.length ? (
+                analytics.pages.map((item) => (
+                  <div className="ladmin-analytics-page" key={item.path}>
+                    <div className="ladmin-analytics-page-top">
+                      <span>{item.label}</span>
+                      <strong>{item.views.toLocaleString()}</strong>
+                    </div>
+                    <div className="ladmin-analytics-page-track">
+                      <span
+                        style={{ width: `${(item.views / topPageMax) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="ladmin-analytics-empty">
+                  No visits recorded yet. New visits will appear here.
+                </p>
+              )}
+              <p className="ladmin-analytics-footnote">
+                Tracks Home and Collection only. No personal information
+                collected.
+              </p>
+            </section>
+          </div>
+          <p className="ladmin-analytics-disclaimer">
+            Tracking starts after this update is deployed. Historical visits are
+            unavailable. Visitors are approximate browser-tab sessions, not
+            individual people.
+            {analytics.truncated
+              ? " Results reached the 10,000-event query limit; totals may be incomplete."
+              : ""}
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+
+// ==========================================
 // MAIN DASHBOARD
 // ==========================================
 
@@ -354,12 +499,22 @@ function Dashboard() {
   const createProduct = useMutation(api.products.create);
   const updateProduct = useMutation(api.products.update);
   const deleteProduct = useMutation(api.products.remove);
-  const generateUploadUrl = useMutation(
-    api.products.generateUploadUrl
-  );
+  const generateUploadUrl = useMutation(api.products.generateUploadUrl);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [activeView, setActiveView] = useState("dashboard");
+  const [productView, setProductView] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem("lustria-admin-product-view");
+      return ["rows", "cards", "compact"].includes(saved) ? saved : "rows";
+    } catch {
+      return "rows";
+    }
+  });
+  const productScrollRef = useRef(null);
+  const [featuredBusy, setFeaturedBusy] = useState({});
+  const featuredBusyRef = useRef(new Set());
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -368,45 +523,251 @@ function Dashboard() {
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("");
 
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
+  // Upload jobs live outside the editor, so closing it never stops a job.
+  // Keep the actual File in a ref, not in React state.
+  const [jobs, setJobs] = useState([]);
+  const jobsRef = useRef(new Map());
+  const runningRef = useRef(0);
+  const nextIdRef = useRef(0);
+  const [queueExpanded, setQueueExpanded] = useState(true);
+  const [queueVisible, setQueueVisible] = useState(false);
+  const [recentlyFinished, setRecentlyFinished] = useState(false);
   const closeRef = useRef(null);
-  const savingRef = useRef(false);
+  const MAX_PARALLEL = 2;
 
-  savingRef.current = saving;
+  const updateJob = (id, changes) => {
+    const job = jobsRef.current.get(id);
+    if (!job) return;
+    Object.assign(job, changes);
+    setJobs(
+      Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({
+        ...view,
+      })),
+    );
+  };
+
+  // XMLHttpRequest reports actual bytes sent. Final database confirmation is
+  // a separate stage; the progress bar never claims 100% before confirmation.
+  const uploadWithProgress = (url, file, onProgress) =>
+    new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) onProgress(event.loaded / event.total);
+      };
+      xhr.onload = () => {
+        if (xhr.status < 200 || xhr.status >= 300) {
+          reject(new Error(`Image upload failed (HTTP ${xhr.status}).`));
+          return;
+        }
+        try {
+          const result = JSON.parse(xhr.responseText);
+          if (!result.storageId) throw new Error("No storage ID returned.");
+          resolve(result.storageId);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      xhr.onerror = () =>
+        reject(new Error("Network error during image upload."));
+      xhr.onabort = () => reject(new Error("Upload interrupted."));
+      xhr.send(file);
+    });
+
+  const runJob = async (job) => {
+    updateJob(job.id, {
+      status: "running",
+      stage: "Preparing upload",
+      progress: 4,
+      error: "",
+    });
+    try {
+      let imageId = job.payload.imageId;
+      if (job.file) {
+        const uploadUrl = await generateUploadUrl();
+        updateJob(job.id, { stage: "Uploading image", progress: 8 });
+        imageId = await uploadWithProgress(uploadUrl, job.file, (ratio) => {
+          updateJob(job.id, {
+            progress: Math.min(90, Math.round(8 + ratio * 82)),
+          });
+        });
+      }
+      if (!imageId) throw new Error("No product image selected.");
+      updateJob(job.id, { stage: "Saving product", progress: 94 });
+      const payload = { ...job.payload, imageId };
+      if (job.editingId) {
+        await updateProduct({ id: job.editingId, ...payload });
+      } else {
+        await createProduct(payload);
+      }
+      updateJob(job.id, {
+        status: "done",
+        stage: "Saved successfully",
+        progress: 100,
+      });
+    } catch (err) {
+      updateJob(job.id, {
+        status: "failed",
+        stage: "Save failed",
+        error: err?.message || "Unexpected error",
+      });
+    } finally {
+      runningRef.current -= 1;
+      drainQueue();
+    }
+  };
+
+  const drainQueue = () => {
+    while (runningRef.current < MAX_PARALLEL) {
+      const job = Array.from(jobsRef.current.values()).find(
+        (item) => item.status === "queued",
+      );
+      if (!job) break;
+      runningRef.current += 1;
+      // Start concurrently, without awaiting. Errors are handled inside runJob.
+      void runJob(job);
+    }
+  };
+
+  const retryJob = (id) => {
+    updateJob(id, {
+      status: "queued",
+      stage: "Waiting to retry",
+      progress: 0,
+      error: "",
+    });
+    setQueueVisible(true);
+    setRecentlyFinished(false);
+    drainQueue();
+  };
+
+  const clearFinished = () => {
+    for (const [id, job] of jobsRef.current) {
+      if (job.status === "done") jobsRef.current.delete(id);
+    }
+    setJobs(
+      Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({
+        ...view,
+      })),
+    );
+  };
+
+  const pendingCount = jobs.filter(
+    (job) => job.status === "queued" || job.status === "running",
+  ).length;
+  const failedCount = jobs.filter((job) => job.status === "failed").length;
+  const doneCount = jobs.filter((job) => job.status === "done").length;
+  const overallProgress = jobs.length
+    ? Math.round(jobs.reduce((sum, job) => sum + job.progress, 0) / jobs.length)
+    : 0;
+
+  useEffect(() => {
+    const guard = (event) => {
+      if (
+        runningRef.current === 0 &&
+        !Array.from(jobsRef.current.values()).some((j) => j.status === "queued")
+      )
+        return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", guard);
+    return () => window.removeEventListener("beforeunload", guard);
+  }, []);
+
+  // Completed jobs remain visible briefly, then the panel disappears.
+  // Failed jobs stay visible so the admin can retry without re-entering data.
+  useEffect(() => {
+    if (!jobs.length || pendingCount || failedCount) {
+      setRecentlyFinished(false);
+      return;
+    }
+    setRecentlyFinished(true);
+    const timeout = window.setTimeout(() => {
+      jobsRef.current.clear();
+      setJobs([]);
+      setQueueVisible(false);
+      setRecentlyFinished(false);
+    }, 4500);
+    return () => window.clearTimeout(timeout);
+  }, [jobs.length, pendingCount, failedCount, doneCount]);
 
   const allProducts = products || [];
 
   const filteredProducts = useMemo(() => {
     return [...(products || [])]
       .filter((product) => {
-        const matchesSearch = [
-          product.name,
-          product.category,
-          product.gemstone,
-        ]
+        const matchesSearch = [product.name, product.category, product.gemstone]
           .join(" ")
           .toLowerCase()
           .includes(search.toLowerCase());
 
         const matchesCategory =
-          category === "All" ||
-          product.category === category;
+          category === "All" || product.category === category;
 
         return matchesSearch && matchesCategory;
       })
       .sort((a, b) => b.createdAt - a.createdAt);
   }, [products, search, category]);
 
-  const availableCount = allProducts.filter(
-    (p) => p.available
-  ).length;
+  useEffect(() => {
+    if (productScrollRef.current) productScrollRef.current.scrollTop = 0;
+  }, [search, category, productView]);
 
-  const featuredCount = allProducts.filter(
-    (p) => p.featured
-  ).length;
+  const changeProductView = (view) => {
+    setProductView(view);
+    try {
+      window.localStorage.setItem("lustria-admin-product-view", view);
+    } catch {
+      // Private browsing may disable storage.
+    }
+  };
+
+  const goToView = (view) => {
+    setActiveView(view);
+  };
+
+  async function toggleFeatured(product) {
+    const id = product._id;
+    if (featuredBusyRef.current.has(id)) return;
+    featuredBusyRef.current.add(id);
+    setFeaturedBusy((prev) => ({ ...prev, [id]: true }));
+    setNotice("");
+    try {
+      await updateProduct({
+        id,
+        name: product.name,
+        category: product.category,
+        gemstone: product.gemstone,
+        metal: product.metal,
+        description: product.description,
+        price: product.price,
+        imageId: product.imageId,
+        available: product.available,
+        featured: !product.featured,
+      });
+      setNotice(
+        product.featured
+          ? `Removed “${product.name}” from Featured.`
+          : `Added “${product.name}” to Featured.`,
+      );
+    } catch (err) {
+      setNotice(
+        `Could not update Featured: ${err?.message || "Unknown error"}`,
+      );
+    } finally {
+      featuredBusyRef.current.delete(id);
+      setFeaturedBusy((prev) => ({ ...prev, [id]: false }));
+    }
+  }
+
+  const availableCount = allProducts.filter((p) => p.available).length;
+
+  const featuredCount = allProducts.filter((p) => p.featured).length;
 
   // ========================================
   // MODAL SCROLL LOCK AND FOCUS
@@ -424,9 +785,7 @@ function Dashboard() {
 
     function handleKeydown(event) {
       if (event.key === "Escape") {
-        if (!savingRef.current) {
-          setEditorOpen(false);
-        }
+        setEditorOpen(false);
         return;
       }
 
@@ -437,8 +796,8 @@ function Dashboard() {
 
       const elements = Array.from(
         dialog.querySelectorAll(
-          'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)'
-        )
+          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)",
+        ),
       ).filter((el) => el.getClientRects().length > 0);
 
       if (!elements.length) return;
@@ -449,10 +808,7 @@ function Dashboard() {
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === last
-      ) {
+      } else if (!event.shiftKey && document.activeElement === last) {
         event.preventDefault();
         first.focus();
       }
@@ -518,107 +874,73 @@ function Dashboard() {
   }
 
   function closeEditor() {
-    if (savingRef.current) return;
-
     setEditorOpen(false);
     setImageFile(null);
   }
 
-  // ========================================
-  // SAVE PRODUCT
-  // ========================================
-
-  async function handleSave(event) {
+  // Validate synchronously, snapshot everything, and close immediately.
+  // The queue owns each snapshot independently of subsequent editor changes.
+  function handleSave(event) {
     event.preventDefault();
-
-    if (savingRef.current) return;
-
-    savingRef.current = true;
-    setSaving(true);
     setError("");
-
-    try {
-      const price = Number(form.price);
-
-      if (
-        !form.name.trim() ||
-        form.price === "" ||
-        !Number.isFinite(price) ||
-        price < 0
-      ) {
-        throw new Error("Enter a valid name and price.");
+    const price = Number(form.price);
+    if (
+      !form.name.trim() ||
+      form.price === "" ||
+      !Number.isFinite(price) ||
+      price < 0
+    ) {
+      setError("Enter a valid product name and price.");
+      return;
+    }
+    if (!imageFile && !form.imageId) {
+      setError("Please upload a product image.");
+      return;
+    }
+    if (imageFile) {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(imageFile.type)) {
+        setError("Only JPG, PNG and WebP images are allowed.");
+        return;
       }
-
-      let imageId = form.imageId;
-
-      if (imageFile) {
-        const allowed = [
-          "image/jpeg",
-          "image/png",
-          "image/webp",
-        ];
-
-        if (!allowed.includes(imageFile.type)) {
-          throw new Error("Only JPG, PNG and WebP images are allowed.");
-        }
-
-        if (imageFile.size > 5 * 1024 * 1024) {
-          throw new Error("Maximum image size is 5 MB.");
-        }
-
-        const uploadUrl = await generateUploadUrl();
-
-        const response = await fetch(uploadUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": imageFile.type,
-          },
-          body: imageFile,
-        });
-
-        if (!response.ok) {
-          throw new Error("Image upload failed.");
-        }
-
-        const uploaded = await response.json();
-        imageId = uploaded.storageId;
+      if (imageFile.size > 5 * 1024 * 1024) {
+        setError("Maximum image size is 5 MB.");
+        return;
       }
-
-      if (!imageId) {
-        throw new Error("Please upload a product image.");
-      }
-
-      const payload = {
+    }
+    const id = ++nextIdRef.current;
+    const job = {
+      id,
+      name: form.name.trim(),
+      editingId,
+      file: imageFile,
+      payload: {
         name: form.name.trim(),
         category: form.category,
         gemstone: form.gemstone,
         metal: form.metal,
         description: form.description.trim(),
         price,
-        imageId,
+        imageId: form.imageId,
         available: form.available,
         featured: form.featured,
-      };
-
-      if (editingId) {
-        await updateProduct({
-          id: editingId,
-          ...payload,
-        });
-        setNotice("Product updated successfully.");
-      } else {
-        await createProduct(payload);
-        setNotice("Product added successfully.");
-      }
-
-      setEditorOpen(false);
-      setImageFile(null);
-    } catch (err) {
-      setError(err.message || "Unable to save product.");
-    } finally {
-      savingRef.current = false;
-      setSaving(false);
-    }
+      },
+      status: "queued",
+      stage: "Waiting in queue",
+      progress: 0,
+      error: "",
+    };
+    jobsRef.current.set(id, job);
+    setJobs(
+      Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({
+        ...view,
+      })),
+    );
+    setQueueVisible(true);
+    setQueueExpanded(true);
+    setRecentlyFinished(false);
+    setEditorOpen(false);
+    setImageFile(null);
+    drainQueue();
   }
 
   // ========================================
@@ -626,11 +948,7 @@ function Dashboard() {
   // ========================================
 
   async function handleDelete(product) {
-    if (
-      !window.confirm(
-        `Delete "${product.name}" permanently?`
-      )
-    ) {
+    if (!window.confirm(`Delete "${product.name}" permanently?`)) {
       return;
     }
 
@@ -655,15 +973,25 @@ function Dashboard() {
         </div>
 
         <nav className="ladmin-navigation">
-          <div className="ladmin-nav-item active">
+          <button
+            type="button"
+            className={`ladmin-nav-item ${activeView === "dashboard" ? "active" : ""}`}
+            aria-current={activeView === "dashboard" ? "page" : undefined}
+            onClick={() => goToView("dashboard")}
+          >
             <Icon name="grid" />
             <span>Dashboard</span>
-          </div>
+          </button>
 
-          <div className="ladmin-nav-item">
+          <button
+            type="button"
+            className={`ladmin-nav-item ${activeView === "products" ? "active" : ""}`}
+            aria-current={activeView === "products" ? "page" : undefined}
+            onClick={() => goToView("products")}
+          >
             <Icon name="package" />
             <span>Products</span>
-          </div>
+          </button>
         </nav>
 
         <div className="ladmin-sidebar-bottom">
@@ -683,45 +1011,34 @@ function Dashboard() {
       <main className="ladmin-main">
         <header className="ladmin-header">
           <div>
-            <span className="ladmin-eyebrow">
-              LUSTRIA MANAGEMENT
-            </span>
+            <span className="ladmin-eyebrow">LUSTRIA MANAGEMENT</span>
 
-            <h1>Dashboard</h1>
-            <p>Manage your jewellery collection.</p>
+            <h1>{activeView === "dashboard" ? "Dashboard" : "Products"}</h1>
+            <p>
+              {activeView === "dashboard"
+                ? "Your website performance at a glance."
+                : "Manage your jewellery collection."}
+            </p>
           </div>
 
-          <button
-            type="button"
-            className="ladmin-primary ladmin-add-button"
-            onClick={openNew}
-          >
-            <Icon name="plus" size={17} />
-            Add Product
-          </button>
+          {activeView === "products" && (
+            <button
+              type="button"
+              className="ladmin-primary ladmin-add-button"
+              onClick={openNew}
+            >
+              <Icon name="plus" size={17} />
+              Add Product
+            </button>
+          )}
         </header>
 
-        {/* STATS */}
-
-        <div className="ladmin-stats">
-          <div className="ladmin-stat">
-            <span>Total Products</span>
-            <strong>{allProducts.length}</strong>
-            <small>All jewellery pieces</small>
-          </div>
-
-          <div className="ladmin-stat">
-            <span>Available</span>
-            <strong>{availableCount}</strong>
-            <small>Visible to customers</small>
-          </div>
-
-          <div className="ladmin-stat">
-            <span>Featured</span>
-            <strong>{featuredCount}</strong>
-            <small>Highlighted products</small>
-          </div>
-        </div>
+        {/* Isolated from the product manager: analytics errors cannot crash admin. */}
+        {activeView === "dashboard" && (
+          <AnalyticsErrorBoundary>
+            <AnalyticsPanel />
+          </AnalyticsErrorBoundary>
+        )}
 
         {/* NOTICE */}
 
@@ -741,131 +1058,262 @@ function Dashboard() {
 
         {/* PRODUCT COLLECTION */}
 
-        <section className="ladmin-panel">
-          <div className="ladmin-panel-header">
-            <div>
-              <h2>Product Collection</h2>
-              <p>{filteredProducts.length} products</p>
-            </div>
-
-            <div className="ladmin-filters">
-              <div className="ladmin-search">
-                <Icon name="search" size={17} />
-
-                <input
-                  type="search"
-                  placeholder="Search jewellery..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+        {activeView === "products" && (
+          <section className="ladmin-panel">
+            <div className="ladmin-panel-header">
+              <div>
+                <h2>
+                  {activeView === "dashboard"
+                    ? "Recent Products"
+                    : "Product Collection"}
+                </h2>
+                <p>
+                  {filteredProducts.length} products · {featuredCount} featured
+                </p>
               </div>
 
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                aria-label="Filter by category"
-              >
-                <option value="All">All Categories</option>
+              <div className="ladmin-filters">
+                <div className="ladmin-search">
+                  <Icon name="search" size={17} />
 
-                {CATEGORIES.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+                  <input
+                    type="search"
+                    placeholder="Search jewellery..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
 
-          {products === undefined ? (
-            <div className="ladmin-empty">
-              Loading products...
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="ladmin-empty">
-              <Icon name="package" size={34} />
-              <h3>No Products Found</h3>
-              <p>Add your first product to get started.</p>
-
-              <button
-                type="button"
-                className="ladmin-primary"
-                onClick={openNew}
-              >
-                Add Product
-              </button>
-            </div>
-          ) : (
-            <div className="ladmin-products">
-              {filteredProducts.map((product) => (
-                <article
-                  className="ladmin-product"
-                  key={product._id}
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  aria-label="Filter by category"
                 >
-                  <div className="ladmin-product-image">
-                    {product.imageUrl && (
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                      />
+                  <option value="All">All Categories</option>
+
+                  {CATEGORIES.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="ladmin-product-toolbar">
+              <div
+                className="ladmin-product-view-switch"
+                role="group"
+                aria-label="Product display layout"
+              >
+                {[
+                  { value: "rows", label: "Rows", icon: "list" },
+                  { value: "cards", label: "Cards", icon: "grid" },
+                  { value: "compact", label: "Compact", icon: "package" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={productView === option.value ? "active" : ""}
+                    aria-pressed={productView === option.value}
+                    onClick={() => changeProductView(option.value)}
+                  >
+                    <Icon name={option.icon} size={15} />
+                    <span>{option.label}</span>
+                  </button>
+                ))}
+              </div>
+              <span className="ladmin-product-toolbar-count">
+                {filteredProducts.length} items · Scroll to browse
+              </span>
+            </div>
+
+            <div
+              className={`ladmin-product-scroll ladmin-view-${productView}`}
+              ref={productScrollRef}
+              tabIndex={0}
+              aria-label="Scrollable products"
+            >
+              {products === undefined ? (
+                <div className="ladmin-empty">Loading products...</div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="ladmin-empty">
+                  <Icon name="package" size={34} />
+                  <h3>No Products Found</h3>
+                  <p>Try a different search or add your first product.</p>
+                  <button
+                    type="button"
+                    className="ladmin-primary"
+                    onClick={openNew}
+                  >
+                    Add Product
+                  </button>
+                </div>
+              ) : (
+                <div className="ladmin-products">
+                  {filteredProducts.map((product) => (
+                    <article className="ladmin-product" key={product._id}>
+                      <div className="ladmin-product-image">
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span className="ladmin-no-image">No image</span>
+                        )}
+                      </div>
+                      <div className="ladmin-product-info">
+                        <h3 title={product.name}>{product.name}</h3>
+                        <p>
+                          {product.category}
+                          {product.gemstone ? ` · ${product.gemstone}` : ""}
+                        </p>
+                        <strong>{formatPrice(product.price)}</strong>
+                      </div>
+                      <div className="ladmin-product-status">
+                        <span
+                          className={`ladmin-badge ${product.available ? "available" : "hidden"}`}
+                        >
+                          {product.available ? "Available" : "Hidden"}
+                        </span>
+                        <button
+                          type="button"
+                          className={`ladmin-featured-toggle ${product.featured ? "is-featured" : ""}`}
+                          disabled={Boolean(featuredBusy[product._id])}
+                          aria-pressed={Boolean(product.featured)}
+                          title={
+                            product.featured
+                              ? "Remove from Signature Creations"
+                              : "Add to Signature Creations"
+                          }
+                          onClick={() => toggleFeatured(product)}
+                        >
+                          <Icon name="star" size={14} />
+                          {featuredBusy[product._id]
+                            ? "Saving…"
+                            : product.featured
+                              ? "Featured"
+                              : "Feature"}
+                        </button>
+                      </div>
+                      <div className="ladmin-product-actions">
+                        <button type="button" onClick={() => openEdit(product)}>
+                          <Icon name="edit" size={16} /> Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="danger"
+                          onClick={() => handleDelete(product)}
+                        >
+                          <Icon name="trash" size={16} /> Delete
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="ladmin-product-footnote" aria-live="polite">
+              Showing {filteredProducts.length} of {allProducts.length} products
+              <span>
+                {productView === "cards"
+                  ? "Card view"
+                  : productView === "compact"
+                    ? "Compact view"
+                    : "Row view"}
+              </span>
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* NON-BLOCKING BACKGROUND UPLOAD MANAGER */}
+      {queueVisible && jobs.length > 0 && (
+        <aside
+          className={`ladmin-queue ${queueExpanded ? "is-expanded" : "is-minimized"}`}
+          aria-label="Background product uploads"
+          aria-live="polite"
+        >
+          <div className="ladmin-queue-header">
+            <div className="ladmin-queue-heading">
+              <span className="ladmin-queue-indicator" aria-hidden="true" />
+              <div>
+                <strong>
+                  {pendingCount
+                    ? `Saving ${pendingCount} product${pendingCount === 1 ? "" : "s"}`
+                    : failedCount
+                      ? `${failedCount} upload${failedCount === 1 ? "" : "s"} need attention`
+                      : "All products saved"}
+                </strong>
+                <small>
+                  {pendingCount
+                    ? `${doneCount} completed · ${failedCount} failed`
+                    : failedCount
+                      ? "Retry failed uploads below"
+                      : "Finished successfully"}
+                </small>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ladmin-queue-toggle"
+              onClick={() => setQueueExpanded((open) => !open)}
+              aria-expanded={queueExpanded}
+              aria-label={queueExpanded ? "Minimize uploads" : "Expand uploads"}
+            >
+              {queueExpanded ? "−" : "+"}
+            </button>
+          </div>
+          <div className="ladmin-queue-overall">
+            <div className="ladmin-queue-track">
+              <span style={{ width: `${overallProgress}%` }} />
+            </div>
+            <small>{overallProgress}% overall</small>
+          </div>
+          {queueExpanded && (
+            <div className="ladmin-queue-body" data-lenis-prevent>
+              {jobs.map((job) => (
+                <div className="ladmin-queue-job" key={job.id}>
+                  <div className="ladmin-queue-job-top">
+                    <span title={job.name}>{job.name}</span>
+                    <small>
+                      {job.status === "done"
+                        ? "✓ Saved"
+                        : job.status === "failed"
+                          ? "Failed"
+                          : `${job.progress}%`}
+                    </small>
+                  </div>
+                  <div className={`ladmin-queue-track ${job.status}`}>
+                    <span style={{ width: `${job.progress}%` }} />
+                  </div>
+                  <div className="ladmin-queue-job-bottom">
+                    <small>{job.error || job.stage}</small>
+                    {job.status === "failed" && (
+                      <button type="button" onClick={() => retryJob(job.id)}>
+                        Retry
+                      </button>
                     )}
                   </div>
-
-                  <div className="ladmin-product-info">
-                    <h3>{product.name}</h3>
-
-                    <p>
-                      {product.category} · {product.gemstone}
-                    </p>
-
-                    <strong>
-                      {formatPrice(product.price)}
-                    </strong>
-                  </div>
-
-                  <div className="ladmin-product-status">
-                    <span
-                      className={`ladmin-badge ${
-                        product.available
-                          ? "available"
-                          : "hidden"
-                      }`}
-                    >
-                      {product.available
-                        ? "Available"
-                        : "Hidden"}
-                    </span>
-
-                    {product.featured && (
-                      <span className="ladmin-badge featured">
-                        Featured
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="ladmin-product-actions">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(product)}
-                    >
-                      <Icon name="edit" size={16} />
-                      Edit
-                    </button>
-
-                    <button
-                      type="button"
-                      className="danger"
-                      onClick={() => handleDelete(product)}
-                    >
-                      <Icon name="trash" size={16} />
-                      Delete
-                    </button>
-                  </div>
-                </article>
+                </div>
               ))}
+              <div className="ladmin-queue-footer">
+                {doneCount > 0 && (
+                  <button type="button" onClick={clearFinished}>
+                    Clear completed
+                  </button>
+                )}
+                {pendingCount > 0 && (
+                  <span>Keep this tab open until uploads finish.</span>
+                )}
+                {recentlyFinished && <span>Closing automatically…</span>}
+              </div>
             </div>
           )}
-        </section>
-      </main>
+        </aside>
+      )}
 
       {/* EDITOR MODAL */}
 
@@ -887,14 +1335,10 @@ function Dashboard() {
           >
             <div className="ladmin-editor-header">
               <div>
-                <span className="ladmin-eyebrow">
-                  PRODUCT MANAGEMENT
-                </span>
+                <span className="ladmin-eyebrow">PRODUCT MANAGEMENT</span>
 
                 <h2 id="ladmin-editor-title">
-                  {editingId
-                    ? "Edit Product"
-                    : "Add New Product"}
+                  {editingId ? "Edit Product" : "Add New Product"}
                 </h2>
               </div>
 
@@ -902,7 +1346,6 @@ function Dashboard() {
                 type="button"
                 className="ladmin-close"
                 ref={closeRef}
-                disabled={saving}
                 onClick={closeEditor}
                 aria-label="Close editor"
               >
@@ -910,10 +1353,7 @@ function Dashboard() {
               </button>
             </div>
 
-            <form
-              className="ladmin-form"
-              onSubmit={handleSave}
-            >
+            <form className="ladmin-form" onSubmit={handleSave}>
               <label>Product Image</label>
 
               <label className="ladmin-image-upload">
@@ -930,15 +1370,11 @@ function Dashboard() {
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
-                  onChange={(e) =>
-                    setImageFile(e.target.files?.[0] || null)
-                  }
+                  onChange={(e) => setImageFile(e.target.files?.[0] || null)}
                 />
               </label>
 
-              <label htmlFor="admin-product-name">
-                Product Name
-              </label>
+              <label htmlFor="admin-product-name">Product Name</label>
 
               <input
                 id="admin-product-name"
@@ -955,9 +1391,7 @@ function Dashboard() {
 
               <div className="ladmin-form-row">
                 <div>
-                  <label htmlFor="admin-category">
-                    Category
-                  </label>
+                  <label htmlFor="admin-category">Category</label>
 
                   <select
                     id="admin-category"
@@ -976,9 +1410,7 @@ function Dashboard() {
                 </div>
 
                 <div>
-                  <label htmlFor="admin-gemstone">
-                    Gemstone
-                  </label>
+                  <label htmlFor="admin-gemstone">Gemstone</label>
 
                   <select
                     id="admin-gemstone"
@@ -1032,9 +1464,7 @@ function Dashboard() {
                 }
               />
 
-              <label htmlFor="admin-description">
-                Description
-              </label>
+              <label htmlFor="admin-description">Description</label>
 
               <textarea
                 id="admin-description"
@@ -1095,22 +1525,13 @@ function Dashboard() {
                 <button
                   type="button"
                   className="ladmin-secondary"
-                  disabled={saving}
                   onClick={closeEditor}
                 >
                   Cancel
                 </button>
 
-                <button
-                  type="submit"
-                  className="ladmin-primary"
-                  disabled={saving}
-                >
-                  {saving
-                    ? "Saving..."
-                    : editingId
-                      ? "Update Product"
-                      : "Add Product"}
+                <button type="submit" className="ladmin-primary">
+                  {editingId ? "Queue Update" : "Save & Add Next"}
                 </button>
               </div>
             </form>

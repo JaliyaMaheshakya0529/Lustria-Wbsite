@@ -10,6 +10,13 @@ export default defineSchema({
     userId: v.id("users"),
   }).index("by_userId", ["userId"]),
 
+  sitePageViews: defineTable({
+    path: v.string(),
+    sessionId: v.string(),
+    timestamp: v.number(),
+  }).index("by_timestamp", ["timestamp"])
+    .index("by_session_path_time", ["sessionId", "path", "timestamp"]),
+
   products: defineTable({
     name: v.string(),
     category: v.string(),

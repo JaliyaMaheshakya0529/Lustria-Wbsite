@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Collection from './pages/Collection'
 import Footer from './components/Footer'
 import Admin from './pages/Admin'
+import SiteAnalyticsTracker from './components/SiteAnalyticsTracker'
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname)
@@ -77,6 +78,7 @@ export default function App() {
 
   return (
     <>
+      <SiteAnalyticsTracker path={isCollectionPage ? "/collection" : "/"} />
       <Navbar onNavigate={navigateTo} />
       <main>
         {isCollectionPage ? (
