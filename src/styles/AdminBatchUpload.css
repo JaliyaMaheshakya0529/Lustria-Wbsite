@@ -1,0 +1,53 @@
+/* Admin-only batch editor. Does not affect storefront styles. */
+.lbatch-backdrop { position: fixed; inset: 0; z-index: 100001; display: grid; place-items: center; padding: 18px; background: rgba(18,17,15,.65); font-family: 'DM Sans', sans-serif; color: #28251f; }
+.lbatch-backdrop *, .lbatch-backdrop *::before, .lbatch-backdrop *::after { box-sizing: border-box; }
+.lbatch-dialog { display: flex; flex-direction: column; width: min(1060px,100%); max-height: min(94dvh,980px); min-height: 0; overflow: hidden; border: 1px solid #e8e4dc; border-radius: 15px; background: #fff; box-shadow: 0 30px 80px rgba(0,0,0,.18); outline: none; }
+.lbatch-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-shrink: 0; padding: 24px 28px 19px; border-bottom: 1px solid #e8e4dc; }
+.lbatch-kicker { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #a98a56; }
+.lbatch-header h2 { margin: 7px 0; font: 400 30px Georgia,serif; color: #28251f; }
+.lbatch-header p, .lbatch-section-heading p { margin: 0; font-size: 12px; color: #827d73; }
+.lbatch-close { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border: 1px solid #e8e4dc; border-radius: 8px; background: #fff; font-size: 23px; cursor: pointer; }
+.lbatch-body { flex: 1 1 auto; min-height: 0; padding: 24px 28px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #c9bba3 transparent; }
+.lbatch-dropzone { display: flex; flex-direction: column; align-items: center; gap: 9px; padding: 25px 15px; text-align: center; border: 1.5px dashed #c9bba3; border-radius: 11px; background: #faf9f6; }
+.lbatch-dropzone.is-dragging { border-color: #a98a56; background: #f4ede0; }
+.lbatch-drop-icon { font-size: 26px; color: #a98a56; }
+.lbatch-dropzone strong { font-size: 14px; }
+.lbatch-dropzone > span:not(.lbatch-drop-icon) { font-size: 11px; color: #827d73; }
+.lbatch-backdrop button { font: inherit; cursor: pointer; }
+.lbatch-outline { min-height: 35px; padding: 8px 13px; border: 1px solid #ded8cc; border-radius: 7px; background: #fff; color: #544d40; font-size: 12px !important; }
+.lbatch-outline:hover { background: #f7f4ee; }
+.lbatch-bulk { margin-top: 24px; padding: 19px; border: 1px solid #e8e4dc; border-radius: 10px; }
+.lbatch-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 16px; }
+.lbatch-section-heading h3 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+.lbatch-section-heading h3 span { color: #a98a56; }
+.lbatch-bulk-grid, .lbatch-item-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.lbatch-backdrop label { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 11px; font-weight: 600; }
+.lbatch-backdrop input:not([type=checkbox]), .lbatch-backdrop select, .lbatch-backdrop textarea { display: block; width: 100%; min-width: 0; padding: 10px; border: 1px solid #e8e4dc; border-radius: 7px; background: #fff; color: #28251f; font: 12px 'DM Sans',sans-serif; outline: none; }
+.lbatch-backdrop textarea { resize: vertical; }
+.lbatch-backdrop input:focus, .lbatch-backdrop select:focus, .lbatch-backdrop textarea:focus { border-color: #a98a56; }
+.lbatch-wide { grid-column: 1 / -1; }
+.lbatch-check { flex-direction: row !important; align-items: center; gap: 8px !important; }
+.lbatch-backdrop input[type=checkbox] { accent-color: #a98a56; width: 16px; height: 16px; }
+.lbatch-items-heading { margin: 24px 0 12px; }
+.lbatch-items { display: grid; gap: 12px; }
+.lbatch-empty { padding: 26px; margin: 0; border: 1px dashed #e8e4dc; border-radius: 9px; color: #827d73; text-align: center; font-size: 12px; }
+.lbatch-item { display: grid; grid-template-columns: 132px minmax(0,1fr); gap: 17px; padding: 15px; border: 1px solid #e8e4dc; border-radius: 10px; }
+.lbatch-preview { width: 132px; height: 132px; object-fit: cover; border-radius: 8px; background: #faf9f6; }
+.lbatch-item-fields { min-width: 0; }
+.lbatch-item-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.lbatch-item-heading strong { font-size: 12px; white-space: nowrap; }
+.lbatch-item-heading small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #827d73; font-size: 10px; }
+.lbatch-item-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.lbatch-name { grid-column: span 2; }
+.lbatch-description { grid-column: span 3; }
+.lbatch-item-bottom { display: flex; align-items: center; flex-wrap: wrap; gap: 17px; margin-top: 12px; }
+.lbatch-item-bottom label { flex-direction: row; align-items: center; gap: 6px; }
+.lbatch-item-bottom button { margin-left: auto; border: none; background: transparent; color: #b34d4d; font-size: 11px; }
+.lbatch-error { padding: 12px; margin: 14px 0 0; border-radius: 7px; background: #fdf1f1; color: #a33b3b; font-size: 12px; }
+.lbatch-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-shrink: 0; padding: 16px 28px; border-top: 1px solid #e8e4dc; background: #fff; }
+.lbatch-footer > span { color: #827d73; font-size: 11px; }
+.lbatch-footer > div { display: flex; gap: 9px; }
+.lbatch-publish { min-height: 38px; padding: 9px 17px; border: 1px solid #292720; border-radius: 7px; background: #292720; color: #fff; font-size: 12px !important; font-weight: 600 !important; }
+.lbatch-publish:disabled, .lbatch-outline:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 780px) { .lbatch-bulk-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .lbatch-item-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .lbatch-name, .lbatch-description { grid-column: 1/-1; } .lbatch-item { grid-template-columns: 96px minmax(0,1fr); } .lbatch-preview { width: 96px; height: 96px; } }
+@media (max-width: 540px) { .lbatch-backdrop { padding: 7px; } .lbatch-dialog { max-height: 98dvh; } .lbatch-header,.lbatch-body,.lbatch-footer { padding: 15px; } .lbatch-item { display: block; } .lbatch-preview { width: 100%; height: 170px; margin-bottom: 12px; } .lbatch-bulk-grid,.lbatch-item-grid { grid-template-columns: 1fr; } .lbatch-name,.lbatch-description,.lbatch-wide { grid-column: 1; } .lbatch-footer { flex-wrap: wrap; } .lbatch-footer > div { width: 100%; } .lbatch-footer button { flex: 1; } }

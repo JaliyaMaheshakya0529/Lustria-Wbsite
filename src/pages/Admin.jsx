@@ -4,6 +4,7 @@ import { useQuery, useMutation, useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
 import "../styles/Admin.css";
+import AdminBatchUpload from "../components/AdminBatchUpload";
 
 const CATEGORIES = [
   "Rings",
@@ -498,6 +499,7 @@ function Dashboard() {
   const featuredBusyRef = useRef(new Set());
 
   const [editorOpen, setEditorOpen] = useState(false);
+  const [batchOpen, setBatchOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ ...EMPTY_PRODUCT });
 
@@ -937,6 +939,34 @@ function Dashboard() {
     drainQueue();
   }
 
+  // Queue all batch items immediately. Existing background manager uploads up to
+  // two at a time and provides progress + retry without blocking the admin.
+  function queueBatch(batch) {
+    if (!batch.length) return;
+    const currentFeatured = allProducts.filter((p) => p.featured).length;
+    const pendingFeatured = [...jobsRef.current.values()].filter(
+      (job) => ["queued", "running"].includes(job.status) && job.payload.featured && !job.editingId
+    ).length;
+    const batchFeatured = batch.filter((item) => item.payload.featured).length;
+    if (currentFeatured + pendingFeatured + batchFeatured > MAX_FEATURED) {
+      throw new Error(`Maximum ${MAX_FEATURED} Featured products. Remove Featured selections first.`);
+    }
+    for (const item of batch) {
+      const id = ++nextIdRef.current;
+      jobsRef.current.set(id, {
+        id, name: item.payload.name, editingId: null,
+        file: item.file, payload: item.payload,
+        status: "queued", stage: "Waiting in queue", progress: 0, error: "",
+      });
+    }
+    setJobs(Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({ ...view })));
+    setQueueVisible(true);
+    setQueueExpanded(true);
+    setRecentlyFinished(false);
+    setNotice(`${batch.length} product${batch.length === 1 ? "" : "s"} added to the upload queue.`);
+    drainQueue();
+  }
+
   // ========================================
   // DELETE PRODUCT
   // ========================================
@@ -1014,14 +1044,16 @@ function Dashboard() {
             <p>{activeView === "dashboard" ? "Your website performance at a glance." : "Manage your jewellery collection."}</p>
           </div>
 
-          {activeView === "products" && <button
-            type="button"
-            className="ladmin-primary ladmin-add-button"
-            onClick={openNew}
-          >
-            <Icon name="plus" size={17} />
-            Add Product
-          </button>}
+          {activeView === "products" && (
+            <div className="ladmin-header-actions">
+              <button type="button" className="ladmin-secondary" onClick={() => setBatchOpen(true)}>
+                <Icon name="package" size={17} /> Batch Upload
+              </button>
+              <button type="button" className="ladmin-primary ladmin-add-button" onClick={openNew}>
+                <Icon name="plus" size={17} /> Add Product
+              </button>
+            </div>
+          )}
         </header>
 
         {/* Isolated from the product manager: analytics errors cannot crash admin. */}
@@ -1221,6 +1253,17 @@ function Dashboard() {
             </div>
           )}
         </aside>
+      )}
+
+      {/* BATCH UPLOAD EDITOR - admin only */}
+      {batchOpen && (
+        <AdminBatchUpload
+          onClose={() => setBatchOpen(false)}
+          onPublish={queueBatch}
+          featuredSlots={Math.max(0, MAX_FEATURED - featuredCount - [...jobsRef.current.values()].filter(
+            (job) => ["queued", "running"].includes(job.status) && job.payload.featured && !job.editingId
+          ).length)}
+        />
       )}
 
       {/* EDITOR MODAL */}

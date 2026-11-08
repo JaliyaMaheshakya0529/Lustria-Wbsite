@@ -1408,3 +1408,9 @@
     min-height: 280px;
   }
 }
+
+/* Batch upload entry point — admin only */
+.ladmin-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.ladmin-header-actions .ladmin-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 17px; border: 1px solid #ded8cc; border-radius: 8px; background: #fff; color: #4b463e; font-size: 12px; font-weight: 600; }
+.ladmin-header-actions .ladmin-secondary:hover { background: #f7f4ee; }
+@media (max-width: 520px) { .ladmin-header-actions { width: 100%; } .ladmin-header-actions button { flex: 1; } }
