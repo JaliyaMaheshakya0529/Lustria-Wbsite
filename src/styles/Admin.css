@@ -1,3 +1,4 @@
+
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
 
 /* ==========================================
@@ -890,11 +891,7 @@
   text-transform: none;
   letter-spacing: normal;
 }
-.ladmin-queue *,
-.ladmin-queue *::before,
-.ladmin-queue *::after {
-  box-sizing: border-box;
-}
+.ladmin-queue *, .ladmin-queue *::before, .ladmin-queue *::after { box-sizing: border-box; }
 .ladmin-queue-header {
   display: flex;
   align-items: center;
@@ -902,27 +899,10 @@
   gap: 14px;
   padding: 16px 17px 12px;
 }
-.ladmin-queue-heading {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  min-width: 0;
-}
-.ladmin-queue-heading > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.ladmin-queue-heading strong {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.ladmin-queue-heading small {
-  font-size: 11px;
-  color: #827d73;
-}
+.ladmin-queue-heading { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.ladmin-queue-heading > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ladmin-queue-heading strong { font-size: 13px; font-weight: 700; line-height: 1.3; }
+.ladmin-queue-heading small { font-size: 11px; color: #827d73; }
 .ladmin-queue-indicator {
   width: 10px;
   height: 10px;
@@ -946,17 +926,8 @@
   font-size: 19px;
   cursor: pointer;
 }
-.ladmin-queue-overall {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 17px 14px;
-}
-.ladmin-queue-overall > small {
-  flex: 0 0 auto;
-  color: #827d73;
-  font-size: 10px;
-}
+.ladmin-queue-overall { display: flex; align-items: center; gap: 12px; padding: 0 17px 14px; }
+.ladmin-queue-overall > small { flex: 0 0 auto; color: #827d73; font-size: 10px; }
 .ladmin-queue-track {
   width: 100%;
   height: 6px;
@@ -971,12 +942,8 @@
   border-radius: inherit;
   transition: width 0.16s ease;
 }
-.ladmin-queue-track.done > span {
-  background: #528663;
-}
-.ladmin-queue-track.failed > span {
-  background: #b65b55;
-}
+.ladmin-queue-track.done > span { background: #528663; }
+.ladmin-queue-track.failed > span { background: #b65b55; }
 .ladmin-queue-body {
   max-height: min(330px, 45dvh);
   overflow-y: auto;
@@ -984,42 +951,19 @@
   border-top: 1px solid #eeeae3;
   padding: 3px 17px 12px;
 }
-.ladmin-queue-job {
-  padding: 12px 0;
-  border-bottom: 1px solid #f0ede7;
-}
-.ladmin-queue-job-top,
-.ladmin-queue-job-bottom {
+.ladmin-queue-job { padding: 12px 0; border-bottom: 1px solid #f0ede7; }
+.ladmin-queue-job-top, .ladmin-queue-job-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
-.ladmin-queue-job-top {
-  margin-bottom: 8px;
-}
-.ladmin-queue-job-top span {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-weight: 600;
-}
-.ladmin-queue-job-top small {
-  flex: 0 0 auto;
-  font-size: 11px;
-  color: #827d73;
-}
-.ladmin-queue-job-bottom {
-  margin-top: 7px;
-}
-.ladmin-queue-job-bottom small {
-  color: #827d73;
-  font-size: 11px;
-  overflow-wrap: anywhere;
-}
-.ladmin-queue-job-bottom button,
-.ladmin-queue-footer button {
+.ladmin-queue-job-top { margin-bottom: 8px; }
+.ladmin-queue-job-top span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; }
+.ladmin-queue-job-top small { flex: 0 0 auto; font-size: 11px; color: #827d73; }
+.ladmin-queue-job-bottom { margin-top: 7px; }
+.ladmin-queue-job-bottom small { color: #827d73; font-size: 11px; overflow-wrap: anywhere; }
+.ladmin-queue-job-bottom button, .ladmin-queue-footer button {
   padding: 3px 7px;
   border: 0;
   background: #f5efe5;
@@ -1029,464 +973,123 @@
   font-size: 11px;
   cursor: pointer;
 }
-.ladmin-queue-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding-top: 12px;
-}
-.ladmin-queue-footer span {
-  color: #827d73;
-  font-size: 10px;
-  text-align: right;
-}
+.ladmin-queue-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 12px; }
+.ladmin-queue-footer span { color: #827d73; font-size: 10px; text-align: right; }
 @media (max-width: 480px) {
-  .ladmin-queue {
-    right: 12px;
-    bottom: 12px;
-    width: calc(100vw - 24px);
-  }
-  .ladmin-queue-body {
-    max-height: 36dvh;
-  }
+  .ladmin-queue { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
+  .ladmin-queue-body { max-height: 36dvh; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ladmin-queue-track > span {
-    transition: none;
-  }
+  .ladmin-queue-track > span { transition: none; }
 }
 
 /* ==========================================
    COMPACT DASHBOARD + INTERACTIVE SIDEBAR
    ========================================== */
 @media (min-width: 851px) {
-  .ladmin-layout {
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .ladmin-main {
-    height: 100dvh;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding-top: 26px;
-    padding-bottom: 22px;
-  }
-  .ladmin-header {
-    flex-shrink: 0;
-  }
-  .ladmin-header h1 {
-    margin: 4px 0 4px;
-    font-size: 34px;
-  }
-  .ladmin-stats {
-    flex-shrink: 0;
-    margin: 17px 0;
-    gap: 12px;
-  }
-  .ladmin-stat {
-    padding: 15px 19px;
-    gap: 6px;
-  }
-  .ladmin-stat strong {
-    font-size: 28px;
-  }
-  .ladmin-panel {
-    min-height: 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 17px 24px;
-  }
-  .ladmin-panel-header {
-    flex-shrink: 0;
-    margin-bottom: 12px;
-  }
-  .ladmin-products {
-    min-height: 0;
-    flex: 1;
-    grid-template-rows: repeat(3, minmax(88px, 1fr));
-  }
-  .ladmin-product {
-    min-height: 0;
-    padding: 6px 0;
-    gap: 14px;
-  }
-  .ladmin-product-image {
-    width: min(58px, 7dvh);
-    height: min(58px, 7dvh);
-  }
-  .ladmin-product-info h3 {
-    margin-bottom: 3px;
-  }
-  .ladmin-product-info p {
-    margin-bottom: 3px;
-  }
-  .ladmin-pagination {
-    flex-shrink: 0;
-  }
+  .ladmin-layout { height: 100dvh; min-height: 0; overflow: hidden; }
+  .ladmin-main { height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding-top: 26px; padding-bottom: 22px; }
+  .ladmin-header { flex-shrink: 0; }
+  .ladmin-header h1 { margin: 4px 0 4px; font-size: 34px; }
+  .ladmin-stats { flex-shrink: 0; margin: 17px 0; gap: 12px; }
+  .ladmin-stat { padding: 15px 19px; gap: 6px; }
+  .ladmin-stat strong { font-size: 28px; }
+  .ladmin-panel { min-height: 0; flex: 1; display: flex; flex-direction: column; padding: 17px 24px; }
+  .ladmin-panel-header { flex-shrink: 0; margin-bottom: 12px; }
+  .ladmin-products { min-height: 0; flex: 1; grid-template-rows: repeat(3, minmax(88px, 1fr)); }
+  .ladmin-product { min-height: 0; padding: 6px 0; gap: 14px; }
+  .ladmin-product-image { width: min(58px, 7dvh); height: min(58px, 7dvh); }
+  .ladmin-product-info h3 { margin-bottom: 3px; }
+  .ladmin-product-info p { margin-bottom: 3px; }
+  .ladmin-pagination { flex-shrink: 0; }
 }
 .ladmin-navigation button.ladmin-nav-item {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
+  width: 100%; border: 0; background: transparent; text-align: left;
+  font: inherit; cursor: pointer; transition: background .18s ease, color .18s ease;
 }
-.ladmin-navigation button.ladmin-nav-item:hover {
-  background: #f8f5ef;
-}
-.ladmin-navigation button.ladmin-nav-item.active {
-  background: #f4f0e8;
-  color: #8b714a;
-}
+.ladmin-navigation button.ladmin-nav-item:hover { background: #f8f5ef; }
+.ladmin-navigation button.ladmin-nav-item.active { background: #f4f0e8; color: #8b714a; }
 .ladmin-navigation button.ladmin-nav-item:focus-visible,
-.ladmin-featured-toggle:focus-visible,
-.ladmin-page-buttons button:focus-visible {
-  outline: 2px solid #a98a56;
-  outline-offset: 2px;
+.ladmin-featured-toggle:focus-visible, .ladmin-page-buttons button:focus-visible {
+  outline: 2px solid #a98a56; outline-offset: 2px;
 }
 .ladmin-featured-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px 10px;
-  border: 1px solid #e6dfd1;
-  border-radius: 6px;
-  background: #fff;
-  color: #8b8171;
-  font: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease,
-    border-color 0.18s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 7px 10px; border: 1px solid #e6dfd1; border-radius: 6px;
+  background: #fff; color: #8b8171; font: inherit; font-size: 11px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
 }
-.ladmin-featured-toggle:hover:not(:disabled) {
-  border-color: #b89758;
-  color: #94703b;
-  background: #fdfaf3;
-}
-.ladmin-featured-toggle.is-featured {
-  background: #f7f0df;
-  color: #96773d;
-  border-color: #f1e4c6;
-}
-.ladmin-featured-toggle.is-featured svg {
-  fill: currentColor;
-}
-.ladmin-featured-toggle:disabled {
-  opacity: 0.65;
-  cursor: wait;
-}
+.ladmin-featured-toggle:hover:not(:disabled) { border-color: #b89758; color: #94703b; background: #fdfaf3; }
+.ladmin-featured-toggle.is-featured { background: #f7f0df; color: #96773d; border-color: #f1e4c6; }
+.ladmin-featured-toggle.is-featured svg { fill: currentColor; }
+.ladmin-featured-toggle:disabled { opacity: .65; cursor: wait; }
 .ladmin-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding-top: 12px;
-  margin-top: auto;
-  border-top: 1px solid #e8e4dc;
-  color: #827d73;
-  font-size: 11px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: 12px; padding-top: 12px; margin-top: auto; border-top: 1px solid #e8e4dc;
+  color: #827d73; font-size: 11px;
 }
-.ladmin-page-buttons {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.ladmin-page-buttons { display: flex; align-items: center; gap: 12px; }
 .ladmin-page-buttons button {
-  padding: 7px 12px;
-  border: 1px solid #e8e4dc;
-  border-radius: 7px;
-  background: white;
-  color: #292720;
-  font: inherit;
-  font-size: 11px;
-  cursor: pointer;
+  padding: 7px 12px; border: 1px solid #e8e4dc; border-radius: 7px;
+  background: white; color: #292720; font: inherit; font-size: 11px; cursor: pointer;
 }
-.ladmin-page-buttons button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+.ladmin-page-buttons button:disabled { opacity: .4; cursor: not-allowed; }
 @media (max-width: 850px) {
-  .ladmin-navigation {
-    display: flex;
-    flex-direction: row;
-    margin-top: 0;
-    gap: 5px;
-  }
-  .ladmin-navigation button.ladmin-nav-item {
-    width: auto;
-    padding: 9px;
-    font-size: 12px;
-    gap: 6px;
-  }
-  .ladmin-navigation button.ladmin-nav-item svg {
-    width: 16px;
-    height: 16px;
-  }
-  .ladmin-sidebar {
-    flex-wrap: wrap;
-  }
-  .ladmin-product-status {
-    flex-basis: auto;
-  }
+  .ladmin-navigation { display: flex; flex-direction: row; margin-top: 0; gap: 5px; }
+  .ladmin-navigation button.ladmin-nav-item { width: auto; padding: 9px; font-size: 12px; gap: 6px; }
+  .ladmin-navigation button.ladmin-nav-item svg { width: 16px; height: 16px; }
+  .ladmin-sidebar { flex-wrap: wrap; }
+  .ladmin-product-status { flex-basis: auto; }
 }
 @media (max-width: 540px) {
-  .ladmin-sidebar {
-    padding: 12px;
-  }
-  .ladmin-sidebar-top > span {
-    display: none;
-  }
-  .ladmin-sidebar-bottom {
-    gap: 0;
-  }
-  .ladmin-sidebar-bottom button {
-    font-size: 0;
-  }
-  .ladmin-sidebar-bottom button svg {
-    width: 20px;
-    height: 20px;
-  }
-  .ladmin-navigation button.ladmin-nav-item {
-    font-size: 11px;
-  }
-  .ladmin-navigation button.ladmin-nav-item svg {
-    display: none;
-  }
-  .ladmin-product-status {
-    flex: 0 1 auto;
-  }
-  .ladmin-pagination {
-    justify-content: center;
-  }
+  .ladmin-sidebar { padding: 12px; }
+  .ladmin-sidebar-top > span { display: none; }
+  .ladmin-sidebar-bottom { gap: 0; }
+  .ladmin-sidebar-bottom button { font-size: 0; }
+  .ladmin-sidebar-bottom button svg { width: 20px; height: 20px; }
+  .ladmin-navigation button.ladmin-nav-item { font-size: 11px; }
+  .ladmin-navigation button.ladmin-nav-item svg { display: none; }
+  .ladmin-product-status { flex: 0 1 auto; }
+  .ladmin-pagination { justify-content: center; }
 }
 
 /* ANALYTICS DASHBOARD — ONLY THE DASHBOARD VIEW */
-.ladmin-analytics {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-height: 0;
-  flex: 1;
-}
-.ladmin-analytics-intro {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-.ladmin-analytics-intro h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 5px;
-}
-.ladmin-analytics-intro p {
-  font-size: 12px;
-  color: #827d73;
-  margin: 0;
-}
-.ladmin-analytics-live {
-  font-size: 11px;
-  color: #527b60;
-  background: #eaf4ed;
-  padding: 7px 11px;
-  border-radius: 30px;
-  white-space: nowrap;
-}
-.ladmin-analytics-kpis {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-.ladmin-analytics-kpi {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 22px;
-  background: #fff;
-  border: 1px solid #e8e4dc;
-  border-radius: 13px;
-}
-.ladmin-analytics-kpi > span {
-  color: #827d73;
-  font-size: 12px;
-}
-.ladmin-analytics-kpi strong {
-  font-size: clamp(24px, 2.5vw, 36px);
-  font-weight: 600;
-  line-height: 1;
-}
-.ladmin-analytics-kpi small {
-  color: #827d73;
-  font-size: 11px;
-}
-.ladmin-analytics-bottom {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
-  gap: 16px;
-  min-height: 0;
-}
-.ladmin-analytics-card {
-  min-width: 0;
-  padding: 25px;
-  background: #fff;
-  border: 1px solid #e8e4dc;
-  border-radius: 13px;
-}
-.ladmin-analytics-card-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 26px;
-}
-.ladmin-analytics-card-head h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-}
-.ladmin-analytics-card-head > span {
-  color: #827d73;
-  font-size: 11px;
-}
-.ladmin-analytics-chart {
-  height: 185px;
-  display: flex;
-  align-items: flex-end;
-  gap: 5px;
-  padding-bottom: 1px;
-  border-bottom: 1px solid #e8e4dc;
-}
-.ladmin-analytics-bar-column {
-  height: 100%;
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-  min-width: 0;
-}
-.ladmin-analytics-bar {
-  width: 100%;
-  min-height: 1px;
-  background: #b89758;
-  border-radius: 3px 3px 0 0;
-  transition: height 0.3s ease;
-}
-.ladmin-analytics-bar-column:hover .ladmin-analytics-bar {
-  background: #8c713f;
-}
-.ladmin-analytics-chart-labels {
-  display: flex;
-  justify-content: space-between;
-  color: #827d73;
-  font-size: 11px;
-  margin-top: 12px;
-}
-.ladmin-analytics-page {
-  margin: 20px 0;
-}
-.ladmin-analytics-page-top {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  margin-bottom: 9px;
-}
-.ladmin-analytics-page-top strong {
-  font-weight: 600;
-}
-.ladmin-analytics-page-track {
-  height: 7px;
-  background: #f2eee7;
-  border-radius: 9px;
-  overflow: hidden;
-}
-.ladmin-analytics-page-track span {
-  display: block;
-  height: 100%;
-  background: #b89758;
-  border-radius: 9px;
-}
-.ladmin-analytics-footnote,
-.ladmin-analytics-empty {
-  font-size: 12px;
-  color: #827d73;
-  line-height: 1.6;
-}
-.ladmin-analytics-disclaimer {
-  font-size: 11px;
-  color: #827d73;
-  line-height: 1.6;
-}
-.ladmin-analytics-placeholder {
-  background: #fff;
-  border: 1px solid #e8e4dc;
-  border-radius: 13px;
-  padding: 35px;
-  color: #827d73;
-}
-@media (min-width: 851px) {
-  .ladmin-analytics {
-    overflow-y: auto;
-    scrollbar-width: thin;
-  }
-}
-@media (max-width: 1050px) {
-  .ladmin-analytics-bottom {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 850px) {
-  .ladmin-analytics-kpis {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .ladmin-analytics {
-    overflow: visible;
-  }
-}
-@media (max-width: 480px) {
-  .ladmin-analytics-card {
-    padding: 16px;
-  }
-  .ladmin-analytics-kpi {
-    padding: 16px;
-  }
-  .ladmin-analytics-chart {
-    height: 140px;
-  }
-}
+.ladmin-analytics { display:flex; flex-direction:column; gap:20px; min-height:0; flex:1; }
+.ladmin-analytics-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.ladmin-analytics-intro h2 { font-size:20px; font-weight:600; margin:0 0 5px; }
+.ladmin-analytics-intro p { font-size:12px; color:#827d73; margin:0; }
+.ladmin-analytics-live { font-size:11px; color:#527b60; background:#eaf4ed; padding:7px 11px; border-radius:30px; white-space:nowrap; }
+.ladmin-analytics-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.ladmin-analytics-kpi { display:flex; flex-direction:column; gap:12px; padding:22px; background:#fff; border:1px solid #e8e4dc; border-radius:13px; }
+.ladmin-analytics-kpi > span { color:#827d73; font-size:12px; }
+.ladmin-analytics-kpi strong { font-size:clamp(24px,2.5vw,36px); font-weight:600; line-height:1; }
+.ladmin-analytics-kpi small { color:#827d73; font-size:11px; }
+.ladmin-analytics-bottom { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr); gap:16px; min-height:0; }
+.ladmin-analytics-card { min-width:0; padding:25px; background:#fff; border:1px solid #e8e4dc; border-radius:13px; }
+.ladmin-analytics-card-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:26px; }
+.ladmin-analytics-card-head h3 { font-size:16px; font-weight:600; margin:0; }
+.ladmin-analytics-card-head > span { color:#827d73; font-size:11px; }
+.ladmin-analytics-chart { height:185px; display:flex; align-items:flex-end; gap:5px; padding-bottom:1px; border-bottom:1px solid #e8e4dc; }
+.ladmin-analytics-bar-column { height:100%; flex:1; display:flex; align-items:flex-end; min-width:0; }
+.ladmin-analytics-bar { width:100%; min-height:1px; background:#b89758; border-radius:3px 3px 0 0; transition:height .3s ease; }
+.ladmin-analytics-bar-column:hover .ladmin-analytics-bar { background:#8c713f; }
+.ladmin-analytics-chart-labels { display:flex; justify-content:space-between; color:#827d73; font-size:11px; margin-top:12px; }
+.ladmin-analytics-page { margin:20px 0; }
+.ladmin-analytics-page-top { display:flex; justify-content:space-between; font-size:13px; margin-bottom:9px; }
+.ladmin-analytics-page-top strong { font-weight:600; }
+.ladmin-analytics-page-track { height:7px; background:#f2eee7; border-radius:9px; overflow:hidden; }
+.ladmin-analytics-page-track span { display:block; height:100%; background:#b89758; border-radius:9px; }
+.ladmin-analytics-footnote, .ladmin-analytics-empty { font-size:12px; color:#827d73; line-height:1.6; }
+.ladmin-analytics-disclaimer { font-size:11px; color:#827d73; line-height:1.6; }
+.ladmin-analytics-placeholder { background:#fff; border:1px solid #e8e4dc; border-radius:13px; padding:35px; color:#827d73; }
+@media (min-width: 851px) { .ladmin-analytics { overflow-y:auto; scrollbar-width:thin; } }
+@media (max-width: 1050px) { .ladmin-analytics-bottom { grid-template-columns:1fr; } }
+@media (max-width: 850px) { .ladmin-analytics-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } .ladmin-analytics { overflow:visible; } }
+@media (max-width: 480px) { .ladmin-analytics-card { padding:16px; } .ladmin-analytics-kpi { padding:16px; } .ladmin-analytics-chart { height:140px; } }
 
 /* Keep product text readable instead of squeezing rows to overlap. */
-@media (min-width: 851px) {
-  .ladmin-product {
-    padding: 12px 0;
-  }
-  .ladmin-product-image {
-    width: 66px;
-    height: 66px;
-  }
-  .ladmin-product-info {
-    min-width: 0;
-  }
-  .ladmin-product-info h3,
-  .ladmin-product-info p,
-  .ladmin-product-info strong {
-    line-height: 1.45;
-  }
-}
+@media (min-width: 851px) { .ladmin-product { padding: 12px 0; } .ladmin-product-image { width: 66px; height: 66px; } .ladmin-product-info { min-width:0; } .ladmin-product-info h3, .ladmin-product-info p, .ladmin-product-info strong { line-height:1.45; } }
 
 /* ==========================================================
    ADMIN PRODUCT VIEW MODES — ONLY AFFECTS THE PRODUCTS PAGE
@@ -1525,7 +1128,7 @@
   border-color: #e8e1d4;
   background: #fff;
   color: #917044;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 5px rgba(0,0,0,.04);
 }
 .ladmin-product-view-switch button:focus-visible,
 .ladmin-product-scroll:focus-visible {
@@ -1547,23 +1150,21 @@
   scrollbar-color: #c6b9a2 transparent;
   padding-right: 8px;
 }
-.ladmin-product-scroll::-webkit-scrollbar {
-  width: 7px;
-}
+.ladmin-product-scroll::-webkit-scrollbar { width: 7px; }
 .ladmin-product-scroll::-webkit-scrollbar-thumb {
   background: #c6b9a2;
   border-radius: 10px;
 }
 .ladmin-product-scroll .ladmin-products {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0,1fr);
   grid-template-rows: none;
   min-height: auto;
   flex: none;
 }
 .ladmin-product-scroll .ladmin-product {
   display: grid;
-  grid-template-columns: 70px minmax(130px, 1fr) auto auto;
+  grid-template-columns: 70px minmax(130px,1fr) auto auto;
   align-items: center;
   gap: 16px;
   min-height: 104px;
@@ -1619,7 +1220,7 @@
 }
 /* Cards: image-forward catalogue previews */
 .ladmin-product-scroll.ladmin-view-cards .ladmin-products {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3,minmax(0,1fr));
   gap: 16px;
   padding: 4px;
 }
@@ -1652,7 +1253,7 @@
 }
 /* Compact: fast inventory scanning */
 .ladmin-product-scroll.ladmin-view-compact .ladmin-product {
-  grid-template-columns: 44px minmax(130px, 1fr) auto auto;
+  grid-template-columns: 44px minmax(130px,1fr) auto auto;
   gap: 12px;
   min-height: 65px;
   padding: 8px 4px;
@@ -1661,26 +1262,16 @@
   width: 44px;
   height: 44px;
 }
-.ladmin-product-scroll.ladmin-view-compact .ladmin-product-info h3 {
-  margin-bottom: 2px;
-  font-size: 12px;
-}
-.ladmin-product-scroll.ladmin-view-compact .ladmin-product-info p {
-  margin-bottom: 2px;
-  font-size: 10px;
-}
-.ladmin-product-scroll.ladmin-view-compact .ladmin-product-info strong {
-  font-size: 11px;
-}
+.ladmin-product-scroll.ladmin-view-compact .ladmin-product-info h3 { margin-bottom: 2px; font-size: 12px; }
+.ladmin-product-scroll.ladmin-view-compact .ladmin-product-info p { margin-bottom: 2px; font-size: 10px; }
+.ladmin-product-scroll.ladmin-view-compact .ladmin-product-info strong { font-size: 11px; }
 .ladmin-product-scroll.ladmin-view-compact .ladmin-product-actions button,
 .ladmin-product-scroll.ladmin-view-compact .ladmin-featured-toggle {
   padding: 6px 9px;
   font-size: 11px;
 }
 @media (min-width: 851px) {
-  .ladmin-main:has(.ladmin-product-scroll) {
-    min-height: 0;
-  }
+  .ladmin-main:has(.ladmin-product-scroll) { min-height: 0; }
   .ladmin-panel:has(.ladmin-product-scroll) {
     display: flex;
     flex-direction: column;
@@ -1692,20 +1283,18 @@
 @media (max-width: 1250px) {
   .ladmin-product-scroll .ladmin-product,
   .ladmin-product-scroll.ladmin-view-compact .ladmin-product {
-    grid-template-columns: 64px minmax(0, 1fr) auto;
+    grid-template-columns: 64px minmax(0,1fr) auto;
   }
   .ladmin-product-scroll.ladmin-view-compact .ladmin-product {
-    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-columns: 44px minmax(0,1fr) auto;
   }
-  .ladmin-product-scroll .ladmin-product-status {
-    grid-column: 2;
-  }
+  .ladmin-product-scroll .ladmin-product-status { grid-column: 2; }
   .ladmin-product-scroll .ladmin-product-actions {
     grid-column: 3;
     grid-row: 1 / span 2;
   }
   .ladmin-product-scroll.ladmin-view-cards .ladmin-products {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2,minmax(0,1fr));
   }
   .ladmin-product-scroll.ladmin-view-cards .ladmin-product-status,
   .ladmin-product-scroll.ladmin-view-cards .ladmin-product-actions {
@@ -1714,18 +1303,13 @@
   }
 }
 @media (max-width: 850px) {
-  .ladmin-product-scroll {
-    flex: none;
-    height: min(62dvh, 650px);
-  }
+  .ladmin-product-scroll { flex: none; height: min(62dvh, 650px); }
   .ladmin-product-scroll .ladmin-product,
   .ladmin-product-scroll.ladmin-view-compact .ladmin-product {
-    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-columns: 58px minmax(0,1fr);
     gap: 10px;
   }
-  .ladmin-product-scroll.ladmin-view-compact .ladmin-product {
-    grid-template-columns: 44px minmax(0, 1fr);
-  }
+  .ladmin-product-scroll.ladmin-view-compact .ladmin-product { grid-template-columns: 44px minmax(0,1fr); }
   .ladmin-product-scroll .ladmin-product-status,
   .ladmin-product-scroll .ladmin-product-actions {
     grid-column: 1 / -1;
@@ -1733,23 +1317,94 @@
   }
 }
 @media (max-width: 520px) {
-  .ladmin-product-toolbar {
-    flex-wrap: wrap;
+  .ladmin-product-toolbar { flex-wrap: wrap; }
+  .ladmin-product-toolbar-count { display: none; }
+  .ladmin-product-view-switch { width: 100%; }
+  .ladmin-product-view-switch button { flex: 1; padding: 8px 5px; }
+  .ladmin-product-scroll.ladmin-view-cards .ladmin-products { grid-template-columns: 1fr; }
+  .ladmin-product-scroll.ladmin-view-cards .ladmin-product-image { aspect-ratio: 4 / 3; }
+}
+
+
+/* FIX: PRODUCT VIEW SCROLLING — override legacy 3-row dashboard rules */
+@media (min-width: 851px) {
+  .ladmin-layout { height: 100dvh; overflow: hidden; }
+  .ladmin-main { min-height: 0; height: 100dvh; overflow: hidden; }
+  .ladmin-main > .ladmin-panel { min-height: 0; flex: 1 1 0; overflow: hidden; }
+  .ladmin-product-scroll {
+    display: block;
+    flex: 1 1 0;
+    height: 0;
+    min-height: 0;
+    max-height: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
   }
-  .ladmin-product-toolbar-count {
-    display: none;
+  .ladmin-product-scroll > .ladmin-products {
+    display: grid;
+    flex: none;
+    height: max-content;
+    min-height: min-content;
+    grid-template-rows: none !important;
+    align-content: start;
   }
-  .ladmin-product-view-switch {
-    width: 100%;
+  .ladmin-product-scroll.ladmin-view-rows .ladmin-product,
+  .ladmin-product-scroll.ladmin-view-compact .ladmin-product {
+    flex-shrink: 0;
   }
-  .ladmin-product-view-switch button {
-    flex: 1;
-    padding: 8px 5px;
+}
+@media (max-width: 850px) {
+  .ladmin-product-scroll {
+    display: block;
+    height: min(62dvh, 650px);
+    min-height: 280px;
+    flex: none;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
   }
-  .ladmin-product-scroll.ladmin-view-cards .ladmin-products {
-    grid-template-columns: 1fr;
+  .ladmin-product-scroll > .ladmin-products {
+    grid-template-rows: none !important;
+    height: max-content;
   }
-  .ladmin-product-scroll.ladmin-view-cards .ladmin-product-image {
-    aspect-ratio: 4 / 3;
+}
+
+/* =============================================
+   PRODUCT MOUSE WHEEL + LENIS SCROLL ISOLATION
+   Scoped to admin products; storefront untouched.
+   ============================================= */
+.ladmin-panel:has(.ladmin-product-scroll) {
+  min-height: 0;
+}
+.ladmin-product-scroll {
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  scroll-behavior: auto;
+}
+@media (min-width: 851px) {
+  .ladmin-panel:has(.ladmin-product-scroll) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    overflow: hidden;
+  }
+  .ladmin-product-scroll {
+    display: block;
+    flex: 1 1 0;
+    height: 0;
+    max-height: none;
+  }
+}
+@media (max-width: 850px) {
+  .ladmin-product-scroll {
+    flex: none;
+    height: min(62dvh, 650px);
+    min-height: 280px;
   }
 }
