@@ -1,45 +1,78 @@
+/* =========================================
+   LUSTRIA NAVBAR
+   Complete responsive stylesheet
+   ========================================= */
+
 .navbar {
+  --nav-gold: #b89758;
+  --nav-bg: 253, 251, 247;
+
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: var(--nav-height, 92px);
+  padding: 0 3rem;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 3rem;
+
   z-index: 1000;
-  background: rgba(253, 251, 247, 0.62);
-  -webkit-backdrop-filter: blur(22px) saturate(165%);
-  backdrop-filter: blur(22px) saturate(165%);
+  background: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
   transition:
-    background 0.25s ease,
-    height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.35s ease,
     padding 0.35s ease;
+}
+
+/* Independent frosted layer */
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  background: rgba(var(--nav-bg), 0.65);
+
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+
+  pointer-events: none;
 }
 
 .navbar.is-scrolled {
   height: 64px;
   padding: 0 2.5rem;
-  background: rgba(253, 251, 247, 0.76);
-  -webkit-backdrop-filter: blur(26px) saturate(185%);
-  backdrop-filter: blur(26px) saturate(185%);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.035);
 }
+
+.navbar.is-scrolled::before {
+  background: rgba(var(--nav-bg), 0.74);
+
+  backdrop-filter: blur(26px) saturate(180%);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+}
+
+/* =========================================
+   BRAND
+   ========================================= */
 
 .nav-brand {
   position: relative;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+
   text-decoration: none;
   filter: invert(1);
-  flex-shrink: 0;
 }
 
 .nav-brand-logo {
-  height: 72px;
   width: auto;
+  height: 72px;
+  object-fit: contain;
   transition: height 0.35s ease;
 }
 
@@ -47,10 +80,15 @@
   height: 48px;
 }
 
+/* =========================================
+   MAIN NAVIGATION
+   ========================================= */
+
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2.2rem;
+
   margin: 0;
   padding: 0;
   list-style: none;
@@ -64,26 +102,38 @@
 }
 
 .nav-link {
-  font-size: 0.92rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: #333333;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  transition: color 0.25s ease;
+
+  color: #333333;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+
   cursor: pointer;
+  transition: color 0.25s ease;
 }
 
 .nav-link:hover {
-  color: var(--color-gold, #b89758);
+  color: var(--nav-gold);
+}
+
+/* =========================================
+   DESKTOP COLLECTION DROPDOWN
+   ========================================= */
+
+.desktop-collection-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .dropdown-chevron {
   width: 12px;
   height: 12px;
-  stroke: currentColor;
+
   transition: transform 0.25s ease;
 }
 
@@ -92,33 +142,49 @@
   transform: rotate(180deg);
 }
 
+/* Mobile collection row hidden on desktop */
+.mobile-collection-row,
+.mobile-collection-toggle {
+  display: none;
+}
+
+/* Dropdown base */
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 14px);
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
+
   min-width: 190px;
-  padding: 0.6rem;
   margin: 0;
+  padding: 0.6rem;
+
   list-style: none;
-  background: rgba(253, 251, 247, 0.62);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.85);
+
+  background: rgba(var(--nav-bg), 0.38);
+
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 14px;
+
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.02),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    0 2px 6px rgba(0, 0, 0, 0.02);
+
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+
+  transform: translateX(-50%) translateY(8px);
+
   transition:
-    opacity 0.2s ease,
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 0.2s ease;
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s ease;
 }
 
+/* Bridge between button and dropdown */
 .dropdown-menu::before {
   content: "";
   position: absolute;
@@ -128,12 +194,15 @@
   height: 18px;
 }
 
-.dropdown-item:hover .dropdown-menu,
-.dropdown-item:focus-within .dropdown-menu {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
+@media (min-width: 869px) {
+  .dropdown-item:hover .dropdown-menu,
+  .dropdown-item:focus-within .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .dropdown-menu li {
@@ -144,21 +213,29 @@
 .dropdown-link {
   display: block;
   padding: 0.65rem 1rem;
+
+  color: #222222;
   font-size: 0.88rem;
   font-weight: 500;
-  color: #222222;
   text-decoration: none;
+
   border-radius: 8px;
+
   transition:
-    background-color 0.2s ease,
     color 0.2s ease,
+    background 0.2s ease,
     transform 0.2s ease;
 }
 
 .dropdown-link:hover {
-  color: var(--color-gold, #b89758);
+  color: var(--nav-gold);
+  background: rgba(184, 151, 88, 0.08);
   transform: translateX(3px);
 }
+
+/* =========================================
+   NAVBAR ACTIONS
+   ========================================= */
 
 .nav-actions {
   display: flex;
@@ -167,15 +244,26 @@
 }
 
 .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 0.6rem 1.5rem;
+
+  background: #111111;
+  color: #ffffff;
+
   border-radius: 50px;
+
   font-size: 0.88rem;
   font-weight: 500;
-  background-color: #111111;
-  color: #ffffff;
   text-decoration: none;
   white-space: nowrap;
-  transition: all 0.25s ease;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .navbar.is-scrolled .nav-cta {
@@ -184,28 +272,42 @@
 }
 
 .nav-cta:hover {
-  background-color: var(--color-gold, #b89758);
+  background: var(--nav-gold);
   transform: translateY(-1px);
+
   box-shadow: 0 4px 14px rgba(184, 151, 88, 0.3);
 }
 
-.nav-menu-backdrop { display: none; }
+/* =========================================
+   MOBILE MENU BUTTON
+   ========================================= */
 
 .mobile-toggle {
   display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.4rem;
-  color: var(--color-text, #121212);
   align-items: center;
   justify-content: center;
+
+  padding: 0.4rem;
+
+  background: transparent;
+  border: none;
+  color: #121212;
+
+  cursor: pointer;
 }
 
 .mobile-toggle svg {
   width: 26px;
   height: 26px;
 }
+
+.nav-menu-backdrop {
+  display: none;
+}
+
+/* =========================================
+   TABLET
+   ========================================= */
 
 @media (max-width: 1024px) {
   .navbar {
@@ -221,6 +323,10 @@
   }
 }
 
+/* =========================================
+   MOBILE NAVBAR
+   ========================================= */
+
 @media (max-width: 868px) {
   .navbar {
     height: var(--nav-height-mobile, 68px);
@@ -232,12 +338,36 @@
     padding: 0 1.25rem;
   }
 
+  .navbar::before {
+    background: rgba(var(--nav-bg), 0.58);
+
+    backdrop-filter: blur(24px) saturate(175%);
+    -webkit-backdrop-filter: blur(24px) saturate(175%);
+  }
+
+  .navbar.is-scrolled::before {
+    background: rgba(var(--nav-bg), 0.68);
+  }
+
+  /* Logo */
+
+  .nav-brand {
+    z-index: 3;
+  }
+
   .nav-brand-logo {
     height: 48px;
   }
 
   .navbar.is-scrolled .nav-brand-logo {
     height: 40px;
+  }
+
+  /* Right actions */
+
+  .nav-actions {
+    position: relative;
+    z-index: 3;
   }
 
   .mobile-toggle {
@@ -249,27 +379,75 @@
     font-size: 0.8rem;
   }
 
-  .nav-links {
+  /* =====================================
+     MOBILE MENU BACKDROP
+     ===================================== */
+
+  .nav-menu-backdrop {
+    display: none;
     position: fixed;
+
+    inset: var(--nav-height-mobile, 68px) 0 0;
+    z-index: 0;
+
+    background: rgba(17, 14, 11, 0.28);
+
+    border: none;
+    padding: 0;
+
+    cursor: pointer;
+  }
+
+  .navbar.is-scrolled .nav-menu-backdrop {
+    top: 58px;
+  }
+
+  .nav-menu-backdrop.is-open {
+    display: block;
+  }
+
+  /* =====================================
+     MOBILE NAVIGATION PANEL
+     ===================================== */
+
+  .nav-links,
+  .navbar.is-scrolled .nav-links {
+    display: none;
+    visibility: hidden;
+    pointer-events: none;
+
+    position: fixed;
+
     top: var(--nav-height-mobile, 68px);
     left: 0;
     right: 0;
+
+    width: 100%;
     max-height: calc(100dvh - var(--nav-height-mobile, 68px));
+
     overflow-y: auto;
-    background: rgba(253, 251, 247, 0.75);
-    backdrop-filter: blur(22px) saturate(170%);
-    -webkit-backdrop-filter: blur(22px) saturate(170%);
-    border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1.5rem 2rem 2.5rem;
-    gap: 1.25rem;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(-10px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.06);
+    align-items: stretch;
+    gap: 0.7rem;
+
+    margin: 0;
+    padding: 1.25rem 1.75rem 2rem;
+
+    list-style: none;
+
+    background: rgba(var(--nav-bg), 0.58);
+
+    backdrop-filter: blur(25px) saturate(170%);
+    -webkit-backdrop-filter: blur(25px) saturate(170%);
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.06);
+
+    z-index: 2;
   }
 
   .navbar.is-scrolled .nav-links {
@@ -277,54 +455,242 @@
     max-height: calc(100dvh - 58px);
   }
 
-  .nav-links.is-open {
-    opacity: 1;
+  /* Open mobile menu */
+
+  .nav-links.is-open,
+  .navbar.is-scrolled .nav-links.is-open {
+    display: flex;
     visibility: visible;
     pointer-events: auto;
-    transform: translateY(0);
+
+    animation: mobileNavOpen 0.25s ease both;
   }
 
+  /* Navigation items */
+
   .nav-item {
-    width: 100%;
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+
+    width: 100%;
     padding: 0;
   }
 
   .nav-link {
-    font-size: 1.1rem;
-    width: 100%;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-  }
-
-  .dropdown-menu {
-    position: static;
-    transform: none !important;
-    width: 100%;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0.25rem 0 0.5rem 1rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    width: 100%;
+    min-height: 44px;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0.5rem 0;
+
+    font-size: 1.1rem;
   }
 
-  .dropdown-menu::before,
-  .dropdown-chevron {
+  /* =====================================
+     MOBILE COLLECTION LINK + ARROW
+     ===================================== */
+
+  .dropdown-item > .desktop-collection-link {
     display: none;
   }
 
+  .mobile-collection-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* Collection text acts as a link */
+
+  .mobile-collection-link {
+    display: flex;
+    align-items: center;
+
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+
+    color: #333333;
+
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+  }
+
+  .mobile-collection-link:hover,
+  .mobile-collection-link:active {
+    color: var(--nav-gold);
+  }
+
+  /* Arrow acts as a separate button */
+
+  .mobile-collection-row .mobile-collection-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+
+    margin: 0;
+    padding: 0;
+
+    background: transparent;
+    color: #333333;
+
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .mobile-collection-toggle:hover {
+    background: rgba(184, 151, 88, 0.1);
+  }
+
+  .mobile-collection-toggle.is-active {
+    color: var(--nav-gold);
+    background: rgba(184, 151, 88, 0.08);
+  }
+
+  /* Chevron animation */
+
+  .mobile-collection-chevron {
+    width: 18px;
+    height: 18px;
+
+    transition: transform 0.25s ease;
+  }
+
+  .mobile-collection-open .mobile-collection-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* =====================================
+     MOBILE DROPDOWN CLOSED
+     NO INVISIBLE HITBOXES
+     ===================================== */
+
+  .dropdown-item .dropdown-menu,
+  .dropdown-item:hover .dropdown-menu,
+  .dropdown-item:focus-within .dropdown-menu {
+    display: none;
+
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    height: 0;
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    transform: none;
+  }
+
+  .dropdown-menu::before {
+    display: none;
+  }
+
+  /* =====================================
+     MOBILE DROPDOWN OPEN
+     ===================================== */
+
+  .dropdown-item.mobile-collection-open .dropdown-menu,
+  .dropdown-item.mobile-collection-open:hover .dropdown-menu,
+  .dropdown-item.mobile-collection-open:focus-within .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    position: static;
+
+    width: 100%;
+    height: auto;
+    min-width: 0;
+
+    margin-top: 0.45rem;
+    padding: 0.5rem 0.75rem;
+
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+
+    background: rgba(var(--nav-bg), 0.28);
+
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 12px;
+
+    box-shadow: none;
+
+    transform: none;
+
+    animation: mobileDropdownOpen 0.25s ease both;
+  }
+
+  /* Dropdown category links */
+
   .dropdown-link {
+    display: block;
+
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+
+    color: #555555;
     font-size: 0.95rem;
-    color: var(--color-muted, #5a5752);
-    padding: 0.4rem 0;
+    font-weight: 500;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    transition:
+      color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .dropdown-link:hover {
+    color: var(--nav-gold);
+    background: rgba(184, 151, 88, 0.09);
+
+    transform: none;
+  }
+
+  /* Fully disable links in closed mobile menu */
+
+  .nav-links:not(.is-open),
+  .nav-links:not(.is-open) .dropdown-menu {
+    display: none !important;
+    pointer-events: none !important;
   }
 }
+
+/* =========================================
+   SMALL PHONES
+   ========================================= */
 
 @media (max-width: 380px) {
   .navbar,
@@ -353,88 +719,68 @@
     padding: 1.25rem 1.25rem 2rem;
   }
 }
-/* The actual fixed header owns the backdrop filter, not an opaque pseudo layer. */
-@media (max-width: 868px) {
-  .navbar {
-    background: rgba(253, 251, 247, 0.66);
-    -webkit-backdrop-filter: blur(24px) saturate(170%);
-    backdrop-filter: blur(24px) saturate(170%);
-  }
-  .navbar.is-scrolled {
-    background: rgba(253, 251, 247, 0.74);
-    -webkit-backdrop-filter: blur(26px) saturate(175%);
-    backdrop-filter: blur(26px) saturate(175%);
-  }
-}
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .navbar, .navbar.is-scrolled, .dropdown-menu, .nav-links {
-    background-color: rgba(253, 251, 247, 0.96);
-  }
-}
+/* =========================================
+   ANIMATIONS
+   ========================================= */
 
-@media (max-width: 868px) {
-  .nav-brand, .nav-actions { z-index: 2; }
-  .nav-links { z-index: 1; }
-  .nav-menu-backdrop {
-    display: block;
-    position: fixed;
-    inset: var(--nav-height-mobile, 68px) 0 0;
-    z-index: 0;
-    border: 0;
-    background: rgba(17, 14, 11, 0.32);
+@keyframes mobileNavOpen {
+  from {
     opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity .25s ease, visibility .25s ease;
+    transform: translateY(-8px);
   }
-  .navbar.is-scrolled .nav-menu-backdrop { top: 58px; }
-  .nav-menu-backdrop.is-open {
+
+  to {
     opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    transform: translateY(0);
   }
+}
+
+@keyframes mobileDropdownOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   ACCESSIBILITY
+   ========================================= */
+
+.navbar a:focus-visible,
+.navbar button:focus-visible {
+  outline: 2px solid var(--nav-gold);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-links, .nav-menu-backdrop { transition: none !important; }
+  .navbar *,
+  .navbar *::before,
+  .navbar *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-/* Frosted dropdown fix: backdrop-filter on a parent creates a backdrop root,
-   preventing a nested dropdown from blurring the page underneath. */
-.navbar,
-.navbar.is-scrolled {
-  background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  isolation: auto;
-}
-.navbar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: rgba(253, 251, 247, 0.70);
-  -webkit-backdrop-filter: blur(22px) saturate(165%);
-  backdrop-filter: blur(22px) saturate(165%);
-}
-.navbar.is-scrolled::before {
-  background: rgba(253, 251, 247, 0.77);
-  -webkit-backdrop-filter: blur(26px) saturate(185%);
-  backdrop-filter: blur(26px) saturate(185%);
-}
-.dropdown-menu {
-  background: rgba(253, 251, 247, 0.38);
-  -webkit-backdrop-filter: blur(28px) saturate(170%);
-  backdrop-filter: blur(28px) saturate(170%);
-}
-@media (max-width: 868px) {
-  .navbar, .navbar.is-scrolled { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .navbar::before { background: rgba(253,251,247,0.68); }
-  .dropdown-menu { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .navbar::before, .navbar.is-scrolled::before { background: rgba(253,251,247,0.96); }
-  .dropdown-menu { background: rgba(253,251,247,0.96); }
+/* =========================================
+   BLUR FALLBACK
+   ========================================= */
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .navbar::before,
+  .navbar.is-scrolled::before {
+    background: rgba(253, 251, 247, 0.96);
+  }
+
+  .dropdown-menu,
+  .nav-links.is-open {
+    background: rgba(253, 251, 247, 0.96);
+  }
 }
