@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
+import useScrollReveal from '../hooks/useScrollReveal'
 import '../styles/Collection.css'
 
 const initialProducts = [
@@ -144,6 +145,8 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
       })
   }, [selectedCategory, selectedGemstone, sortBy])
 
+  useScrollReveal(filteredProducts)
+
   const resetFilters = () => {
     handleCategorySelect('All')
     setSelectedGemstone('All')
@@ -154,14 +157,14 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
 
   return (
     <section className="shop-section">
-      <header className="shop-header">
+      <header className="shop-header reveal-on-scroll">
         <h1 className="shop-heading">The Entire Collection</h1>
         <p className="shop-sub">
           Handcrafted solid 925 sterling silver jewelry set with authentic natural Ceylon gems.
         </p>
       </header>
 
-      <div className="shop-controls-bar">
+      <div className="shop-controls-bar reveal-on-scroll">
         <button
           type="button"
           className="btn-filter-mobile"
@@ -231,7 +234,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
       </div>
 
       <div className="shop-layout">
-        <aside className={`shop-sidebar ${mobileFilterOpen ? 'is-open' : ''}`}>
+        <aside className={`shop-sidebar reveal-on-scroll ${mobileFilterOpen ? 'is-open' : ''}`}>
           <div className="shop-sidebar-header">
             <h3>Filters</h3>
             <button
@@ -285,7 +288,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
 
         <main className="shop-grid-area">
           {filteredProducts.length === 0 ? (
-            <div className="shop-empty">
+            <div className="shop-empty reveal-on-scroll">
               <p className="shop-empty-text">No creations match the selected filters.</p>
               <button type="button" className="btn-primary" onClick={resetFilters}>
                 Clear All Filters
@@ -294,7 +297,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange }) 
           ) : (
             <div className="shop-grid">
               {filteredProducts.map((piece) => (
-                <article key={piece.id} className="signature-card">
+                <article key={piece.id} className="signature-card reveal-on-scroll">
                   <div className="signature-image-box">
                     <img src={piece.image} alt={piece.title} loading="lazy" />
                   </div>

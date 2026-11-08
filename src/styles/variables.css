@@ -86,3 +86,30 @@ html.lenis body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a8883d;
 }
+
+/* Scroll Reveal & Progressive Blur Transitions */
+.reveal-on-scroll {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(32px) scale(0.99);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, filter, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

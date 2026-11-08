@@ -2,40 +2,67 @@ import OurWork from '../components/OurWork'
 import SignatureCreations from '../components/SignatureCreations'
 import Benefits from '../components/Benefits'
 import Reviews from '../components/Reviews'
+import useScrollReveal from '../hooks/useScrollReveal'
 import '../styles/Home.css'
 
-export default function Home() {
+export default function Home({ onExplore }) {
+  useScrollReveal()
+
   return (
     <>
       <section className="hero-minimal">
-        <div className="hero-content">
+        <div className="hero-content reveal-on-scroll">
           <h1 className="hero-brand-name">Lustria Gem &amp; Jewellery</h1>
           <p className="hero-script-tagline">A gem for everyone</p>
           <p className="hero-subtext">
             Authentic natural gemstones, handcrafted in solid sterling silver.
           </p>
           <div className="hero-actions">
-            <a href="#collection" className="btn-primary">
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={onExplore}
+            >
               Explore Collection
-            </a>
-            <a href="#custom" className="btn-outline">
+            </button>
+            <a href="#contact" className="btn-outline">
               Custom Order
             </a>
           </div>
         </div>
       </section>
 
-      <span className="ceperate" aria-hidden="true" />
-      <OurWork />
+      <div className="reveal-on-scroll">
+        <span className="ceperate" aria-hidden="true" />
+      </div>
 
-      <span className="ceperate" aria-hidden="true" />
-      <SignatureCreations />
+      <div className="reveal-on-scroll">
+        <OurWork />
+      </div>
 
-      <span className="ceperate" aria-hidden="true" />
-      <Benefits />
+      <div className="reveal-on-scroll">
+        <span className="ceperate" aria-hidden="true" />
+      </div>
 
-      <span className="ceperate" aria-hidden="true" />
-      <Reviews />
+      <div className="reveal-on-scroll">
+        <SignatureCreations />
+      </div>
+
+      <div className="reveal-on-scroll">
+        <span className="ceperate" aria-hidden="true" />
+      </div>
+
+      <div className="reveal-on-scroll">
+        <Benefits />
+      </div>
+
+      <div className="reveal-on-scroll">
+        <span className="ceperate" aria-hidden="true" />
+      </div>
+
+      <div className="reveal-on-scroll">
+        <Reviews />
+      </div>
     </>
   )
 }
