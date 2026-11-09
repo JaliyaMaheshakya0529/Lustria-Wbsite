@@ -1,4 +1,6 @@
 import '../styles/SignatureCreations.css'
+import '../styles/ProductCode.css'
+import { productCode } from '../utils/productCodes'
 
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -11,6 +13,7 @@ export default function SignatureCreations({ onExplore, onProductSelect }) {
     .slice(0, 4)
     .map((product) => ({
       id: product._id,
+      productNo: product.productNo,
       title: product.name,
       metal: product.metal,
       price: `LKR ${product.price.toLocaleString('en-LK')}`,
@@ -35,11 +38,11 @@ export default function SignatureCreations({ onExplore, onProductSelect }) {
               role="link"
               tabIndex={0}
               aria-label={`View details for ${piece.title}`}
-              onClick={() => onProductSelect?.(piece.id)}
+              onClick={() => onProductSelect?.(piece)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
-                  onProductSelect?.(piece.id)
+                  onProductSelect?.(piece)
                 }
               }}
             >
@@ -49,6 +52,7 @@ export default function SignatureCreations({ onExplore, onProductSelect }) {
 
               <div className="signature-info">
                 <span className="signature-metal">{piece.metal}</span>
+                {productCode(piece.productNo) && <span className="lustria-product-code">{productCode(piece.productNo)}</span>}
                 <h3 className="signature-title">{piece.title}</h3>
                 <span className="signature-price">{piece.price}</span>
               </div>

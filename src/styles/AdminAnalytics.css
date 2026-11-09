@@ -1,0 +1,104 @@
+/* Lustria Analytics v2. Scoped so public styling and product upload UI stay intact. */
+.ladmin-layout .ladmin-analytics.la2 {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  gap: 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 8px 7px 24px 0;
+  scrollbar-width: thin;
+}
+.ladmin-layout .la2 h2,.ladmin-layout .la2 h3 { line-height: 1.25; }
+.la2-topline,.la2-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.la2-topline h2 { font-size:18px; font-weight:650; }
+.la2-topline p,.la2-panel-head p { margin-top:5px !important; font-size:12px; color:#827d73 !important; }
+.la2-live { display:inline-flex; align-items:center; gap:7px; flex-shrink:0; font-size:11px; font-weight:500; color:#4d7255; background:#eaf3eb; border:1px solid #dcebe0; border-radius:30px; padding:8px 12px; }
+.la2-live-dot { width:7px; height:7px; border-radius:50%; background:#5a9f70; }
+.la2-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.la2-stat,.la2-panel { background:#fff; border:1px solid #e8e4dc; border-radius:14px; }
+.la2-stat { padding:21px 23px; display:flex; flex-direction:column; gap:7px; min-width:0; }
+.la2-stat-label { color:#817b70; font-size:12px; font-weight:500; }
+.la2-stat strong { font-family:"DM Sans",sans-serif; font-size:clamp(28px,2.5vw,38px); font-weight:600; line-height:1.18; letter-spacing:-.06em; color:#292722; font-variant-numeric:tabular-nums; }
+.la2-stat small { color:#928b80; font-size:11px; }
+.la2-panel { padding:25px 27px; min-width:0; }
+.la2-panel-head h3 { font-size:17px; font-weight:600; color:#292722; }
+.la2-toggle { display:inline-flex; border:1px solid #e7e2d9; border-radius:9px; background:#f9f8f5; padding:3px; gap:3px; flex-shrink:0; }
+.la2-toggle button,.la2-tabs button,.la2-period button { font-size:12px; font-weight:600; border:0; background:transparent; color:#80786d; border-radius:6px; padding:8px 12px; transition:background .15s,color .15s; }
+.la2-toggle button.selected,.la2-tabs button.selected,.la2-period button.selected { background:#fff; color:#8b6f43; box-shadow:0 1px 5px #1b170b12; }
+.la2 button:focus-visible,.la2 input:focus-visible,.la2 select:focus-visible,.la2 a:focus-visible { outline:2px solid #b08d48; outline-offset:2px; }
+.la2-trend-summary { display:flex; flex-wrap:wrap; gap:24px; align-items:center; color:#837a70; font-size:12px; margin:24px 0 13px; }
+.la2-trend-summary strong { font-size:14px; font-weight:650; color:#39352e; }
+.la2-chart { display:flex; height:200px; gap:7px; align-items:stretch; position:relative; padding:8px 0 0; background:repeating-linear-gradient(to top, #f0ece5 0px, #f0ece5 1px, transparent 1px,transparent 48px); border-bottom:1px solid #ddd6ca; }
+.la2-chart-col { position:relative; flex:1; min-width:0; display:flex; align-items:center; justify-content:end; flex-direction:column; gap:10px; height:100%; z-index:1; }
+.la2-chart-bar { display:block; width:100%; max-width:35px; min-height:2px; background:linear-gradient(180deg, #c5a56d 0%, #ad884c 100%); border-radius:5px 5px 0 0; transition:background .15s; }
+.la2-chart-col:hover .la2-chart-bar { background:#8e713f; }
+.la2-chart-col > span { position:absolute; bottom:-26px; left:0; right:0; text-align:center; color:#978f82; font-size:11px; }
+.la2-trend:has(.la2-chart-col > span) .la2-chart { margin-bottom:32px; }
+.la2-chart-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2; color:#928a80; font-size:12px; pointer-events:none; }
+.la2-axis { display:flex; justify-content:space-between; font-size:11px; color:#948c80; margin-top:12px; }
+.la2-pages-heading { margin-bottom:22px; }
+.la2-export { padding:10px 15px; font-size:12px; font-weight:600; border:1px solid #e4ddcf; border-radius:8px; background:#fff; color:#735d3c; white-space:nowrap; }
+.la2-export:hover:not(:disabled) { background:#faf6ef; }
+.la2-controls,.la2-table-toolbar { display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.la2-controls { margin-bottom:14px; }
+.la2-tabs { display:flex; padding:3px; gap:2px; border:1px solid #ece7df; border-radius:9px; background:#f8f6f2; }
+.la2-tabs button { white-space:nowrap; }
+.la2-search { display:flex; align-items:center; gap:8px; min-width:220px; flex:0 1 305px; padding:9px 12px; border:1px solid #e8e3db; border-radius:9px; color:#9a9285; background:#fff; }
+.la2-search:focus-within { border-color:#b08d48; }
+.la2-search input { border:none; background:transparent; color:#292722; font-size:12px; flex:1; min-width:0; outline:0 !important; }
+.la2-search input::placeholder { color:#9d9487; }
+.la2-table-toolbar { border-top:1px solid #eee9e1; padding:15px 0; }
+.la2-period { display:flex; align-items:center; gap:4px; }
+.la2-period button.selected { background:#f5efe4; box-shadow:none; }
+.la2-sort { display:flex; gap:9px; align-items:center; font-size:12px; color:#827d73; }
+.la2-sort select { border:1px solid #e6e0d7; padding:9px 10px; border-radius:8px; background:#fff; font-size:12px; color:#39352e; }
+.la2-table-wrap { max-width:100%; overflow-x:auto; }
+.la2-table { border-collapse:collapse; width:100%; min-width:550px; font-size:12px; }
+.la2-table thead { background:#faf9f6; }
+.la2-table th { padding:13px 14px; font-size:11px; color:#8d8578; text-align:right; font-weight:600; white-space:nowrap; border-top:1px solid #eee9e1; border-bottom:1px solid #eee9e1; }
+.la2-table th:first-child { text-align:left; width:64%; }
+.la2-table td { border-bottom:1px solid #f2eee8; text-align:right; padding:14px; color:#5e5548; font-variant-numeric:tabular-nums; }
+.la2-table td:first-child { text-align:left; }
+.la2-table td.is-selected { font-weight:700; color:#8c6f42; }
+.la2-table tbody tr:hover { background:#fdfbf7; }
+.la2-page-name { display:flex; align-items:center; gap:13px; min-width:0; }
+.la2-page-name > div { flex:1; min-width:0; }
+.la2-page-type { display:grid; place-items:center; width:33px; height:33px; flex:0 0 33px; border-radius:9px; color:#9f8150; background:#f7f1e7; border:1px solid #eee2d0; font-size:20px; }
+.la2-page-name a { display:block; font-weight:600; color:#302d28; text-decoration:none; overflow-wrap:anywhere; }
+.la2-page-name a:hover { color:#9b7843; text-decoration:underline; }
+.la2-page-name small { display:block; font-size:10px; color:#938b7e; margin-top:4px; overflow-wrap:anywhere; }
+.la2-share { background:#f3efe8; height:4px; margin-top:8px; max-width:270px; border-radius:3px; overflow:hidden; }
+.la2-share span { display:block; height:100%; background:#b49257; border-radius:3px; }
+.la2-empty { text-align:center !important; padding:32px 10px !important; color:#91897e !important; }
+.la2-table-footer { color:#9a9186; font-size:11px; padding-top:15px; }
+.la2-note { color:#8d867b !important; font-size:11px; line-height:1.7; padding:0 3px 12px; }
+.la2-loading { color:#827d73; font-size:13px; }
+.la2-sr-only { position:absolute; height:1px; width:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+@media (max-width:1100px) { .la2-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:850px) {
+  .ladmin-layout .ladmin-analytics.la2 { overflow:visible; flex:auto; padding:5px 0 22px; }
+  .la2-panel { padding:20px; }
+  .la2-chart { gap:4px; height:160px; }
+}
+@media (max-width:560px) {
+  .la2-stats { gap:9px; }
+  .la2-stat { padding:16px 13px; }
+  .la2-stat strong { font-size:29px; }
+  .la2-panel { padding:17px 14px; }
+  .la2-topline { flex-wrap:wrap; }
+  .la2-topline h2 { font-size:17px; }
+  .la2-controls { align-items:stretch; flex-direction:column; }
+  .la2-tabs { width:100%; }
+  .la2-tabs button { flex:1; padding:9px 5px; font-size:11px; }
+  .la2-search { min-width:0; flex:auto; width:100%; }
+  .la2-table-toolbar { align-items:stretch; }
+  .la2-period { justify-content:space-between; }
+  .la2-period button { flex:1; }
+  .la2-sort { justify-content:space-between; }
+}
+@media (prefers-reduced-motion:reduce) { .la2-chart-bar { transition:none; } }

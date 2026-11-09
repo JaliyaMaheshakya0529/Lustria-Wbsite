@@ -1,0 +1,82 @@
+/* Scoped 404 design: matches the website's light ivory, serif headline, gold
+   accent and pill buttons. No changes to other pages, nav or footer. */
+.l404 {
+  background: var(--color-bg, #fdfbf7);
+  color: var(--color-text, #121212);
+  min-height: max(700px, calc(100svh - 110px));
+  width: 100%;
+  padding: calc(var(--nav-height, 92px) + 3.5rem) 22px 7rem;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.l404 * { box-sizing: border-box; }
+.l404-inner { width: min(100%, 740px); margin: 0 auto; }
+.l404-art {
+  display: flex; align-items: center; justify-content: center;
+  gap: 26px; color: var(--color-gold, #b08d48);
+  margin-bottom: 14px;
+}
+.l404-trace { width: clamp(36px, 10vw, 110px); height: 1px; background: #ded4c1; }
+.l404-gem { width: 72px; height: 64px; stroke: currentColor; stroke-width: 1.7; }
+.l404-number {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(112px, 23vw, 190px);
+  font-weight: 400;
+  line-height: .8;
+  letter-spacing: -.065em;
+  color: #25241f;
+  margin: 14px auto 20px;
+}
+.l404-script {
+  font-family: var(--font-script, 'Alex Brush', cursive);
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--color-gold, #b08d48);
+  margin: 0 0 18px;
+}
+.l404 h1 {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(31px, 5vw, 50px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  margin: 0 0 16px;
+}
+.l404-description {
+  color: var(--color-muted, #5a5752);
+  font-family: var(--font-main, system-ui, sans-serif);
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 470px;
+  margin: 0 auto 34px;
+}
+.l404-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+.l404-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 13px 28px;
+  border-radius: 999px;
+  font-family: var(--font-main, system-ui, sans-serif);
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .075em; text-decoration: none;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease, color .2s ease;
+}
+.l404-btn:hover { transform: translateY(-2px); }
+.l404-btn:focus-visible { outline: 2px solid var(--color-gold, #b08d48); outline-offset: 4px; }
+.l404-btn--primary { background: #121212; color: #fff; border: 1px solid #121212; }
+.l404-btn--primary:hover { background: var(--color-gold, #b08d48); border-color: var(--color-gold, #b08d48); color: #fff; }
+.l404-btn--secondary { background: transparent; color: #121212; border: 1px solid rgba(18,18,18,.25); }
+.l404-btn--secondary:hover { border-color: var(--color-gold, #b08d48); color: var(--color-gold, #b08d48); }
+@media (max-width: 640px) {
+  .l404 { min-height: calc(100svh - 70px); padding: calc(var(--nav-height-mobile, 68px) + 3rem) 18px 4rem; }
+  .l404-gem { width: 56px; height: 50px; }
+  .l404-art { gap: 18px; }
+  .l404-number { margin: 14px auto 20px; }
+  .l404-description { font-size: 14px; }
+  .l404-actions { align-items: stretch; flex-direction: column; width: min(100%, 285px); margin: auto; }
+  .l404-btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l404-btn { transition: none; }
+}

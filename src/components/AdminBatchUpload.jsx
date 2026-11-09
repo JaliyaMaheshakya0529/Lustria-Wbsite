@@ -3,6 +3,7 @@ import '../styles/AdminBatchUpload.css';
 
 const CATEGORIES = ['Rings', 'Earrings', 'Necklaces', 'Bracelets', 'Gemstones'];
 const GEMSTONES = ['Blue Sapphire', 'Yellow Sapphire', 'Pink Sapphire', 'White Sapphire', 'Padparadscha', 'Blue Topaz', 'White Topaz', 'Amethyst', 'Garnet', 'Citrine', 'Peridot', 'Tourmaline', "Cat's Eye", 'Pearl', 'Black Coral', 'Nawarathna', 'Other'];
+const METALS = ['925 Sterling Silver', 'Pure Sterling Silver', 'Gold-Plated Sterling Silver', 'Loose Natural Gemstone'];
 const MAX_FILES = 50;
 const MAX_BYTES = 5 * 1024 * 1024;
 const ACCEPTED = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -193,7 +194,7 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
                       <div className="lbatch-bulk-grid">
                         <BulkField field="category" title="Category" checked={applyFields.includes('category')} onToggle={toggleField}><select value={bulk.category} onChange={(e) => setBulk({ ...bulk, category: e.target.value })}>{CATEGORIES.map((v) => <option key={v}>{v}</option>)}</select></BulkField>
                         <BulkField field="gemstone" title="Gemstone" checked={applyFields.includes('gemstone')} onToggle={toggleField}><select value={bulk.gemstone} onChange={(e) => setBulk({ ...bulk, gemstone: e.target.value })}>{GEMSTONES.map((v) => <option key={v}>{v}</option>)}</select></BulkField>
-                        <BulkField field="metal" title="Metal" checked={applyFields.includes('metal')} onToggle={toggleField}><input value={bulk.metal} onChange={(e) => setBulk({ ...bulk, metal: e.target.value })} /></BulkField>
+                        <BulkField field="metal" title="Metal" checked={applyFields.includes('metal')} onToggle={toggleField}><select value={bulk.metal} onChange={(e) => setBulk({ ...bulk, metal: e.target.value })}>{METALS.map((v) => <option key={v} value={v}>{v}</option>)}</select></BulkField>
                         <BulkField field="price" title="Price (LKR)" checked={applyFields.includes('price')} onToggle={toggleField}><input type="number" min="0" step="0.01" placeholder="Price for selected items" value={bulk.price} onChange={(e) => setBulk({ ...bulk, price: e.target.value })} /></BulkField>
                         <BulkField field="description" title="Description" checked={applyFields.includes('description')} onToggle={toggleField} wide><textarea rows={2} value={bulk.description} placeholder="Common product description" onChange={(e) => setBulk({ ...bulk, description: e.target.value })} /></BulkField>
                         <BulkField field="available" title="Availability" checked={applyFields.includes('available')} onToggle={toggleField}><select value={String(bulk.available)} onChange={(e) => setBulk({ ...bulk, available: e.target.value === 'true' })}><option value="true">Available</option><option value="false">Unavailable</option></select></BulkField>
@@ -231,7 +232,7 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
                             <label>Price (LKR) <input type="number" min="0" step="0.01" className={active.price === '' || !Number.isFinite(Number(active.price)) || Number(active.price) < 0 ? 'is-invalid' : ''} value={active.price} placeholder="Required" onChange={(e) => update(active.id, { price: e.target.value })} /></label>
                             <label>Category <select value={active.category} onChange={(e) => update(active.id, { category: e.target.value })}>{CATEGORIES.map((v) => <option key={v}>{v}</option>)}</select></label>
                             <label>Gemstone <select value={active.gemstone} onChange={(e) => update(active.id, { gemstone: e.target.value })}>{GEMSTONES.map((v) => <option key={v}>{v}</option>)}</select></label>
-                            <label>Metal <input value={active.metal} onChange={(e) => update(active.id, { metal: e.target.value })} /></label>
+                            <label>Metal <select value={active.metal} onChange={(e) => update(active.id, { metal: e.target.value })}>{METALS.map((v) => <option key={v} value={v}>{v}</option>)}</select></label>
                             <label className="lbatch-full">Description <textarea rows={3} value={active.description} onChange={(e) => update(active.id, { description: e.target.value })} placeholder="Materials, gemstone, design and other useful product details…" /></label>
                           </div>
                           <div className="lbatch-flags"><label><input type="checkbox" checked={active.available} onChange={(e) => update(active.id, { available: e.target.checked })} /> Available</label><label><input type="checkbox" checked={active.featured} disabled={!active.featured && featuredCount >= featuredSlots} onChange={(e) => update(active.id, { featured: e.target.checked })} /> Featured <small>({featuredCount}/{featuredSlots} slots)</small></label></div>

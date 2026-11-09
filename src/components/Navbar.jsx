@@ -110,8 +110,8 @@ export default function Navbar({ onNavigate }) {
           )}
         </div>
 
-        <a href="/#work" className="mobile-nav-link"
-          onClick={(e) => go(e, '/', null, 'work')}>About</a>
+        <a href="/about" className="mobile-nav-link"
+          onClick={(e) => go(e, '/about')}>About</a>
       </nav>
     </div>,
     document.body
@@ -147,8 +147,8 @@ export default function Navbar({ onNavigate }) {
               </ul>
             </li>
             <li className="nav-item">
-              <a href="/#work" className="nav-link"
-                onClick={(e) => go(e, '/', null, 'work')}>About</a>
+              <a href="/about" className="nav-link"
+                onClick={(e) => go(e, '/about')}>About</a>
             </li>
           </ul>
         </nav>

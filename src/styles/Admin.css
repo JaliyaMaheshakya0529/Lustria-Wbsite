@@ -1414,3 +1414,25 @@
 .ladmin-header-actions .ladmin-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 17px; border: 1px solid #ded8cc; border-radius: 8px; background: #fff; color: #4b463e; font-size: 12px; font-weight: 600; }
 .ladmin-header-actions .ladmin-secondary:hover { background: #f7f4ee; }
 @media (max-width: 520px) { .ladmin-header-actions { width: 100%; } .ladmin-header-actions button { flex: 1; } }
+
+/* Per-page analytics: scoped to the existing admin design */
+.ladmin-breakdown-label { margin:18px 0 10px; font-size:12px; font-weight:600; color:#39352f; }
+.ladmin-breakdown-table-wrap { width:100%; overflow-x:auto; }
+.ladmin-breakdown-table { width:100%; border-collapse:collapse; font-size:12px; min-width:350px; }
+.ladmin-breakdown-table th { text-align:right; white-space:nowrap; font-size:11px; font-weight:500; color:#827d73; padding:10px 6px; border-bottom:1px solid #e8e4dc; }
+.ladmin-breakdown-table th:first-child { text-align:left; }
+.ladmin-breakdown-table td { padding:12px 6px; text-align:right; border-bottom:1px solid #f1eee8; font-variant-numeric:tabular-nums; color:#544e46; }
+.ladmin-breakdown-table td:first-child { text-align:left; max-width:220px; overflow-wrap:anywhere; }
+.ladmin-breakdown-table td strong { font-weight:600; color:#292722; }
+.ladmin-breakdown-table td small { display:block; font-size:10px; color:#938c80; margin-top:4px; }
+.ladmin-product-breakdown-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; }
+.ladmin-product-breakdown-head input { min-width:0; width:165px; max-width:55%; border:1px solid #e8e4dc; border-radius:8px; padding:9px 11px; background:white; font:inherit; font-size:12px; color:#292722; }
+.ladmin-product-breakdown-head input:focus { outline:2px solid #b89758; outline-offset:1px; }
+.ladmin-product-table-wrap { max-height:340px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; }
+@media(max-width:480px) { .ladmin-product-breakdown-head { align-items:stretch; flex-direction:column; } .ladmin-product-breakdown-head input { width:100%; max-width:none; } }
+
+/* Permanent item ID in the existing Products list — no layout redesign. */
+.ladmin-product-info .ladmin-product-id {
+  display: block; color: #9c845c; font-size: 10px; font-weight: 600;
+  letter-spacing: .07em; margin: 3px 0 5px;
+}

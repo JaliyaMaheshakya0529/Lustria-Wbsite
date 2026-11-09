@@ -5,6 +5,8 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
 import "../styles/Admin.css";
 import AdminBatchUpload from "../components/AdminBatchUpload";
+import { productCode } from "../utils/productCodes";
+import AdminAnalyticsPanel from "../components/AdminAnalyticsPanel";
 
 const CATEGORIES = [
   "Rings",
@@ -370,7 +372,7 @@ class AnalyticsErrorBoundary extends React.Component {
           <div className="ladmin-analytics-intro">
             <div>
               <h2>Site Analytics</h2>
-              <p>First-party page views · Last 30 days · UTC</p>
+              <p>First-party page views · Last 30 days · Sri Lanka time</p>
             </div>
           </div>
           <div className="ladmin-analytics-placeholder">
@@ -389,82 +391,6 @@ class AnalyticsErrorBoundary extends React.Component {
     }
     return this.props.children;
   }
-}
-
-function AnalyticsPanel() {
-  const analytics = useQuery(api.analytics.overview, {});
-  const chartMax = Math.max(1, ...(analytics?.daily || []).map((day) => day.views));
-  const topPageMax = Math.max(1, ...(analytics?.pages || []).map((item) => item.views));
-
-  return (
-    <section className="ladmin-analytics" aria-label="Website analytics">
-            <div className="ladmin-analytics-intro">
-              <div>
-                <h2>Site Analytics</h2>
-                <p>First-party page views · Last 30 days · UTC</p>
-              </div>
-              <span className="ladmin-analytics-live">Live from Convex</span>
-            </div>
-            {analytics === undefined ? (
-              <div className="ladmin-analytics-placeholder">Loading website analytics…</div>
-            ) : (
-              <>
-                <div className="ladmin-analytics-kpis">
-                  {[
-                    ["Today", analytics.todayViews, "Page views today"],
-                    ["Last 7 days", analytics.weekViews, "Page views"],
-                    ["Last 30 days", analytics.totalViews, "Page views"],
-                    ["Visitors", analytics.uniqueSessions, "Approx. unique sessions"],
-                  ].map(([label, value, hint]) => (
-                    <article className="ladmin-analytics-kpi" key={label}>
-                      <span>{label}</span>
-                      <strong>{value.toLocaleString()}</strong>
-                      <small>{hint}</small>
-                    </article>
-                  ))}
-                </div>
-                <div className="ladmin-analytics-bottom">
-                  <section className="ladmin-analytics-card">
-                    <div className="ladmin-analytics-card-head">
-                      <h3>Traffic Overview</h3>
-                      <span>Daily page views</span>
-                    </div>
-                    <div className="ladmin-analytics-chart" role="img" aria-label="Daily website page views for the last 30 days">
-                      {analytics.daily.map((day) => (
-                        <div className="ladmin-analytics-bar-column" key={day.date} title={`${day.date}: ${day.views} views`}>
-                          <span className="ladmin-analytics-bar" style={{ height: `${Math.max(day.views ? 4 : 1, (day.views / chartMax) * 100)}%` }} />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="ladmin-analytics-chart-labels">
-                      <span>{analytics.daily[0]?.date}</span>
-                      <span>Today</span>
-                    </div>
-                  </section>
-                  <section className="ladmin-analytics-card">
-                    <div className="ladmin-analytics-card-head">
-                      <h3>Most Visited Pages</h3>
-                      <span>Last 30 days</span>
-                    </div>
-                    {analytics.pages.length ? analytics.pages.map((item) => (
-                      <div className="ladmin-analytics-page" key={item.path}>
-                        <div className="ladmin-analytics-page-top">
-                          <span>{item.label}</span><strong>{item.views.toLocaleString()}</strong>
-                        </div>
-                        <div className="ladmin-analytics-page-track"><span style={{ width: `${(item.views / topPageMax) * 100}%` }} /></div>
-                      </div>
-                    )) : <p className="ladmin-analytics-empty">No visits recorded yet. New visits will appear here.</p>}
-                    <p className="ladmin-analytics-footnote">Tracks Home and Collection only. No personal information collected.</p>
-                  </section>
-                </div>
-                <p className="ladmin-analytics-disclaimer">
-                  Tracking starts after this update is deployed. Historical visits are unavailable. Visitors are approximate browser-tab sessions, not individual people.
-                  {analytics.truncated ? " Results reached the 10,000-event query limit; totals may be incomplete." : ""}
-                </p>
-              </>
-            )}
-          </section>
-  );
 }
 
 // ==========================================
@@ -680,6 +606,7 @@ function Dashboard() {
       .filter((product) => {
         const matchesSearch = [
           product.name,
+          productCode(product.productNo) || "",
           product.category,
           product.gemstone,
         ]
@@ -1059,7 +986,7 @@ function Dashboard() {
         {/* Isolated from the product manager: analytics errors cannot crash admin. */}
         {activeView === "dashboard" && (
           <AnalyticsErrorBoundary>
-            <AnalyticsPanel />
+            <AdminAnalyticsPanel />
           </AnalyticsErrorBoundary>
         )}
 
@@ -1165,6 +1092,7 @@ function Dashboard() {
                     </div>
                     <div className="ladmin-product-info">
                       <h3 title={product.name}>{product.name}</h3>
+                      <span className="ladmin-product-id">{productCode(product.productNo) || 'Product ID pending'}</span>
                       <p>{product.category}{product.gemstone ? ` · ${product.gemstone}` : ""}</p>
                       <strong>{formatPrice(product.price)}</strong>
                     </div>
@@ -1408,6 +1336,7 @@ function Dashboard() {
                 }
               >
                 <option>925 Sterling Silver</option>
+                <option>Pure Sterling Silver</option>
                 <option>Gold-Plated Sterling Silver</option>
                 <option>Loose Natural Gemstone</option>
               </select>

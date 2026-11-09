@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import useScrollReveal from '../hooks/useScrollReveal'
 import '../styles/Collection.css'
+import '../styles/ProductCode.css'
 
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import { productCode } from '../utils/productCodes'
 
 const baseCategories = ['All', 'Rings', 'Earrings', 'Necklaces', 'Gemstones']
 
@@ -15,8 +17,10 @@ const sortOptions = [
 
 export default function Collection({ initialCategory = 'All', onFilterChange, onProductSelect }) {
   const dbProducts = useQuery(api.products.list)
+  const isLoading = dbProducts === undefined
   const products = useMemo(() => (dbProducts || []).map((product) => ({
     id: product._id,
+    productNo: product.productNo,
     title: product.name,
     category: product.category,
     gemstone: product.gemstone,
@@ -114,6 +118,8 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
 
   useScrollReveal(filteredProducts)
 
+  const hasActiveFilters = selectedCategory !== 'All' || selectedGemstone !== 'All' || sortBy !== 'featured'
+
   const resetFilters = () => {
     handleCategorySelect('All')
     setSelectedGemstone('All')
@@ -150,12 +156,22 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
             <line x1="9" y1="8" x2="15" y2="8" />
             <line x1="17" y1="16" x2="23" y2="16" />
           </svg>
-          Filters {selectedCategory !== 'All' || selectedGemstone !== 'All' ? '• Active' : ''}
+          Filters {hasActiveFilters ? '• Active' : ''}
         </button>
 
         <span className="shop-item-count">
-          Showing <strong>{filteredProducts.length}</strong> creations
+          {isLoading ? (
+            <span role="status">Loading creations…</span>
+          ) : (
+            <>Showing <strong>{filteredProducts.length}</strong> creations</>
+          )}
         </span>
+
+        {hasActiveFilters && (
+          <button type="button" className="shop-clear-filters" onClick={resetFilters}>
+            <span aria-hidden="true">×</span> Clear Filters
+          </button>
+        )}
 
         <div className="shop-sort">
           <span className="shop-sort-label" id="shop-sort-label">Sort by:</span>
@@ -260,15 +276,26 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
             </div>
           </div>
 
-          {(selectedCategory !== 'All' || selectedGemstone !== 'All') && (
+          {hasActiveFilters && (
             <button type="button" className="btn-reset-filters" onClick={resetFilters}>
-              Reset Filters
+              Clear All Filters
             </button>
           )}
         </aside>
 
         <div className="shop-grid-area">
-          {filteredProducts.length === 0 ? (
+          {isLoading ? (
+            <div className="shop-grid shop-grid-loading" role="status" aria-label="Loading the Lustria collection" aria-live="polite">
+              {Array.from({ length: 6 }, (_, index) => (
+                <div className="shop-skeleton-card" key={index} aria-hidden="true">
+                  <div className="shop-skeleton-image shop-shimmer" />
+                  <div className="shop-skeleton-line shop-shimmer" />
+                  <div className="shop-skeleton-line shop-skeleton-line-short shop-shimmer" />
+                </div>
+              ))}
+              <span className="shop-sr-only">Loading jewellery collection…</span>
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="shop-empty reveal-on-scroll">
               <p className="shop-empty-text">No creations match the selected filters.</p>
               <button type="button" className="btn-primary" onClick={resetFilters}>
@@ -284,11 +311,11 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
                   role="link"
                   tabIndex={0}
                   aria-label={`View details for ${piece.title}`}
-                  onClick={() => onProductSelect?.(piece.id)}
+                  onClick={() => onProductSelect?.(piece)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault()
-                      onProductSelect?.(piece.id)
+                      onProductSelect?.(piece)
                     }
                   }}
                 >
@@ -298,6 +325,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
 
                   <div className="signature-info">
                     <span className="signature-metal">{piece.metal}</span>
+                    {productCode(piece.productNo) && <span className="lustria-product-code">{productCode(piece.productNo)}</span>}
                     <h3 className="signature-title">{piece.title}</h3>
                     <span className="signature-price">{piece.priceFormatted}</span>
                   </div>
