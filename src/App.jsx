@@ -12,7 +12,6 @@ import Admin from './pages/Admin'
 import SiteAnalyticsTracker from './components/SiteAnalyticsTracker'
 import './styles/NotFound.css'
 import { productUrl } from './utils/productCodes'
-import ProductNumberInitializer from './components/ProductNumberInitializer'
 
 // Match only routes this app actually supports.
 const normalizePath = (path) => path.replace(/\/+$/, '') || '/'
@@ -121,7 +120,7 @@ export default function App() {
   const isAdmin = currentPath === '/admin' || currentPath.startsWith('/admin/')
   const productId = isProduct ? safeDecode(currentPath.slice('/product/'.length)) : null
 
-  if (isAdmin) return <><ProductNumberInitializer /><Admin /></>
+  if (isAdmin) return <Admin />
 
   const trackingPath = isHome ? '/' : isCollection ? '/collection' : isAbout ? '/about' : null
 
