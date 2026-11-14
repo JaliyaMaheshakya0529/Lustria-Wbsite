@@ -52,7 +52,6 @@ export default function SignatureCreations({ onExplore, onProductSelect }) {
 
               <div className="signature-info">
                 <span className="signature-metal">{piece.metal}</span>
-                {productCode(piece.productNo) && <span className="lustria-product-code">{productCode(piece.productNo)}</span>}
                 <h3 className="signature-title">{piece.title}</h3>
                 <span className="signature-price">{piece.price}</span>
               </div>
