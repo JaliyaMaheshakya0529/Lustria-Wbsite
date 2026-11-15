@@ -16,18 +16,8 @@
 .bespoke-form input,.bespoke-form textarea{font:400 15px/1.5 var(--font-main);padding:12px 14px;border:1px solid #d7d1c7;border-radius:7px;background:#fdfcf9;color:#24211c;width:100%;min-width:0}
 .bespoke-form textarea{resize:vertical}
 .bespoke-form input:focus-visible,.bespoke-form textarea:focus-visible{outline:2px solid #b08d48;outline-offset:2px}
-.bespoke-upload{padding:20px;border:1px dashed #bcaa8a;border-radius:9px;background:#faf8f3;display:grid;gap:12px}
-.bespoke-upload input{font-size:12px;background:transparent;border:0;padding:0}
-.bespoke-preview{display:flex;gap:15px;align-items:center}
-.bespoke-preview img{width:110px;height:100px;object-fit:contain;border-radius:7px;background:white}
-.bespoke-preview button{border:0;background:none;text-decoration:underline;color:#755921;cursor:pointer}
 .bespoke-submit{width:100%;padding:16px;border:0;border-radius:8px;background:#20251f;color:white;font:600 14px var(--font-main);cursor:pointer}
 .bespoke-submit:disabled{opacity:.55;cursor:wait}
 .bespoke-error{background:#fff0ec;color:#9c3025;padding:12px;margin-bottom:15px;border-radius:6px;font-size:13px}
-.bespoke-receipt h2{font:500 38px/1.15 var(--font-serif);margin:18px 0}
-.bespoke-receipt p{line-height:1.7;color:#686155}
-.bespoke-reference{margin:25px 0;overflow-wrap:anywhere;font-size:12px}
-.bespoke-reference strong{display:block}
-.bespoke-receipt a{color:#755921}
 @media(max-width:800px){.bespoke-page{padding:calc(var(--nav-height-mobile) + 30px) 18px 50px}.bespoke-form{padding:24px}}
 @media(max-width:480px){.bespoke-grid{grid-template-columns:1fr}.bespoke-form{padding:20px}}

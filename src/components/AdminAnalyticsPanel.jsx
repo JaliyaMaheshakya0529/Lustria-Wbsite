@@ -46,7 +46,7 @@ function AnalyticsContent() {
       (kind === 'all' || (kind === 'products' ? item.type === 'product' : item.type === 'page')) &&
       (!query || `${item.label} ${item.path}`.toLowerCase().includes(query))
     )
-    return [...filtered].sort((a, b) => {
+    return filtered.sort((a, b) => {
       if (sort === 'name') return a.label.localeCompare(b.label)
       if (sort === 'least') return a[period] - b[period] || a.label.localeCompare(b.label)
       return b[period] - a[period] || a.label.localeCompare(b.label)

@@ -1,7 +1,8 @@
 const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
+const hasWhatsappNumber = /^[1-9]\d{6,14}$/.test(whatsappNumber)
 
 export function whatsappLink(message) {
-  return /^[1-9]\d{6,14}$/.test(whatsappNumber)
+  return hasWhatsappNumber
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     : null
 }

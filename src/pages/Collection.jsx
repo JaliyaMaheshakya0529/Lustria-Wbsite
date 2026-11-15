@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import useScrollReveal from '../hooks/useScrollReveal'
 import '../styles/Collection.css'
 import '../styles/ProductCode.css'
@@ -34,15 +34,15 @@ export default function Collection({ selectedCategory = 'All', onFilterChange, o
     sort: sortBy,
   }, { initialNumItems: PAGE_SIZE })
   const isLoading = status === 'LoadingFirstPage'
-  const categories = [...new Set([...baseCategories, ...(facets ?? []).map(item => item.category)])]
-  const gemstones = ['All', ...new Set((facets ?? []).map(item => item.gemstone).filter(Boolean))].sort(
+  const categories = useMemo(() => [...new Set([...baseCategories, ...(facets ?? []).map(item => item.category)])], [facets])
+  const gemstones = useMemo(() => ['All', ...new Set((facets ?? []).map(item => item.gemstone).filter(Boolean))].sort(
     (a, b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b)
-  )
-  const total = facets?.reduce((count, item) => (
+  ), [facets])
+  const total = useMemo(() => facets?.reduce((count, item) => (
     (!category || item.category === category) && (!gemstone || item.gemstone === gemstone)
       ? count + item.count
       : count
-  ), 0)
+  ), 0), [facets, category, gemstone])
 
   // Lock the background while the mobile drawer is open. Support Esc and
   // restore focus to the button that opened the drawer.
