@@ -3,9 +3,18 @@
   publish = "dist"
 
 [[redirects]]
-  from = "/*"
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/product/:id"
   to = "/index.html"
   status = 200
+
+[[edge_functions]]
+  path = "/product/*"
+  function = "product-page"
 
 [[headers]]
   for = "/index.html"

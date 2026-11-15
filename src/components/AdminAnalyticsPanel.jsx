@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Component, useMemo, useState } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import '../styles/AdminAnalytics.css'
@@ -26,7 +26,7 @@ function downloadCSV(rows) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-export default function AdminAnalyticsPanel() {
+function AnalyticsContent() {
   const analytics = useQuery(api.analytics.overview, {})
   const [graphRange, setGraphRange] = useState(30)
   const [period, setPeriod] = useState('views')
@@ -167,7 +167,8 @@ export default function AdminAnalyticsPanel() {
                         <div className="la2-page-name">
                           <span className="la2-page-type" aria-hidden="true">{page.type === 'product' ? '◇' : '○'}</span>
                           <div>
-                            <a href={page.path} target="_blank" rel="noopener noreferrer">{page.label}</a>
+                            {page.available === false ? <strong>{page.label}</strong>
+                              : <a href={page.path} target="_blank" rel="noopener noreferrer">{page.label}</a>}
                             <small>{page.path}</small>
                             <div className="la2-share" aria-hidden="true"><span style={{ width: `${selectedTotal ? (page[period] / selectedTotal) * 100 : 0}%` }} /></div>
                           </div>
@@ -192,4 +193,46 @@ export default function AdminAnalyticsPanel() {
       )}
     </section>
   )
+}
+
+class AnalyticsErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <section className="ladmin-analytics" aria-label="Website analytics">
+          <div className="ladmin-analytics-intro">
+            <div>
+              <h2>Site Analytics</h2>
+              <p>First-party page views · Last 30 days · Sri Lanka time</p>
+            </div>
+          </div>
+          <div className="ladmin-analytics-placeholder">
+            <strong>Analytics could not load.</strong>
+            <p>Try again. If the problem persists, check the Convex deployment and logs. You can still use Products from the sidebar.</p>
+            <button
+              type="button"
+              className="ladmin-primary"
+              onClick={() => this.setState({ error: null })}
+            >
+              Retry Analytics
+            </button>
+          </div>
+        </section>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export default function AdminAnalyticsPanel() {
+  return <AnalyticsErrorBoundary><AnalyticsContent /></AnalyticsErrorBoundary>
 }

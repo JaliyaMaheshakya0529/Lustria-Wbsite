@@ -1,14 +1,11 @@
-import { useEffect } from 'react'
+import usePageMetadata from '../hooks/usePageMetadata'
+import { notFoundMetadata } from '../utils/metadata'
 import '../styles/NotFound.css'
 
 // Uses the public Lustria navbar/footer from App.jsx, never records analytics.
 // This component is also used for non-existent /product/:id routes.
 export default function NotFound({ onNavigate }) {
-  useEffect(() => {
-    const previous = document.title
-    document.title = 'Lustria'
-    return () => { document.title = previous }
-  }, [])
+  usePageMetadata(notFoundMetadata)
 
   const followLink = (event, path) => {
     // Preserve opening in a new tab and the browser's normal link behavior.

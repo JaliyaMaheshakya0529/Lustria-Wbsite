@@ -1,9 +1,13 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DAYS = 30;
+const RETENTION_DAYS = 90;
+const SESSION_LIMIT_PER_MINUTE = 30;
+const SITE_LIMIT_PER_SECOND = 40;
 const COLOMBO_OFFSET_MS = 330 * 60 * 1000;
 const PAGE_NAMES: Record<string, string> = {
   "/": "Home",
@@ -33,6 +37,7 @@ export const recordPageView = mutation({
     if (!/^[a-zA-Z0-9_-]{12,80}$/.test(sessionId)) return;
     const isStatic = Object.prototype.hasOwnProperty.call(PAGE_NAMES, path);
     let canonicalPath = path;
+    let productLabel: string | undefined;
     if (!isStatic) {
       const number = parseProductNumber(path);
       if (number === null) return;
@@ -47,6 +52,7 @@ export const recordPageView = mutation({
       }
       if (!product?.available || product.productNo === undefined) return;
       canonicalPath = `/product/${productCode(product.productNo)}`;
+      productLabel = product.name;
     }
 
     const now = Date.now();
@@ -55,7 +61,31 @@ export const recordPageView = mutation({
         q.eq("sessionId", sessionId).eq("path", canonicalPath).gte("timestamp", now - 1500)
       ).first();
     if (recent) return;
-    await ctx.db.insert("sitePageViews", { path: canonicalPath, sessionId, timestamp: now });
+    const sessionEvents = await ctx.db.query("sitePageViews")
+      .withIndex("by_session_time", q => q.eq("sessionId", sessionId).gte("timestamp", now - 60000))
+      .take(SESSION_LIMIT_PER_MINUTE);
+    if (sessionEvents.length >= SESSION_LIMIT_PER_MINUTE) return;
+    const siteEvents = await ctx.db.query("sitePageViews")
+      .withIndex("by_timestamp", q => q.gte("timestamp", now - 1000))
+      .take(SITE_LIMIT_PER_SECOND);
+    if (siteEvents.length >= SITE_LIMIT_PER_SECOND) return;
+    await ctx.db.insert("sitePageViews", {
+      path: canonicalPath,
+      sessionId,
+      timestamp: now,
+      ...(productLabel !== undefined ? { productLabel } : {}),
+    });
+  },
+});
+
+export const purgeExpired = internalMutation({
+  args: {},
+  handler: async (ctx): Promise<void> => {
+    const expired = await ctx.db.query("sitePageViews")
+      .withIndex("by_timestamp", q => q.lt("timestamp", Date.now() - RETENTION_DAYS * DAY_MS))
+      .take(500);
+    await Promise.all(expired.map(event => ctx.db.delete(event._id)));
+    if (expired.length === 500) await ctx.scheduler.runAfter(0, internal.analytics.purgeExpired, {});
   },
 });
 
@@ -80,18 +110,18 @@ export const overview = query({
     for (const product of products) {
       if (product.productNo !== undefined) productByNo.set(product.productNo, product);
     }
-    const aliasByNo = new Map(aliases.map(alias => [alias.oldProductNo, alias.productId]));
+    const aliasByNo = new Map(aliases.map(alias => [alias.oldProductNo, alias]));
 
-    // Historic old-code events are attributed to the product's CURRENT code.
-    // Its analytics history is not lost when IDs below 50 are moved up.
+    // Keep historical events even after a product is removed from the catalogue.
     const canonicalize = (path: string): string | null => {
       if (Object.prototype.hasOwnProperty.call(PAGE_NAMES, path)) return path;
       const number = parseProductNumber(path);
       if (number === null) return null;
-      const product = productByNo.get(number)
-        ?? (aliasByNo.has(number) ? productById.get(aliasByNo.get(number)!) : undefined);
-      if (!product || product.productNo === undefined) return null;
-      return `/product/${productCode(product.productNo)}`;
+      const alias = aliasByNo.get(number);
+      const currentNumber = productByNo.get(number)?.productNo
+        ?? (alias ? productById.get(alias.productId)?.productNo ?? alias.currentProductNo : undefined)
+        ?? number;
+      return `/product/${productCode(currentNumber)}`;
     };
 
     const events = await ctx.db.query("sitePageViews")
@@ -105,6 +135,7 @@ export const overview = query({
     }));
     type Counts = { today: number; week: number; views: number };
     const byPage: Record<string, Counts> = {};
+    const eventLabels = new Map<string, string>();
     const sessions = new Set<string>();
     let todayViews = 0;
     let weekViews = 0;
@@ -113,6 +144,7 @@ export const overview = query({
     for (const event of events.slice(0, 10000)) {
       const path = canonicalize(event.path);
       if (path === null) continue;
+      if (event.productLabel && !eventLabels.has(path)) eventLabels.set(path, event.productLabel);
       totalViews++;
       sessions.add(event.sessionId);
       const index = Math.floor((event.timestamp - start) / DAY_MS);
@@ -133,10 +165,12 @@ export const overview = query({
       byPage[path] ??= { today: 0, week: 0, views: 0 };
     }
     const names = new Map<string, string>();
+    const availablePaths = new Set(Object.keys(PAGE_NAMES));
     for (const product of products) {
       if (product.productNo === undefined) continue;
       const path = `/product/${productCode(product.productNo)}`;
       names.set(path, product.name);
+      if (product.available) availablePaths.add(path);
       byPage[path] ??= { today: 0, week: 0, views: 0 };
     }
 
@@ -152,7 +186,8 @@ export const overview = query({
       })),
       pages: Object.entries(byPage).map(([path, counts]) => ({
         path,
-        label: PAGE_NAMES[path] || names.get(path) || `Product ${path.slice(9)}`,
+        label: PAGE_NAMES[path] || names.get(path) || eventLabels.get(path) || `Product ${path.slice(9)}`,
+        available: availablePaths.has(path),
         ...counts,
         type: path.startsWith("/product/") ? "product" : "page",
       })).sort((a, b) => b.views - a.views || a.label.localeCompare(b.label)),

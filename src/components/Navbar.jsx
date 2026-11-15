@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { contactLink } from '../utils/inquiries'
+import { followLink } from '../utils/navigation'
 import '../styles/Navbar.css'
 
 const categories = [
@@ -66,16 +68,11 @@ export default function Navbar({ onNavigate }) {
     setMobileCollectionOpen(false)
   }
 
-  const navigate = (path, category = null, section = null) => {
-    closeMenu()
-    onNavigate?.(path, category, section)
-  }
-
-  const go = (event, path, category = null, section = null) => {
-    // Normal browser link behavior is preserved with modifier keys.
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return
-    event.preventDefault()
-    navigate(path, category, section)
+  const go = (event, path, category = null) => {
+    followLink(event, () => {
+      closeMenu()
+      onNavigate(path, category)
+    })
   }
 
   const mobileMenu = mobileMenuOpen && typeof document !== 'undefined' && createPortal(
@@ -154,8 +151,9 @@ export default function Navbar({ onNavigate }) {
         </nav>
 
         <div className="nav-actions">
-          <a href="/#contact" className="nav-cta"
-            onClick={(e) => go(e, '/', null, 'contact')}>Inquire</a>
+          {contactLink && (
+            <a href={contactLink} className="nav-cta" target="_blank" rel="noopener noreferrer">Inquire</a>
+          )}
           <button type="button" className="mobile-toggle"
             aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
             aria-controls="mobile-nav-links" aria-expanded={mobileMenuOpen}

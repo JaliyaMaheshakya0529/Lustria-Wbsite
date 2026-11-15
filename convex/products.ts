@@ -1,8 +1,11 @@
 
-import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
+import { query, mutation, internalMutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { QueryCtx, MutationCtx } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
 
 // ============================================
 // LUSTRIA PRODUCT MANAGEMENT
@@ -14,6 +17,13 @@ type DatabaseCtx = QueryCtx | MutationCtx;
 // Public product numbering begins at LUS-00050. Existing numbers below 50
 // are moved once during the authorized admin migration, with legacy aliases.
 const FIRST_PRODUCT_NO = 50;
+const MAX_FEATURED = 4;
+const IMAGE_RETRY_WINDOW = 24 * 60 * 60 * 1000;
+
+async function withPublicImage(ctx: QueryCtx, product: Doc<"products">) {
+  const { revision: _revision, creationRequestId: _requestId, ...publicFields } = product;
+  return { ...publicFields, imageUrl: await ctx.storage.getUrl(product.imageId) };
+}
 
 // ============================================
 // ADMIN AUTHORIZATION
@@ -128,7 +138,7 @@ export const getByNumber = query({
       item = alias ? await ctx.db.get(alias.productId) : null;
     }
     if (!item || !item.available) return null;
-    return { ...item, imageUrl: await ctx.storage.getUrl(item.imageId) };
+    return withPublicImage(ctx, item);
   },
 });
 
@@ -142,10 +152,7 @@ export const getByLegacyId = query({
     if (!id) return null;
     const item = await ctx.db.get(id);
     if (!item || !item.available) return null;
-    return {
-      ...item,
-      imageUrl: await ctx.storage.getUrl(item.imageId),
-    };
+    return withPublicImage(ctx, item);
   },
 });
 
@@ -184,7 +191,9 @@ export const assignLegacyNumbers = mutation({
         if (!existingAlias) await ctx.db.insert("productCodeAliases", {
           oldProductNo: item.productNo,
           productId: item._id,
+          currentProductNo: newNo,
         });
+        else await ctx.db.patch(existingAlias._id, { currentProductNo: newNo });
       }
       await ctx.db.patch(item._id, { productNo: newNo });
     }
@@ -200,23 +209,64 @@ export const list = query({
   args: {},
 
   handler: async (ctx) => {
-    const products = await ctx.db
-      .query("products")
+    const products = await ctx.db.query("products")
+      .withIndex("by_available_created", q => q.eq("available", true))
+      .order("desc")
       .collect();
 
-    const availableProducts = products.filter(
-      (product) => product.available
-    ).sort((a, b) => b.createdAt - a.createdAt);
+    return Promise.all(products.map(product => withPublicImage(ctx, product)));
+  },
+});
 
-    return await Promise.all(
-      availableProducts.map(async (product) => ({
-        ...product,
+export const listFeatured = query({
+  args: {},
+  handler: async (ctx) => {
+    const products = await ctx.db.query("products")
+      .withIndex("by_featured_available_created", q => q.eq("featured", true).eq("available", true))
+      .order("desc")
+      .take(MAX_FEATURED);
+    return Promise.all(products.map(product => withPublicImage(ctx, product)));
+  },
+});
 
-        imageUrl: product.imageId
-          ? await ctx.storage.getUrl(product.imageId)
-          : null,
-      }))
-    );
+export const collectionFacets = query({
+  args: {},
+  handler: async (ctx) => {
+    const counts = new Map<string, { category: string; gemstone: string; count: number }>();
+    const available = ctx.db.query("products")
+      .withIndex("by_available_created", q => q.eq("available", true));
+    for await (const { category, gemstone } of available) {
+      const key = JSON.stringify([category, gemstone]);
+      const entry = counts.get(key);
+      if (entry) entry.count++;
+      else counts.set(key, { category, gemstone, count: 1 });
+    }
+    return [...counts.values()];
+  },
+});
+
+export const listCollection = query({
+  args: {
+    category: v.optional(v.string()),
+    gemstone: v.optional(v.string()),
+    sort: v.union(v.literal("featured"), v.literal("price-low"), v.literal("price-high")),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { category, gemstone, sort, paginationOpts }) => {
+    let products = ctx.db.query("products")
+      .withIndex(sort === "featured" ? "by_available_featured_created" : "by_available_price",
+        q => q.eq("available", true))
+      .order(sort === "price-low" ? "asc" : "desc");
+    if (category !== undefined) products = products.filter(q => q.eq(q.field("category"), category));
+    if (gemstone !== undefined) products = products.filter(q => q.eq(q.field("gemstone"), gemstone));
+    const results = await products.paginate({
+      ...paginationOpts,
+      numItems: Math.min(paginationOpts.numItems, 50),
+    });
+    return {
+      ...results,
+      page: await Promise.all(results.page.map(product => withPublicImage(ctx, product))),
+    };
   },
 });
 
@@ -259,6 +309,62 @@ export const generateUploadUrl = mutation({
     return await ctx.storage.generateUploadUrl();
   },
 });
+
+async function deleteUnusedImage(ctx: MutationCtx, imageId: Id<"_storage">) {
+  const product = await ctx.db.query("products")
+    .withIndex("by_image", q => q.eq("imageId", imageId)).first();
+  if (!product && await ctx.storage.getUrl(imageId)) await ctx.storage.delete(imageId);
+}
+
+async function consumeStagedImage(ctx: MutationCtx, imageId: Id<"_storage">) {
+  const staged = await ctx.db.query("stagedProductImages")
+    .withIndex("by_image", q => q.eq("imageId", imageId)).unique();
+  if (!staged) return;
+  await ctx.scheduler.cancel(staged.cleanupId);
+  await ctx.db.delete(staged._id);
+}
+
+export const stageImage = mutation({
+  args: { imageId: v.id("_storage") },
+  handler: async (ctx, { imageId }): Promise<boolean> => {
+    await checkAdmin(ctx);
+    const file = await ctx.db.system.get("_storage", imageId);
+    if (!file) throw new ConvexError("IMAGE_MISSING");
+    if (file.size === 0 || file.size > 5 * 1024 * 1024 ||
+        !["image/jpeg", "image/png", "image/webp"].includes(file.contentType ?? "")) {
+      await deleteUnusedImage(ctx, imageId);
+      return false;
+    }
+    const staged = await ctx.db.query("stagedProductImages")
+      .withIndex("by_image", q => q.eq("imageId", imageId)).unique();
+    if (!staged) {
+      const cleanupId = await ctx.scheduler.runAfter(IMAGE_RETRY_WINDOW, internal.products.expireStagedImage, { imageId });
+      await ctx.db.insert("stagedProductImages", { imageId, cleanupId });
+    }
+    return true;
+  },
+});
+
+export const expireStagedImage = internalMutation({
+  args: { imageId: v.id("_storage") },
+  handler: async (ctx, { imageId }) => {
+    const staged = await ctx.db.query("stagedProductImages")
+      .withIndex("by_image", q => q.eq("imageId", imageId)).unique();
+    if (!staged) return;
+    await deleteUnusedImage(ctx, imageId);
+    await ctx.db.delete(staged._id);
+  },
+});
+
+async function checkFeaturedSlot(ctx: MutationCtx, featured: boolean, alreadyFeatured = false) {
+  if (!featured || alreadyFeatured) return;
+  const featuredProducts = await ctx.db.query("products")
+    .withIndex("by_featured_available_created", q => q.eq("featured", true))
+    .take(MAX_FEATURED);
+  if (featuredProducts.length >= MAX_FEATURED) {
+    throw new ConvexError("Only four products can be featured. Unfeature one first.");
+  }
+}
 
 // ============================================
 // SHARED PRODUCT VALIDATION
@@ -314,19 +420,26 @@ function validateProduct(
 // ============================================
 
 export const create = mutation({
-  args: productFields,
+  args: { ...productFields, requestId: v.optional(v.string()) },
 
-  handler: async (ctx, args) => {
+  handler: async (ctx, { requestId, ...args }) => {
     await checkAdmin(ctx);
+    if (requestId) {
+      if (!/^[a-f0-9-]{36}$/.test(requestId)) throw new ConvexError("Invalid product request.");
+      const previous = await ctx.db.query("products")
+        .withIndex("by_creationRequestId", q => q.eq("creationRequestId", requestId)).unique();
+      if (previous) return previous._id;
+    }
 
     validateProduct(args);
+    await checkFeaturedSlot(ctx, args.featured);
 
     const imageUrl = await ctx.storage.getUrl(
       args.imageId
     );
 
     if (!imageUrl) {
-      throw new Error("Uploaded image was not found.");
+      throw new ConvexError("IMAGE_MISSING");
     }
 
     const productNo = await allocateProductNo(ctx);
@@ -344,9 +457,12 @@ export const create = mutation({
         available: args.available,
         featured: args.featured,
         createdAt: Date.now(),
+        revision: 0,
+        ...(requestId ? { creationRequestId: requestId } : {}),
       }
     );
 
+    await consumeStagedImage(ctx, args.imageId);
     return productId;
   },
 });
@@ -358,29 +474,33 @@ export const create = mutation({
 export const update = mutation({
   args: {
     id: v.id("products"),
+    expectedRevision: v.number(),
     ...productFields,
   },
 
-  handler: async (ctx, args) => {
+  handler: async (ctx, { id, expectedRevision, ...args }) => {
     await checkAdmin(ctx);
 
-    const existingProduct = await ctx.db.get(args.id);
+    const existingProduct = await ctx.db.get(id);
 
     if (!existingProduct) {
-      throw new Error("Product not found.");
+      throw new ConvexError("PRODUCT_NOT_FOUND");
     }
+    const revision = existingProduct.revision ?? 0;
+    if (revision !== expectedRevision) throw new ConvexError("PRODUCT_CHANGED");
 
     validateProduct(args);
+    await checkFeaturedSlot(ctx, args.featured, existingProduct.featured);
 
     const imageUrl = await ctx.storage.getUrl(
       args.imageId
     );
 
     if (!imageUrl) {
-      throw new Error("Uploaded image was not found.");
+      throw new ConvexError("IMAGE_MISSING");
     }
 
-    await ctx.db.patch(args.id, {
+    await ctx.db.patch(id, {
       name: args.name.trim(),
       category: args.category,
       gemstone: args.gemstone,
@@ -390,9 +510,26 @@ export const update = mutation({
       imageId: args.imageId,
       available: args.available,
       featured: args.featured,
+      revision: revision + 1,
     });
 
-    return args.id;
+    await consumeStagedImage(ctx, args.imageId);
+    if (existingProduct.imageId !== args.imageId) {
+      await deleteUnusedImage(ctx, existingProduct.imageId);
+    }
+    return id;
+  },
+});
+
+export const setFeatured = mutation({
+  args: { id: v.id("products"), featured: v.boolean() },
+  handler: async (ctx, { id, featured }) => {
+    await checkAdmin(ctx);
+    const product = await ctx.db.get(id);
+    if (!product) throw new ConvexError("PRODUCT_NOT_FOUND");
+    if (product.featured === featured) return;
+    await checkFeaturedSlot(ctx, featured);
+    await ctx.db.patch(id, { featured, revision: (product.revision ?? 0) + 1 });
   },
 });
 
@@ -414,20 +551,15 @@ export const remove = mutation({
       throw new Error("Product not found.");
     }
 
-    await ctx.db.delete(args.id);
-
-    // Remove image if no other product uses it.
-    const otherProducts = await ctx.db
-      .query("products")
-      .collect();
-
-    const imageInUse = otherProducts.some(
-      (item) => item.imageId === product.imageId
-    );
-
-    if (!imageInUse) {
-      await ctx.storage.delete(product.imageId);
+    if (product.productNo !== undefined) {
+      const aliases = await ctx.db.query("productCodeAliases")
+        .withIndex("by_productId", q => q.eq("productId", args.id)).collect();
+      for (const alias of aliases) {
+        await ctx.db.patch(alias._id, { currentProductNo: product.productNo });
+      }
     }
+    await ctx.db.delete(args.id);
+    await deleteUnusedImage(ctx, product.imageId);
 
     return {
       success: true,

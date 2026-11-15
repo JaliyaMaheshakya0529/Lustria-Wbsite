@@ -1,16 +1,14 @@
 import { useEffect } from 'react'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 
 // Runs only on the admin route, after authorization. Existing products are
 // assigned permanent numbers in small transactions. New products are numbered
 // directly in their create mutation, including batch uploads.
 export default function ProductNumberInitializer() {
-  const isAdmin = useQuery(api.products.adminStatus)
   const migrate = useMutation(api.products.assignLegacyNumbers)
 
   useEffect(() => {
-    if (isAdmin !== true) return
     let cancelled = false
     const run = async () => {
       try {
@@ -24,6 +22,6 @@ export default function ProductNumberInitializer() {
     }
     void run()
     return () => { cancelled = true }
-  }, [isAdmin, migrate])
+  }, [migrate])
   return null
 }

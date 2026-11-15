@@ -1,12 +1,14 @@
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery, useMutation, useConvexAuth } from "convex/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
 import "../styles/Admin.css";
 import AdminBatchUpload from "../components/AdminBatchUpload";
 import { productCode } from "../utils/productCodes";
 import AdminAnalyticsPanel from "../components/AdminAnalyticsPanel";
+import AdminAccess from "../components/AdminAccess";
+import useProductUploadQueue from "../hooks/useProductUploadQueue";
 
 const CATEGORIES = [
   "Rings",
@@ -123,291 +125,13 @@ function Icon({ name, size = 20 }) {
   );
 }
 
-// ==========================================
-// LOGIN
-// ==========================================
-
-function Login() {
-  const { signIn } = useAuthActions();
-
-  const [signup, setSignup] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    setBusy(true);
-    setError("");
-
-    try {
-      const form = new FormData();
-      form.set("email", email.trim());
-      form.set("password", password);
-      form.set("flow", signup ? "signUp" : "signIn");
-
-      await signIn("password", form);
-    } catch (err) {
-      setError(err.message || "Authentication failed.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="ladmin-auth">
-      <div className="ladmin-login-card">
-        <div className="ladmin-brand">
-          <h1>LUSTRIA</h1>
-          <span>ADMINISTRATION</span>
-        </div>
-
-        <div className="ladmin-login-heading">
-          <span className="ladmin-eyebrow">PRIVATE ACCESS</span>
-          <h2>{signup ? "Create Account" : "Welcome Back"}</h2>
-          <p>
-            Sign in to manage your jewellery collection.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="ladmin-login-form">
-          <label htmlFor="admin-email">Email Address</label>
-          <input
-            id="admin-email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@example.com"
-          />
-
-          <label htmlFor="admin-password">Password</label>
-          <input
-            id="admin-password"
-            type="password"
-            required
-            minLength={8}
-            autoComplete={signup ? "new-password" : "current-password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-          />
-
-          {error && <p className="ladmin-error">{error}</p>}
-
-          <button
-            type="submit"
-            className="ladmin-primary"
-            disabled={busy}
-          >
-            {busy
-              ? "Please wait..."
-              : signup
-                ? "Create Account"
-                : "Sign In"}
-          </button>
-        </form>
-
-        <button
-          type="button"
-          className="ladmin-link-button"
-          onClick={() => {
-            setSignup(!signup);
-            setError("");
-          }}
-        >
-          {signup
-            ? "Already have an account? Sign in"
-            : "First time? Create an account"}
-        </button>
-
-        <a href="/" className="ladmin-return">
-          Return to Website
-        </a>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
-// ACCESS DENIED
-// ==========================================
-
-function AccessDenied() {
-  const { signOut } = useAuthActions();
-
-  return (
-    <div className="ladmin-auth">
-      <div className="ladmin-login-card">
-        <div className="ladmin-brand">
-          <h1>LUSTRIA</h1>
-          <span>ADMINISTRATION</span>
-        </div>
-
-        <div className="ladmin-login-heading">
-          <span className="ladmin-eyebrow">ACCOUNT PENDING</span>
-          <h2>Access Restricted</h2>
-          <p>
-            Your account is authenticated, but it has not been
-            approved as a Lustria administrator.
-          </p>
-          <p>
-            Open Convex Dashboard, find your account in the
-            users table, and add its ID to the admins table.
-          </p>
-        </div>
-
-        <button
-          className="ladmin-primary"
-          onClick={() => signOut()}
-        >
-          Sign Out
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
-// ERROR BOUNDARY
-// ==========================================
-
-class AdminErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { error };
-  }
-
-  render() {
-    if (this.state.error) {
-      return (
-        <div className="ladmin-auth">
-          <div className="ladmin-login-card">
-            <div className="ladmin-brand">
-              <h1>LUSTRIA</h1>
-              <span>ADMINISTRATION</span>
-            </div>
-
-            <h2>Admin Service Unavailable</h2>
-            <p className="ladmin-error">
-              {this.state.error.message}
-            </p>
-
-            <button
-              className="ladmin-primary"
-              onClick={() => window.location.reload()}
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-// ==========================================
-// ADMIN ACCESS
-// ==========================================
-
-function AdminAccess() {
-  const { isLoading, isAuthenticated } = useConvexAuth();
-
-  const isAdmin = useQuery(
-    api.products.adminStatus,
-    isAuthenticated ? {} : "skip"
-  );
-
-  if (isLoading) {
-    return (
-      <div className="ladmin-loading">
-        Loading Lustria Admin...
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) return <Login />;
-
-  if (isAdmin === undefined) {
-    return (
-      <div className="ladmin-loading">
-        Checking administrator permissions...
-      </div>
-    );
-  }
-
-  if (!isAdmin) return <AccessDenied />;
-
-  return <Dashboard />;
-}
-
-// ==========================================
-// ISOLATED ANALYTICS
-// Keep the existing dashboard layout, but prevent a missing backend
-// function from crashing the login, products or upload manager.
-// ==========================================
-
-class AnalyticsErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { error };
-  }
-
-  render() {
-    if (this.state.error) {
-      return (
-        <section className="ladmin-analytics" aria-label="Website analytics">
-          <div className="ladmin-analytics-intro">
-            <div>
-              <h2>Site Analytics</h2>
-              <p>First-party page views · Last 30 days · Sri Lanka time</p>
-            </div>
-          </div>
-          <div className="ladmin-analytics-placeholder">
-            <strong>Analytics is not connected to Convex yet.</strong>
-            <p>Deploy convex/analytics.ts and convex/schema.ts to your current Convex deployment. Products and uploads are still available in the sidebar.</p>
-            <button
-              type="button"
-              className="ladmin-primary"
-              onClick={() => this.setState({ error: null })}
-            >
-              Retry Analytics
-            </button>
-          </div>
-        </section>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-// ==========================================
-// MAIN DASHBOARD
-// ==========================================
-
 function Dashboard() {
   const { signOut } = useAuthActions();
 
   const products = useQuery(api.products.listAdmin);
 
-  const createProduct = useMutation(api.products.create);
-  const updateProduct = useMutation(api.products.update);
+  const setFeatured = useMutation(api.products.setFeatured);
   const deleteProduct = useMutation(api.products.remove);
-  const generateUploadUrl = useMutation(
-    api.products.generateUploadUrl
-  );
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -427,146 +151,22 @@ function Dashboard() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [batchOpen, setBatchOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [editingRevision, setEditingRevision] = useState(0);
   const [form, setForm] = useState({ ...EMPTY_PRODUCT });
 
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("");
+  const editorImageRef = useRef(null);
 
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  // Upload jobs live outside the editor, so closing it never stops a job.
-  // Keep the actual File in a ref, not in React state.
-  const [jobs, setJobs] = useState([]);
-  const jobsRef = useRef(new Map());
-  const runningRef = useRef(0);
-  const nextIdRef = useRef(0);
-  const [queueExpanded, setQueueExpanded] = useState(true);
-  const [queueVisible, setQueueVisible] = useState(false);
-  const [recentlyFinished, setRecentlyFinished] = useState(false);
   const closeRef = useRef(null);
-  const MAX_PARALLEL = 2;
-
-  const updateJob = (id, changes) => {
-    const job = jobsRef.current.get(id);
-    if (!job) return;
-    Object.assign(job, changes);
-    setJobs(Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({ ...view })));
-  };
-
-  // XMLHttpRequest reports actual bytes sent. Final database confirmation is
-  // a separate stage; the progress bar never claims 100% before confirmation.
-  const uploadWithProgress = (url, file, onProgress) =>
-    new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", url);
-      xhr.setRequestHeader("Content-Type", file.type);
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) onProgress(event.loaded / event.total);
-      };
-      xhr.onload = () => {
-        if (xhr.status < 200 || xhr.status >= 300) {
-          reject(new Error(`Image upload failed (HTTP ${xhr.status}).`));
-          return;
-        }
-        try {
-          const result = JSON.parse(xhr.responseText);
-          if (!result.storageId) throw new Error("No storage ID returned.");
-          resolve(result.storageId);
-        } catch (error) {
-          reject(error);
-        }
-      };
-      xhr.onerror = () => reject(new Error("Network error during image upload."));
-      xhr.onabort = () => reject(new Error("Upload interrupted."));
-      xhr.send(file);
-    });
-
-  const runJob = async (job) => {
-    updateJob(job.id, { status: "running", stage: "Preparing upload", progress: 4, error: "" });
-    try {
-      let imageId = job.payload.imageId;
-      if (job.file) {
-        const uploadUrl = await generateUploadUrl();
-        updateJob(job.id, { stage: "Uploading image", progress: 8 });
-        imageId = await uploadWithProgress(uploadUrl, job.file, (ratio) => {
-          updateJob(job.id, { progress: Math.min(90, Math.round(8 + ratio * 82)) });
-        });
-      }
-      if (!imageId) throw new Error("No product image selected.");
-      updateJob(job.id, { stage: "Saving product", progress: 94 });
-      const payload = { ...job.payload, imageId };
-      if (job.editingId) {
-        await updateProduct({ id: job.editingId, ...payload });
-      } else {
-        await createProduct(payload);
-      }
-      updateJob(job.id, { status: "done", stage: "Saved successfully", progress: 100 });
-    } catch (err) {
-      updateJob(job.id, { status: "failed", stage: "Save failed", error: err?.message || "Unexpected error" });
-    } finally {
-      runningRef.current -= 1;
-      drainQueue();
-    }
-  };
-
-  const drainQueue = () => {
-    while (runningRef.current < MAX_PARALLEL) {
-      const job = Array.from(jobsRef.current.values()).find((item) => item.status === "queued");
-      if (!job) break;
-      runningRef.current += 1;
-      // Start concurrently, without awaiting. Errors are handled inside runJob.
-      void runJob(job);
-    }
-  };
-
-  const retryJob = (id) => {
-    updateJob(id, { status: "queued", stage: "Waiting to retry", progress: 0, error: "" });
-    setQueueVisible(true);
-    setRecentlyFinished(false);
-    drainQueue();
-  };
-
-  const clearFinished = () => {
-    for (const [id, job] of jobsRef.current) {
-      if (job.status === "done") jobsRef.current.delete(id);
-    }
-    setJobs(Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({ ...view })));
-  };
-
-  const pendingCount = jobs.filter((job) => job.status === "queued" || job.status === "running").length;
-  const failedCount = jobs.filter((job) => job.status === "failed").length;
-  const doneCount = jobs.filter((job) => job.status === "done").length;
-  const overallProgress = jobs.length
-    ? Math.round(jobs.reduce((sum, job) => sum + job.progress, 0) / jobs.length)
-    : 0;
-
-  useEffect(() => {
-    const guard = (event) => {
-      if (runningRef.current === 0 && !Array.from(jobsRef.current.values()).some(j => j.status === "queued")) return;
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", guard);
-    return () => window.removeEventListener("beforeunload", guard);
-  }, []);
-
-  // Completed jobs remain visible briefly, then the panel disappears.
-  // Failed jobs stay visible so the admin can retry without re-entering data.
-  useEffect(() => {
-    if (!jobs.length || pendingCount || failedCount) {
-      setRecentlyFinished(false);
-      return;
-    }
-    setRecentlyFinished(true);
-    const timeout = window.setTimeout(() => {
-      jobsRef.current.clear();
-      setJobs([]);
-      setQueueVisible(false);
-      setRecentlyFinished(false);
-    }, 4500);
-    return () => window.clearTimeout(timeout);
-  }, [jobs.length, pendingCount, failedCount, doneCount]);
+  const {
+    jobs, queueExpanded, setQueueExpanded, queueVisible, pendingCount, failedCount,
+    doneCount, overallProgress, recentlyFinished, pendingNewFeatured,
+    enqueue, countPendingFeatured, retryJob, dismissJob, clearFinished,
+  } = useProductUploadQueue();
 
   // Keep mouse-wheel scrolling native inside Products even when a site-wide
   // smooth-scroll library (for example Lenis) is active.
@@ -645,9 +245,7 @@ function Dashboard() {
     if (featuredBusyRef.current.has(id)) return;
     if (!product.featured) {
       const activeFeatured = (products || []).filter((item) => item.featured).length;
-      const pendingFeatured = [...jobsRef.current.values()].filter(
-        (job) => ["queued", "running"].includes(job.status) && job.payload.featured && !job.editingId
-      ).length;
+      const pendingFeatured = countPendingFeatured(job => !job.editingId);
       if (activeFeatured + pendingFeatured >= MAX_FEATURED) {
         setNotice(`Maximum ${MAX_FEATURED} featured products. Remove one first.`);
         return;
@@ -657,32 +255,21 @@ function Dashboard() {
     setFeaturedBusy((prev) => ({ ...prev, [id]: true }));
     setNotice("");
     try {
-      await updateProduct({
+      await setFeatured({
         id,
-        name: product.name,
-        category: product.category,
-        gemstone: product.gemstone,
-        metal: product.metal,
-        description: product.description,
-        price: product.price,
-        imageId: product.imageId,
-        available: product.available,
         featured: !product.featured,
       });
       setNotice(product.featured
         ? `Removed “${product.name}” from Featured.`
         : `Added “${product.name}” to Featured.`);
     } catch (err) {
-      setNotice(`Could not update Featured: ${err?.message || "Unknown error"}`);
+      setNotice(err?.data === "PRODUCT_NOT_FOUND" ? "This product was deleted."
+        : `Could not update Featured: ${err?.data || err?.message || "Unknown error"}`);
     } finally {
       featuredBusyRef.current.delete(id);
       setFeaturedBusy((prev) => ({ ...prev, [id]: false }));
     }
   }
-
-  const availableCount = allProducts.filter(
-    (p) => p.available
-  ).length;
 
   const featuredCount = allProducts.filter(
     (p) => p.featured
@@ -705,6 +292,7 @@ function Dashboard() {
     function handleKeydown(event) {
       if (event.key === "Escape") {
         setEditorOpen(false);
+        setImageFile(null);
         return;
       }
 
@@ -756,8 +344,8 @@ function Dashboard() {
     if (!imageFile) return;
 
     const url = URL.createObjectURL(imageFile);
-    setPreview(url);
-
+    const image = editorImageRef.current;
+    if (image) image.src = url;
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
@@ -776,6 +364,7 @@ function Dashboard() {
 
   function openEdit(product) {
     setEditingId(product._id);
+    setEditingRevision(product.revision ?? 0);
 
     setForm({
       name: product.name,
@@ -826,19 +415,16 @@ function Dashboard() {
     }
     if (form.featured) {
       const currentFeatured = allProducts.filter((item) => item.featured && item._id !== editingId).length;
-      const pendingFeatured = [...jobsRef.current.values()].filter((job) =>
-        ["queued", "running"].includes(job.status) && job.payload.featured && job.editingId !== editingId
-      ).length;
+      const pendingFeatured = countPendingFeatured(job => !editingId || job.editingId !== editingId);
       if (currentFeatured + pendingFeatured >= MAX_FEATURED) {
         setError(`Only ${MAX_FEATURED} products can be featured. Unfeature another product first.`);
         return;
       }
     }
-    const id = ++nextIdRef.current;
-    const job = {
-      id,
+    enqueue([{
       name: form.name.trim(),
       editingId,
+      expectedRevision: editingRevision,
       file: imageFile,
       payload: {
         name: form.name.trim(),
@@ -851,19 +437,9 @@ function Dashboard() {
         available: form.available,
         featured: form.featured,
       },
-      status: "queued",
-      stage: "Waiting in queue",
-      progress: 0,
-      error: "",
-    };
-    jobsRef.current.set(id, job);
-    setJobs(Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({ ...view })));
-    setQueueVisible(true);
-    setQueueExpanded(true);
-    setRecentlyFinished(false);
+    }]);
     setEditorOpen(false);
     setImageFile(null);
-    drainQueue();
   }
 
   // Queue all batch items immediately. Existing background manager uploads up to
@@ -871,27 +447,13 @@ function Dashboard() {
   function queueBatch(batch) {
     if (!batch.length) return;
     const currentFeatured = allProducts.filter((p) => p.featured).length;
-    const pendingFeatured = [...jobsRef.current.values()].filter(
-      (job) => ["queued", "running"].includes(job.status) && job.payload.featured && !job.editingId
-    ).length;
+    const pendingFeatured = countPendingFeatured(job => !job.editingId);
     const batchFeatured = batch.filter((item) => item.payload.featured).length;
     if (currentFeatured + pendingFeatured + batchFeatured > MAX_FEATURED) {
       throw new Error(`Maximum ${MAX_FEATURED} Featured products. Remove Featured selections first.`);
     }
-    for (const item of batch) {
-      const id = ++nextIdRef.current;
-      jobsRef.current.set(id, {
-        id, name: item.payload.name, editingId: null,
-        file: item.file, payload: item.payload,
-        status: "queued", stage: "Waiting in queue", progress: 0, error: "",
-      });
-    }
-    setJobs(Array.from(jobsRef.current.values()).map(({ file, ...view }) => ({ ...view })));
-    setQueueVisible(true);
-    setQueueExpanded(true);
-    setRecentlyFinished(false);
+    enqueue(batch.map(item => ({ ...item, name: item.payload.name, editingId: null })));
     setNotice(`${batch.length} product${batch.length === 1 ? "" : "s"} added to the upload queue.`);
-    drainQueue();
   }
 
   // ========================================
@@ -951,7 +513,7 @@ function Dashboard() {
             View Website
           </a>
 
-          <button type="button" onClick={() => signOut()}>
+          <button type="button" onClick={() => signOut()} disabled={pendingCount > 0}>
             <Icon name="logout" size={17} />
             Sign Out
           </button>
@@ -985,9 +547,7 @@ function Dashboard() {
 
         {/* Isolated from the product manager: analytics errors cannot crash admin. */}
         {activeView === "dashboard" && (
-          <AnalyticsErrorBoundary>
-            <AdminAnalyticsPanel />
-          </AnalyticsErrorBoundary>
+          <AdminAnalyticsPanel />
         )}
 
         {/* NOTICE */}
@@ -1141,7 +701,7 @@ function Dashboard() {
               <span className="ladmin-queue-indicator" aria-hidden="true" />
               <div>
                 <strong>{pendingCount ? `Saving ${pendingCount} product${pendingCount === 1 ? "" : "s"}` : failedCount ? `${failedCount} upload${failedCount === 1 ? "" : "s"} need attention` : "All products saved"}</strong>
-                <small>{pendingCount ? `${doneCount} completed · ${failedCount} failed` : failedCount ? "Retry failed uploads below" : "Finished successfully"}</small>
+                <small>{pendingCount ? `${doneCount} completed · ${failedCount} failed` : failedCount ? "Review failed uploads below" : "Finished successfully"}</small>
               </div>
             </div>
             <button type="button" className="ladmin-queue-toggle"
@@ -1168,7 +728,10 @@ function Dashboard() {
                   <div className="ladmin-queue-job-bottom">
                     <small>{job.error || job.stage}</small>
                     {job.status === "failed" && (
-                      <button type="button" onClick={() => retryJob(job.id)}>Retry</button>
+                      <>
+                        {job.canRetry && <button type="button" onClick={() => retryJob(job.id)}>Retry</button>}
+                        <button type="button" onClick={() => dismissJob(job.id)}>Dismiss</button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -1188,9 +751,7 @@ function Dashboard() {
         <AdminBatchUpload
           onClose={() => setBatchOpen(false)}
           onPublish={queueBatch}
-          featuredSlots={Math.max(0, MAX_FEATURED - featuredCount - [...jobsRef.current.values()].filter(
-            (job) => ["queued", "running"].includes(job.status) && job.payload.featured && !job.editingId
-          ).length)}
+          featuredSlots={Math.max(0, MAX_FEATURED - featuredCount - pendingNewFeatured)}
         />
       )}
 
@@ -1243,7 +804,9 @@ function Dashboard() {
               <label>Product Image</label>
 
               <label className="ladmin-image-upload">
-                {preview ? (
+                {imageFile ? (
+                  <img ref={editorImageRef} alt="Product preview" />
+                ) : preview ? (
                   <img src={preview} alt="Product preview" />
                 ) : (
                   <div className="ladmin-upload-placeholder">
@@ -1445,8 +1008,6 @@ function Dashboard() {
 
 export default function Admin() {
   return (
-    <AdminErrorBoundary>
-      <AdminAccess />
-    </AdminErrorBoundary>
+    <AdminAccess><Dashboard /></AdminAccess>
   );
 }

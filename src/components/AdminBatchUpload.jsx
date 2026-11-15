@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import '../styles/AdminBatchUpload.css';
 
 const CATEGORIES = ['Rings', 'Earrings', 'Necklaces', 'Bracelets', 'Gemstones'];
@@ -8,7 +8,6 @@ const MAX_FILES = 50;
 const MAX_BYTES = 5 * 1024 * 1024;
 const ACCEPTED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const DEFAULTS = { category: 'Rings', gemstone: 'Blue Sapphire', metal: '925 Sterling Silver', description: '', price: '', available: true };
-const BULK_FIELDS = ['category', 'gemstone', 'metal', 'price', 'description', 'available'];
 const humanFileName = (name) => name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/\b\w/g, (c) => c.toUpperCase());
 const validItem = (item) => !!item.name.trim() && item.price !== '' && Number.isFinite(Number(item.price)) && Number(item.price) >= 0;
 
@@ -31,23 +30,24 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
   const nextId = useRef(0);
   const urlsRef = useRef(new Set());
   const dialogRef = useRef(null);
-  const editorRef = useRef(null);
-  const itemsRef = useRef(items);
-  const busyRef = useRef(busy);
-  const onCloseRef = useRef(onClose);
-  itemsRef.current = items;
-  busyRef.current = busy;
-  onCloseRef.current = onClose;
+
+  function requestClose() {
+    if (busy) return;
+    if (items.length && !window.confirm('Discard this batch? Your product edits have not been published.')) return;
+    onClose();
+  }
+  const closeOnEscape = useEffectEvent(() => requestClose());
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const previouslyFocused = document.activeElement;
+    const urls = urlsRef.current;
     dialogRef.current?.focus({ preventScroll: true });
     const handleKey = (event) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        if (!busyRef.current) requestClose();
+        closeOnEscape();
       }
       if (event.key !== 'Tab' || !dialogRef.current) return;
       const focusable = [...dialogRef.current.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]')]
@@ -61,24 +61,17 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKey);
-      urlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-      urlsRef.current.clear();
+      urls.forEach((url) => URL.revokeObjectURL(url));
+      urls.clear();
       previouslyFocused?.focus?.({ preventScroll: true });
     };
   }, []);
 
-  const requestClose = () => {
-    if (busyRef.current) return;
-    if (itemsRef.current.length && !window.confirm('Discard this batch? Your product edits have not been published.')) return;
-    onCloseRef.current();
-  };
-
   const addFiles = (fileList) => {
     const incoming = Array.from(fileList || []);
     if (!incoming.length) return;
-    const invalid = incoming.filter((f) => !ACCEPTED.has(f.type) || f.size > MAX_BYTES);
     const valid = incoming.filter((f) => ACCEPTED.has(f.type) && f.size <= MAX_BYTES);
-    const available = Math.max(0, MAX_FILES - itemsRef.current.length);
+    const available = Math.max(0, MAX_FILES - items.length);
     const accepted = valid.slice(0, available);
     const newItems = accepted.map((file) => {
       const url = URL.createObjectURL(file);
@@ -105,8 +98,8 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
   const remove = (id) => {
     setItems((current) => current.filter((item) => item.id !== id));
     setSelected((current) => current.filter((candidate) => candidate !== id));
-    setActiveId((idNow) => idNow === id ? (itemsRef.current.find((item) => item.id !== id)?.id ?? null) : idNow);
-    const item = itemsRef.current.find((entry) => entry.id === id);
+    setActiveId((idNow) => idNow === id ? (items.find((item) => item.id !== id)?.id ?? null) : idNow);
+    const item = items.find((entry) => entry.id === id);
     if (item) { URL.revokeObjectURL(item.url); urlsRef.current.delete(item.url); }
     setError('');
   };
@@ -210,7 +203,7 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
                       <div className="lbatch-selection-bar"><button type="button" onClick={() => setSelected(items.map((item) => item.id))}>Select all</button><button type="button" onClick={() => setSelected([])}>Clear</button></div>
                       <div className="lbatch-product-rows">
                         {visible.length === 0 && <p className="lbatch-noresults">No matching products.</p>}
-                        {visible.map((item, index) => (
+                        {visible.map((item) => (
                           <div key={item.id} className={`lbatch-product-row ${active?.id === item.id ? 'is-current' : ''}`}>
                             <input type="checkbox" checked={selected.includes(item.id)} onChange={() => toggleSelect(item.id)} aria-label={`Select ${item.name || item.file.name}`} />
                             <button type="button" className="lbatch-row-button" onClick={() => setActiveId(item.id)} aria-current={active?.id === item.id ? 'true' : undefined}>
@@ -222,7 +215,7 @@ export default function AdminBatchUpload({ onClose, onPublish, featuredSlots = 0
                       </div>
                     </div>
 
-                    <div className="lbatch-detail-editor" ref={editorRef}>
+                    <div className="lbatch-detail-editor">
                       {active && (
                         <>
                           <div className="lbatch-detail-header"><div><span className="lbatch-kicker">EDIT PRODUCT</span><h3>{active.name || 'Untitled product'}</h3><p title={active.file.name}>{active.file.name}</p></div><button type="button" className="lbatch-remove" onClick={() => remove(active.id)}>Remove</button></div>

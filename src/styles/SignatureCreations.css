@@ -44,11 +44,17 @@
 }
 
 .signature-card {
+  color: inherit;
   display: flex;
   flex-direction: column;
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.25s ease;
+}
+
+.signature-card:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 4px;
 }
 
 .signature-card:hover {

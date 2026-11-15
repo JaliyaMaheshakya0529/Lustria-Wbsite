@@ -1,13 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useScrollReveal from '../hooks/useScrollReveal'
 import '../styles/Collection.css'
 import '../styles/ProductCode.css'
 
-import { useQuery } from 'convex/react'
+import { usePaginatedQuery, useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-import { productCode } from '../utils/productCodes'
+import ProductCard from '../components/ProductCard'
 
 const baseCategories = ['All', 'Rings', 'Earrings', 'Necklaces', 'Gemstones']
+const PAGE_SIZE = 24
 
 const sortOptions = [
   { value: 'featured', label: 'Featured' },
@@ -15,25 +16,8 @@ const sortOptions = [
   { value: 'price-high', label: 'Price: High to Low' }
 ]
 
-export default function Collection({ initialCategory = 'All', onFilterChange, onProductSelect }) {
-  const dbProducts = useQuery(api.products.list)
-  const isLoading = dbProducts === undefined
-  const products = useMemo(() => (dbProducts || []).map((product) => ({
-    id: product._id,
-    productNo: product.productNo,
-    title: product.name,
-    category: product.category,
-    gemstone: product.gemstone,
-    metal: product.metal,
-    price: product.price,
-    priceFormatted: `LKR ${product.price.toLocaleString('en-LK')}`,
-    image: product.imageUrl,
-    featured: product.featured,
-    createdAt: product.createdAt
-  })), [dbProducts])
-  const categories = useMemo(() => [...baseCategories, ...new Set(products.map(p => p.category).filter(c => !baseCategories.includes(c)))], [products])
-  const gemstones = useMemo(() => ['All', ...new Set(products.map(p => p.gemstone).filter(Boolean))].sort((a, b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b)), [products])
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory)
+export default function Collection({ selectedCategory = 'All', onFilterChange, onNavigate }) {
+  const facets = useQuery(api.products.collectionFacets)
   const [selectedGemstone, setSelectedGemstone] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
   const [sortMenuOpen, setSortMenuOpen] = useState(false)
@@ -42,10 +26,23 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const filterTriggerRef = useRef(null)
   const filterCloseRef = useRef(null)
-
-  useEffect(() => {
-    setSelectedCategory(initialCategory)
-  }, [initialCategory])
+  const category = selectedCategory === 'All' ? undefined : selectedCategory
+  const gemstone = selectedGemstone === 'All' ? undefined : selectedGemstone
+  const { results: products, status, loadMore } = usePaginatedQuery(api.products.listCollection, {
+    ...(category !== undefined ? { category } : {}),
+    ...(gemstone !== undefined ? { gemstone } : {}),
+    sort: sortBy,
+  }, { initialNumItems: PAGE_SIZE })
+  const isLoading = status === 'LoadingFirstPage'
+  const categories = [...new Set([...baseCategories, ...(facets ?? []).map(item => item.category)])]
+  const gemstones = ['All', ...new Set((facets ?? []).map(item => item.gemstone).filter(Boolean))].sort(
+    (a, b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b)
+  )
+  const total = facets?.reduce((count, item) => (
+    (!category || item.category === category) && (!gemstone || item.gemstone === gemstone)
+      ? count + item.count
+      : count
+  ), 0)
 
   // Lock the background while the mobile drawer is open. Support Esc and
   // restore focus to the button that opened the drawer.
@@ -54,6 +51,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
 
     const originalBodyOverflow = document.body.style.overflow
     const originalHtmlOverflow = document.documentElement.style.overflow
+    const filterTrigger = filterTriggerRef.current
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
     window.dispatchEvent(new CustomEvent('lustria:scroll-lock', { detail: { locked: true } }))
@@ -74,7 +72,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
       window.dispatchEvent(new CustomEvent('lustria:scroll-lock', { detail: { locked: false } }))
       window.removeEventListener('keydown', onEscape)
       window.removeEventListener('resize', onResize)
-      filterTriggerRef.current?.focus({ preventScroll: true })
+      filterTrigger?.focus({ preventScroll: true })
     }
   }, [mobileFilterOpen])
 
@@ -97,31 +95,12 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
     }
   }, [sortMenuOpen])
 
-  const handleCategorySelect = (cat) => {
-    setSelectedCategory(cat)
-    if (onFilterChange) onFilterChange(cat)
-  }
-
-  const filteredProducts = useMemo(() => {
-    return [...products]
-      .filter((item) => {
-        const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory
-        const matchesGemstone = selectedGemstone === 'All' || item.gemstone === selectedGemstone
-        return matchesCategory && matchesGemstone
-      })
-      .sort((a, b) => {
-        if (sortBy === 'price-low') return a.price - b.price
-        if (sortBy === 'price-high') return b.price - a.price
-        return Number(b.featured) - Number(a.featured) || b.createdAt - a.createdAt
-      })
-  }, [products, selectedCategory, selectedGemstone, sortBy])
-
-  useScrollReveal(filteredProducts)
+  useScrollReveal(products)
 
   const hasActiveFilters = selectedCategory !== 'All' || selectedGemstone !== 'All' || sortBy !== 'featured'
 
   const resetFilters = () => {
-    handleCategorySelect('All')
+    onFilterChange('All')
     setSelectedGemstone('All')
     setSortBy('featured')
   }
@@ -163,15 +142,9 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
           {isLoading ? (
             <span role="status">Loading creations…</span>
           ) : (
-            <>Showing <strong>{filteredProducts.length}</strong> creations</>
+            <>Showing <strong>{products.length}</strong>{total > products.length ? ` of ${total}` : ''} creations</>
           )}
         </span>
-
-        {hasActiveFilters && (
-          <button type="button" className="shop-clear-filters" onClick={resetFilters}>
-            <span aria-hidden="true">×</span> Clear Filters
-          </button>
-        )}
 
         <div className="shop-sort">
           <span className="shop-sort-label" id="shop-sort-label">Sort by:</span>
@@ -252,7 +225,8 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
                   key={cat}
                   type="button"
                   className={`filter-pill ${selectedCategory === cat ? 'is-active' : ''}`}
-                  onClick={() => handleCategorySelect(cat)}
+                  aria-pressed={selectedCategory === cat}
+                  onClick={() => onFilterChange(cat)}
                 >
                   {cat}
                 </button>
@@ -268,6 +242,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
                   key={gem}
                   type="button"
                   className={`filter-pill ${selectedGemstone === gem ? 'is-active' : ''}`}
+                  aria-pressed={selectedGemstone === gem}
                   onClick={() => setSelectedGemstone(gem)}
                 >
                   {gem}
@@ -295,7 +270,7 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
               ))}
               <span className="shop-sr-only">Loading jewellery collection…</span>
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : products.length === 0 && status === 'Exhausted' ? (
             <div className="shop-empty reveal-on-scroll">
               <p className="shop-empty-text">No creations match the selected filters.</p>
               <button type="button" className="btn-primary" onClick={resetFilters}>
@@ -303,34 +278,20 @@ export default function Collection({ initialCategory = 'All', onFilterChange, on
               </button>
             </div>
           ) : (
-            <div className="shop-grid">
-              {filteredProducts.map((piece) => (
-                <article
-                  key={piece.id}
-                  className="signature-card reveal-on-scroll lustria-clickable-product"
-                  role="link"
-                  tabIndex={0}
-                  aria-label={`View details for ${piece.title}`}
-                  onClick={() => onProductSelect?.(piece)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault()
-                      onProductSelect?.(piece)
-                    }
-                  }}
-                >
-                  <div className="signature-image-box">
-                    <img src={piece.image} alt={piece.title} loading="lazy" />
-                  </div>
-
-                  <div className="signature-info">
-                    <span className="signature-metal">{piece.metal}</span>
-                    <h3 className="signature-title">{piece.title}</h3>
-                    <span className="signature-price">{piece.priceFormatted}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <>
+              <div className="shop-grid">
+                {products.map((product) => (
+                  <ProductCard key={product._id} product={product} onNavigate={onNavigate} reveal />
+                ))}
+              </div>
+              {status !== 'Exhausted' && (
+                <div className="shop-load-more">
+                  <button type="button" className="btn-primary" disabled={status === 'LoadingMore'} onClick={() => loadMore(PAGE_SIZE)}>
+                    {status === 'LoadingMore' ? 'Loading creations…' : 'Load More'}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

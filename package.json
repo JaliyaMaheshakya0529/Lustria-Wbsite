@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/build-pages.js",
     "lint": "oxlint",
+    "test": "node --disable-warning=ExperimentalWarning --test",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -10,6 +10,7 @@
 
 import type * as analytics from "../analytics.js";
 import type * as auth from "../auth.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as products from "../products.js";
 
@@ -22,6 +23,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
   auth: typeof auth;
+  crons: typeof crons;
   http: typeof http;
   products: typeof products;
 }>;

@@ -10,7 +10,8 @@ export function parseProductCode(value) {
   const productNo = Number(value.slice(4))
   // Legacy 6-digit codes are also valid deep links; canonical display uses
   // a minimum width of five digits. Old IDs below 50 resolve via aliases.
-  const legacySixDigits = /^LUS-\d{6,}$/.test(value)
+  if (productCode(productNo) === null) return null
+  const legacySixDigits = `LUS-${String(productNo).padStart(6, '0')}` === value
   return productCode(productNo) === value || legacySixDigits ? productNo : null
 }
 

@@ -165,15 +165,6 @@
   text-align: center;
   margin-top: 12px;
 }
-.lpd-setup-note {
-  border: 1px solid #e8d9b5;
-  background: #fff8e9;
-  color: #806435;
-  padding: 15px;
-  border-radius: 7px;
-  font-size: 13px;
-  line-height: 1.6;
-}
 .lpd-state {
   max-width: 700px;
   margin: 50px auto;
@@ -193,13 +184,6 @@
   padding: 13px 20px;
   border-radius: 7px;
   cursor: pointer;
-}
-.lustria-clickable-product {
-  cursor: pointer;
-}
-.lustria-clickable-product:focus-visible {
-  outline: 2px solid #b28e56;
-  outline-offset: 4px;
 }
 @media (max-width: 760px) {
   .lpd-page {

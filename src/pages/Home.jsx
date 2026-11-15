@@ -3,9 +3,10 @@ import SignatureCreations from '../components/SignatureCreations'
 import Benefits from '../components/Benefits'
 import Reviews from '../components/Reviews'
 import useScrollReveal from '../hooks/useScrollReveal'
+import { customOrderLink } from '../utils/inquiries'
 import '../styles/Home.css'
 
-export default function Home({ onExplore, onProductSelect }) {
+export default function Home({ onExplore, onNavigate }) {
   useScrollReveal()
 
   return (
@@ -25,9 +26,11 @@ export default function Home({ onExplore, onProductSelect }) {
             >
               Explore Collection
             </button>
-            <a href="#contact" className="btn-outline">
-              Custom Order
-            </a>
+            {customOrderLink && (
+              <a href={customOrderLink} className="btn-outline" target="_blank" rel="noopener noreferrer">
+                Custom Order
+              </a>
+            )}
           </div>
         </div>
       </section>
@@ -45,7 +48,7 @@ export default function Home({ onExplore, onProductSelect }) {
       </div>
 
       <div className="reveal-on-scroll">
-        <SignatureCreations onExplore={onExplore} onProductSelect={onProductSelect} />
+        <SignatureCreations onExplore={onExplore} onNavigate={onNavigate} />
       </div>
 
       <div className="reveal-on-scroll">

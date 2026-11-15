@@ -14,7 +14,9 @@ export default defineSchema({
     path: v.string(),
     sessionId: v.string(),
     timestamp: v.number(),
+    productLabel: v.optional(v.string()),
   }).index("by_timestamp", ["timestamp"])
+    .index("by_session_time", ["sessionId", "timestamp"])
     .index("by_session_path_time", ["sessionId", "path", "timestamp"]),
 
   // Old codes (LUS-000001 etc.) remain resolvable after the one-time move
@@ -22,7 +24,9 @@ export default defineSchema({
   productCodeAliases: defineTable({
     oldProductNo: v.number(),
     productId: v.id("products"),
-  }).index("by_oldProductNo", ["oldProductNo"]),
+    currentProductNo: v.optional(v.number()),
+  }).index("by_oldProductNo", ["oldProductNo"])
+    .index("by_productId", ["productId"]),
 
   // A single counter document; updated atomically with product creation.
   productCounters: defineTable({
@@ -43,5 +47,18 @@ export default defineSchema({
     available: v.boolean(),
     featured: v.boolean(),
     createdAt: v.number(),
-  }).index("by_productNo", ["productNo"]),
+    revision: v.optional(v.number()),
+    creationRequestId: v.optional(v.string()),
+  }).index("by_productNo", ["productNo"])
+    .index("by_available_created", ["available", "createdAt"])
+    .index("by_available_price", ["available", "price"])
+    .index("by_available_featured_created", ["available", "featured", "createdAt"])
+    .index("by_featured_available_created", ["featured", "available", "createdAt"])
+    .index("by_image", ["imageId"])
+    .index("by_creationRequestId", ["creationRequestId"]),
+
+  stagedProductImages: defineTable({
+    imageId: v.id("_storage"),
+    cleanupId: v.id("_scheduled_functions"),
+  }).index("by_image", ["imageId"]),
 });

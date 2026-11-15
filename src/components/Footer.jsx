@@ -1,8 +1,15 @@
+import { contactLink, customOrderLink } from '../utils/inquiries'
+import { followLink } from '../utils/navigation'
 import '../styles/Footer.css'
 
-export default function Footer({ onNavigate }) {
-  const currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear()
+const categories = [
+  ['Gemstones', 'Natural Sapphires'],
+  ['Rings', 'Custom Rings'],
+  ['Necklaces', 'Pendants & Bands'],
+]
 
+export default function Footer({ onNavigate }) {
   return (
     <footer className="footer" id="contact">
       <div className="footer-content">
@@ -14,18 +21,21 @@ export default function Footer({ onNavigate }) {
         <div className="footer-col">
           <h4>Explore</h4>
           <ul>
-            <li><a href="/collection?category=Gemstones" onClick={(event) => { event.preventDefault(); onNavigate?.('/collection', 'Gemstones') }}>Natural Sapphires</a></li>
-            <li><a href="/collection?category=Rings" onClick={(event) => { event.preventDefault(); onNavigate?.('/collection', 'Rings') }}>Custom Rings</a></li>
-            <li><a href="/collection?category=Necklaces" onClick={(event) => { event.preventDefault(); onNavigate?.('/collection', 'Necklaces') }}>Pendants &amp; Bands</a></li>
+            {categories.map(([category, label]) => (
+              <li key={category}>
+                <a href={`/collection?category=${category}`}
+                  onClick={(event) => followLink(event, () => onNavigate('/collection', category))}>{label}</a>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div className="footer-col">
           <h4>Connect</h4>
           <ul>
-            <li><a href="#contact">WhatsApp Support</a></li>
-            <li><a href="#contact">Custom Inquiries</a></li>
-            <li><a href="#contact">Ja-Ela, Sri Lanka</a></li>
+            {contactLink && <li><a href={contactLink} target="_blank" rel="noopener noreferrer">WhatsApp Support</a></li>}
+            {customOrderLink && <li><a href={customOrderLink} target="_blank" rel="noopener noreferrer">Custom Inquiries</a></li>}
+            <li>Ja-Ela, Sri Lanka</li>
           </ul>
         </div>
       </div>

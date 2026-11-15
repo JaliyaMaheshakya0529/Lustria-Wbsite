@@ -37,7 +37,8 @@
   margin: 0;
 }
 
-.footer-col a {
+.footer-col a,
+.footer-col li {
   color: var(--color-muted, #5a5752);
   font-size: 0.9rem;
   text-decoration: none;

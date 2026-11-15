@@ -4,10 +4,11 @@ import { api } from '../../convex/_generated/api'
 import SiteAnalyticsTracker from '../components/SiteAnalyticsTracker'
 import NotFound from './NotFound'
 import { productCode, parseProductCode } from '../utils/productCodes'
+import { whatsappLink } from '../utils/inquiries'
+import { productMetadata } from '../utils/metadata'
+import usePageMetadata from '../hooks/usePageMetadata'
 import '../styles/ProductDetails.css'
 import '../styles/ProductCode.css'
-
-const WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
 
 export default function ProductDetails({ productId, onNavigate }) {
   const numericCode = parseProductCode(productId)
@@ -24,15 +25,14 @@ export default function ProductDetails({ productId, onNavigate }) {
   const product = numericCode !== null ? byCode : byLegacyId
   const isLoading = product === undefined
   const code = productCode(product?.productNo)
+  usePageMetadata(product ? productMetadata(product) : null)
 
   useEffect(() => {
     if (!product) return
-    document.title = 'Lustria'
     if (code && productId !== code) {
       // Keep previously shared internal-ID links working, then switch to the permanent URL.
       window.history.replaceState({}, '', `/product/${code}`)
     }
-    return () => { document.title = 'Lustria' }
   }, [product, code, productId])
 
   const goBack = () => onNavigate('/collection')
@@ -57,9 +57,7 @@ export default function ProductDetails({ productId, onNavigate }) {
     `Link: ${productLink}`,
     'Could you please share more details?'
   ].join('\n')
-  const whatsappHref = WHATSAPP_NUMBER
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(inquiry)}`
-    : null
+  const whatsappHref = whatsappLink(inquiry)
 
   return (
     <section className="lpd-page">
@@ -96,15 +94,15 @@ export default function ProductDetails({ productId, onNavigate }) {
                 {product.metal && <div><dt>Metal</dt><dd>{product.metal}</dd></div>}
               </dl>
             </div>
-            {whatsappHref ? (
+            {whatsappHref && (
+              <>
               <a className="lpd-whatsapp" href={whatsappHref} target="_blank" rel="noopener noreferrer">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.4 11.6a8.4 8.4 0 0 1-12.3 7.5L3.5 20.5l1.5-4.4A8.4 8.4 0 1 1 20.4 11.6Z"/><path d="M9 8.3c-.3-.6-.7-.5-1-.5-.3 0-.7.2-.9.6-.2.4-.5 1.2.1 2.4.6 1.3 2.2 3.2 4.4 4.2 1.7.8 2.4.4.4-.3.8-1.1.7-1.4"/></svg>
                 Inquire via WhatsApp
               </a>
-            ) : (
-              <p className="lpd-setup-note">Set VITE_WHATSAPP_NUMBER in the environment variables to enable WhatsApp inquiries.</p>
+              <p className="lpd-help">Ask us about availability, sizing and customisation.</p>
+              </>
             )}
-            <p className="lpd-help">Ask us about availability, sizing and customisation.</p>
           </div>
         </div>
       </div>
