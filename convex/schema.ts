@@ -5,6 +5,11 @@ import { v } from "convex/values";
 
 export default defineSchema({
   ...authTables,
+  // Archived imports; homepage reviews are now static.
+  reviews: defineTable({
+    author: v.string(), quote: v.string(), rating: v.optional(v.number()),
+    source: v.string(), featured: v.boolean(), createdAt: v.number(),
+  }).index("by_featured", ["featured"]),
   customOrders: defineTable({
     requestId: v.optional(v.string()), name: v.string(), phone: v.string(), address: v.string(),
     ringSize: v.string(), description: v.string(), budget: v.string(),

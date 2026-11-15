@@ -33,6 +33,20 @@ function AnalyticsContent() {
   const [kind, setKind] = useState('all')
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState('most')
+  const [activeDay, setActiveDay] = useState(null)
+  const [tooltip, setTooltip] = useState(null)
+  const showTooltip = (event, day) => {
+    setActiveDay(day.date)
+    const x = event.clientX, y = event.clientY
+    setTooltip({ date: day.date, views: day.views,
+      x: Math.max(8, Math.min(x + 16, window.innerWidth - 200)),
+      y: y + 96 > window.innerHeight ? Math.max(8, y - 88) : y + 16 })
+  }
+  const [hideZero, setHideZero] = useState(false)
+  const [pageSize, setPageSize] = useState(10)
+  const [pageIndex, setPageIndex] = useState(0)
+  const resetFilters = () => { setSearch(''); setKind('all'); setPeriod('views'); setSort('most'); setHideZero(false); setPageIndex(0) }
+
 
   const days = analytics?.daily?.slice(-graphRange) ?? []
   const maxValue = Math.max(1, ...days.map(d => d.views))
@@ -44,6 +58,7 @@ function AnalyticsContent() {
     const query = search.trim().toLowerCase()
     const filtered = allPages.filter(item =>
       (kind === 'all' || (kind === 'products' ? item.type === 'product' : item.type === 'page')) &&
+      (!hideZero || item[period] > 0) &&
       (!query || `${item.label} ${item.path}`.toLowerCase().includes(query))
     )
     return filtered.sort((a, b) => {
@@ -51,14 +66,21 @@ function AnalyticsContent() {
       if (sort === 'least') return a[period] - b[period] || a.label.localeCompare(b.label)
       return b[period] - a[period] || a.label.localeCompare(b.label)
     })
-  }, [analytics?.pages, period, kind, search, sort])
+  }, [analytics?.pages, period, kind, search, sort, hideZero])
 
+  const pageCount = Math.max(1, Math.ceil(displayed.length / pageSize))
+  const currentPage = Math.min(pageIndex, pageCount - 1)
+  const visiblePages = displayed.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+  const selectedDay = days.find(day => day.date === activeDay)
+  const peakDay = days.reduce((best, day) => !best || day.views > best.views ? day : best, null)
+  const filteredTotal = displayed.reduce((sum, page) => sum + page[period], 0)
   const allCount = analytics?.pages?.length ?? 0
   const productCount = analytics?.pages?.filter(p => p.type === 'product').length ?? 0
   const selectedTotal = analytics?.pages?.reduce((sum, p) => sum + p[period], 0) ?? 0
 
   return (
-    <section className="ladmin-analytics la2" aria-label="Website analytics" data-lenis-prevent>
+    <section className="ladmin-analytics la2" aria-label="Website analytics" data-lenis-prevent onScroll={() => setTooltip(null)}>
+      {tooltip && <div className="la2-cursor-tooltip" role="tooltip" style={{ left: tooltip.x, top: tooltip.y }}><span>{tooltip.date}</span><strong>{fmt(tooltip.views)} <small>views</small></strong></div>}
       <div className="la2-topline">
         <div>
           <h2>Site Analytics</h2>
@@ -93,23 +115,24 @@ function AnalyticsContent() {
                 <p>Page views by day</p>
               </div>
               <div className="la2-toggle" role="group" aria-label="Traffic chart range">
-                <button type="button" aria-pressed={graphRange === 7} className={graphRange === 7 ? 'selected' : ''} onClick={() => setGraphRange(7)}>7 days</button>
-                <button type="button" aria-pressed={graphRange === 30} className={graphRange === 30 ? 'selected' : ''} onClick={() => setGraphRange(30)}>30 days</button>
+                <button type="button" aria-pressed={graphRange === 7} className={graphRange === 7 ? 'selected' : ''} onClick={() => { setGraphRange(7); setActiveDay(null); setTooltip(null) }}>7 days</button>
+                <button type="button" aria-pressed={graphRange === 30} className={graphRange === 30 ? 'selected' : ''} onClick={() => { setGraphRange(30); setActiveDay(null); setTooltip(null) }}>30 days</button>
               </div>
             </div>
             <div className="la2-trend-summary">
               <span><strong>{fmt(graphTotal)}</strong> views in this period</span>
-              <span><strong>{graphAverage}</strong> average / day</span>
+              <span><strong>{graphAverage}</strong> average / day</span><span><strong>{peakDay?.views ? peakDay.date : "—"}</strong> busiest day</span>
             </div>
             <div className="la2-chart" aria-label={`Daily page views for the last ${graphRange} days`}>
               {days.map(day => (
-                <div className="la2-chart-col" key={day.date} title={`${day.date}: ${fmt(day.views)} views`}>
+                <button type="button" className={`la2-chart-col ${activeDay === day.date ? "is-active" : ""}`} key={day.date} aria-label={`${day.date}: ${fmt(day.views)} views`} aria-pressed={activeDay === day.date} onClick={() => setActiveDay(day.date)} onFocus={() => setActiveDay(day.date)} onPointerEnter={e => { if (e.pointerType !== "touch") showTooltip(e, day) }} onPointerMove={e => { if (e.pointerType !== "touch") showTooltip(e, day) }} onPointerLeave={() => setTooltip(null)} onBlur={() => setTooltip(null)}>
                   <div className="la2-chart-bar" style={{ height: day.views ? `${Math.max(3, day.views / maxValue * 100)}%` : '2px' }} />
                   {graphRange === 7 && <span>{day.date.slice(5)}</span>}
-                </div>
+                </button>
               ))}
               {graphTotal === 0 && <div className="la2-chart-empty">No page views recorded for this period.</div>}
             </div>
+            <div className="la2-chart-inspector" role="status">{selectedDay ? <><strong>{selectedDay.date}</strong><span>{fmt(selectedDay.views)} page views</span></> : "Hover, focus or tap a bar to inspect a day."}</div>
             {graphRange === 30 && <div className="la2-axis"><span>{days[0]?.date}</span><span>{days[days.length - 1]?.date}</span></div>}
           </div>
 
@@ -130,13 +153,13 @@ function AnalyticsContent() {
                   ['website', 'Website pages'],
                   ['products', `Products (${productCount})`],
                 ].map(([value, label]) => (
-                  <button key={value} type="button" className={kind === value ? 'selected' : ''} aria-pressed={kind === value} onClick={() => setKind(value)}>{label}</button>
+                  <button key={value} type="button" className={kind === value ? 'selected' : ''} aria-pressed={kind === value} onClick={() => { setKind(value); setPageIndex(0) }}>{label}</button>
                 ))}
               </div>
               <label className="la2-search">
                 <span className="la2-sr-only">Search by page name or product code</span>
                 <svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-                <input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search pages or product codes" />
+                <input type="search" value={search} onChange={e => { setSearch(e.target.value); setPageIndex(0) }} placeholder="Search pages or product codes" />
               </label>
             </div>
             <div className="la2-table-toolbar">
@@ -146,22 +169,23 @@ function AnalyticsContent() {
                   ['week', '7 days'],
                   ['views', '30 days'],
                 ].map(([key, label]) => (
-                  <button key={key} type="button" className={period === key ? 'selected' : ''} aria-pressed={period === key} onClick={() => setPeriod(key)}>{label}</button>
+                  <button key={key} type="button" className={period === key ? 'selected' : ''} aria-pressed={period === key} onClick={() => { setPeriod(key); setPageIndex(0) }}>{label}</button>
                 ))}
               </div>
               <label className="la2-sort">Sort by
-                <select value={sort} onChange={e => setSort(e.target.value)}>
+                <select value={sort} onChange={e => { setSort(e.target.value); setPageIndex(0) }}>
                   <option value="most">Most viewed</option>
                   <option value="least">Least viewed</option>
                   <option value="name">Page name</option>
                 </select>
               </label>
             </div>
+            <div className="la2-results-controls"><span aria-live="polite"><strong>{fmt(filteredTotal)}</strong> views across {displayed.length} matching pages</span><label><input type="checkbox" checked={hideZero} onChange={e => { setHideZero(e.target.checked); setPageIndex(0) }}/> Hide zero-view pages</label><button type="button" onClick={resetFilters}>Reset filters</button></div>
             <div className="la2-table-wrap">
               <table className="la2-table">
                 <thead><tr><th>Page</th><th>Today</th><th>7 days</th><th>30 days</th></tr></thead>
                 <tbody>
-                  {displayed.map(page => (
+                  {visiblePages.map(page => (
                     <tr key={page.path}>
                       <td>
                         <div className="la2-page-name">
@@ -183,7 +207,7 @@ function AnalyticsContent() {
                 </tbody>
               </table>
             </div>
-            <div className="la2-table-footer">Showing {displayed.length} of {allCount} pages · 404 and admin routes excluded.</div>
+            <div className="la2-pagination"><span aria-live="polite">{displayed.length ? currentPage * pageSize + 1 : 0}–{Math.min((currentPage + 1) * pageSize, displayed.length)} of {displayed.length} pages</span><label>Rows <select aria-label="Pages per table page" value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setPageIndex(0) }}>{[10,25,50].map(size => <option key={size} value={size}>{size}</option>)}</select></label><div><button type="button" disabled={currentPage === 0} onClick={() => setPageIndex(currentPage - 1)}>Previous</button><span>{currentPage + 1} / {pageCount}</span><button type="button" disabled={currentPage >= pageCount - 1} onClick={() => setPageIndex(currentPage + 1)}>Next</button></div></div>
           </div>
           <p className="la2-note">
             Visits recorded before analytics was enabled cannot be recovered. Sessions are approximate browser-tab sessions, not individual visitors.

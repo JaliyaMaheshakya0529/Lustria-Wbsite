@@ -134,6 +134,9 @@ function Dashboard() {
   const deleteProduct = useMutation(api.products.remove);
 
   const [search, setSearch] = useState("");
+  const [availability, setAvailability] = useState("all");
+  const [productSort, setProductSort] = useState("newest");
+  const resetProductFilters = () => { setSearch(""); setCategory("All"); setAvailability("all"); setProductSort("newest"); };
   const [category, setCategory] = useState("All");
   const [activeView, setActiveView] = useState("dashboard");
   const [productView, setProductView] = useState(() => {
@@ -212,20 +215,27 @@ function Dashboard() {
         ]
           .join(" ")
           .toLowerCase()
-          .includes(search.toLowerCase());
+          .includes(search.trim().toLowerCase());
 
         const matchesCategory =
           category === "All" ||
           product.category === category;
 
-        return matchesSearch && matchesCategory;
+        const matchesStatus = availability === "all" || (availability === "featured" ? product.featured : availability === "available" ? product.available : !product.available);
+        return matchesSearch && matchesCategory && matchesStatus;
       })
-      .sort((a, b) => b.createdAt - a.createdAt);
-  }, [products, search, category]);
+      .sort((a, b) => {
+        if (productSort === "name") return a.name.localeCompare(b.name);
+        if (productSort === "price-low") return a.price - b.price;
+        if (productSort === "price-high") return b.price - a.price;
+        if (productSort === "oldest") return a.createdAt - b.createdAt;
+        return b.createdAt - a.createdAt;
+      });
+  }, [products, search, category, availability, productSort]);
 
   useEffect(() => {
     if (productScrollRef.current) productScrollRef.current.scrollTop = 0;
-  }, [search, category, productView]);
+  }, [search, category, productView, availability, productSort]);
 
   const changeProductView = (view) => {
     setProductView(view);
@@ -525,9 +535,7 @@ function Dashboard() {
       <main className="ladmin-main">
         <header className="ladmin-header">
           <div>
-            <span className="ladmin-eyebrow">
-              LUSTRIA MANAGEMENT
-            </span>
+
 
             <h1>{activeView === "dashboard" ? "Dashboard" : "Products"}</h1>
             <p>{activeView === "dashboard" ? "Your website performance at a glance." : "Manage your jewellery collection."}</p>
@@ -550,6 +558,8 @@ function Dashboard() {
           <AdminAnalyticsPanel />
         )}
 
+
+
         {/* NOTICE */}
 
         {notice && (
@@ -569,6 +579,9 @@ function Dashboard() {
         {/* PRODUCT COLLECTION */}
 
         {activeView === "products" && <section className="ladmin-panel">
+          <div className="ladmin-collection-summary" role="group" aria-label="Collection status filters">
+          {[["all", "All products", allProducts.length], ["available", "Available", allProducts.filter(p => p.available).length], ["hidden", "Hidden", allProducts.filter(p => !p.available).length], ["featured", "Featured", featuredCount]].map(([value,label,count]) => <button key={value} type="button" aria-pressed={availability === value} className={availability === value ? "selected" : ""} onClick={() => setAvailability(value)}><span>{label}</span><strong>{count}</strong></button>)}
+          </div>
           <div className="ladmin-panel-header">
             <div>
               <h2>{activeView === "dashboard" ? "Recent Products" : "Product Collection"}</h2>
@@ -581,7 +594,7 @@ function Dashboard() {
 
                 <input
                   type="search"
-                  placeholder="Search jewellery..."
+                  aria-label="Search products" placeholder="Name, code or gemstone..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -622,9 +635,7 @@ function Dashboard() {
                 </button>
               ))}
             </div>
-            <span className="ladmin-product-toolbar-count">
-              {filteredProducts.length} items · Scroll to browse
-            </span>
+            <div className="ladmin-browse-controls"><label>Sort <select aria-label="Sort products" value={productSort} onChange={e => setProductSort(e.target.value)}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="name">Name A–Z</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label>{(search || category !== "All" || availability !== "all" || productSort !== "newest") && <button type="button" onClick={resetProductFilters}>Reset filters</button>}</div>
           </div>
 
           <div className={`ladmin-product-scroll ladmin-view-${productView}`} ref={productScrollRef} data-lenis-prevent data-lenis-prevent-wheel tabIndex={0} aria-label="Scrollable products">
@@ -634,7 +645,7 @@ function Dashboard() {
               <div className="ladmin-empty">
                 <Icon name="package" size={34} />
                 <h3>No Products Found</h3>
-                <p>Try a different search or add your first product.</p>
+                <p>Try a different search or add your first product.</p>{allProducts.length > 0 && <button type="button" className="ladmin-secondary" onClick={resetProductFilters}>Clear filters</button>}
                 <button type="button" className="ladmin-primary" onClick={openNew}>
                   Add Product
                 </button>
@@ -775,9 +786,7 @@ function Dashboard() {
           >
             <div className="ladmin-editor-header">
               <div>
-                <span className="ladmin-eyebrow">
-                  PRODUCT MANAGEMENT
-                </span>
+
 
                 <h2 id="ladmin-editor-title">
                   {editingId
