@@ -4,11 +4,11 @@ export const pageMetadata = {
     description: 'Discover handcrafted sterling silver jewellery set with natural Ceylon gemstones.',
   },
   '/collection': {
-    title: 'Jewellery Collection | Lustria',
+    title: 'Lustria Gem & Jewellery | Collection',
     description: 'Explore Lustria rings, earrings, necklaces and natural Ceylon gemstones. Filter by jewellery type or gemstone.',
   },
   '/about': {
-    title: 'About Lustria | Ceylon Gem & Jewellery',
+    title: 'Lustria Gem & Jewellery | About',
     description: 'Meet Lustria and discover how natural Sri Lankan gemstones become handcrafted sterling silver jewellery.',
   },
   '/admin': { title: 'Lustria Admin', robots: 'noindex' },
