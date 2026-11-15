@@ -16,6 +16,7 @@ async function loadHandlers(file) {
 
 const products = await loadHandlers('products')
 const analytics = await loadHandlers('analytics')
+const orders = await loadHandlers('orders')
 
 const indexFields = {
   by_productNo: ['productNo'],
@@ -30,7 +31,7 @@ function fixture() {
   const tables = {
     admins: [{ _id: 'admin-row', userId: 'admin' }],
     products: [], productCodeAliases: [], productCounters: [],
-    sitePageViews: [], stagedProductImages: [],
+    sitePageViews: [], stagedProductImages: [], customOrders: [],
   }
   const files = new Map(['shared', 'replacement', 'abandoned'].map(id => [
     id, { size: 1000, contentType: 'image/jpeg' },
@@ -122,6 +123,27 @@ const ring = {
   name: 'Silver Ring', category: 'Rings', gemstone: 'Sapphire', metal: 'Sterling Silver',
   description: '', price: 6000, imageId: 'shared', available: true, featured: false,
 }
+
+test('legacy orders stay intact when a new custom order is saved and retried', async () => {
+  const { publicContext, tables, scheduled } = fixture()
+  const details = {
+    name: 'Sample Customer', phone: '077 123 4567', address: 'Sample address',
+    ringSize: 'US 7', description: 'Silver setting', budget: '',
+  }
+  const oldOrder = {
+    ...details, orderCode: 'LUS-ORD-1001', imageId: 'legacy-image',
+    whatsappStatus: 'pending_config', createdAt: Date.now(),
+  }
+  const legacyId = await publicContext.db.insert('customOrders', oldOrder)
+  const request = { ...details, requestId: crypto.randomUUID() }
+  await assert.rejects(orders.submit._handler(publicContext, { ...request, phone: '.......' }), /WhatsApp number/)
+  const id = await orders.submit._handler(publicContext, request)
+  assert.equal(await orders.submit._handler(publicContext, request), id)
+  assert.equal(tables.customOrders.length, 2)
+  assert.deepEqual(await publicContext.db.get(legacyId), { ...oldOrder, _id: legacyId })
+  assert.equal((await publicContext.db.get(id)).notification, 'queued')
+  assert.deepEqual([...scheduled.values()], [{ delay: 0, args: { id } }])
+})
 
 test('featured writes preserve product fields, reject stale edits and enforce the cap', async () => {
   const { admin, publicContext, tables } = fixture()

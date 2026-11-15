@@ -5,6 +5,21 @@ import { v } from "convex/values";
 
 export default defineSchema({
   ...authTables,
+  customOrders: defineTable({
+    requestId: v.optional(v.string()), name: v.string(), phone: v.string(), address: v.string(),
+    ringSize: v.string(), description: v.string(), budget: v.string(),
+    image: v.optional(v.string()), createdAt: v.number(),
+    notification: v.optional(v.string()), messageId: v.optional(v.string()),
+    // Orders from the previous form retain their original details and attachment.
+    orderCode: v.optional(v.string()),
+    jewelryType: v.optional(v.string()),
+    gemstone: v.optional(v.string()),
+    metal: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")),
+    status: v.optional(v.string()),
+    whatsappStatus: v.optional(v.string()),
+    whatsappError: v.optional(v.string()),
+  }).index("by_request", ["requestId"]).index("by_created", ["createdAt"]),
 
   admins: defineTable({
     userId: v.id("users"),

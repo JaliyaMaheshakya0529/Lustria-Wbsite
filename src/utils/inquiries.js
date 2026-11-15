@@ -7,4 +7,4 @@ export function whatsappLink(message) {
 }
 
 export const contactLink = whatsappLink('Hello Lustria, I would like to inquire about your jewellery.')
-export const customOrderLink = whatsappLink('Hello Lustria, I would like to discuss a custom jewellery order.')
+export const customOrderLink = '/custom-order'

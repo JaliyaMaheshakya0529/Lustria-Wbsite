@@ -34,7 +34,7 @@ export default function Footer({ onNavigate }) {
           <h4>Connect</h4>
           <ul>
             {contactLink && <li><a href={contactLink} target="_blank" rel="noopener noreferrer">WhatsApp Support</a></li>}
-            {customOrderLink && <li><a href={customOrderLink} target="_blank" rel="noopener noreferrer">Custom Inquiries</a></li>}
+            {customOrderLink && <li><a href={customOrderLink}>Custom Inquiries</a></li>}
             <li>Ja-Ela, Sri Lanka</li>
           </ul>
         </div>

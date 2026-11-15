@@ -27,7 +27,7 @@ export default function Home({ onExplore, onNavigate }) {
               Explore Collection
             </button>
             {customOrderLink && (
-              <a href={customOrderLink} className="btn-outline" target="_blank" rel="noopener noreferrer">
+              <a href={customOrderLink} className="btn-outline">
                 Custom Order
               </a>
             )}

@@ -11,6 +11,7 @@ export const pageMetadata = {
     title: 'Lustria Gem & Jewellery | About',
     description: 'Meet Lustria and discover how natural Sri Lankan gemstones become handcrafted sterling silver jewellery.',
   },
+  '/custom-order': { title: 'Design Your Ring | Lustria', description: 'Share your idea for a handcrafted custom ring.' },
   '/admin': { title: 'Lustria Admin', robots: 'noindex' },
 }
 

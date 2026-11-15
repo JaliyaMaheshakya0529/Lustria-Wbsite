@@ -9,6 +9,7 @@ import usePageMetadata from './hooks/usePageMetadata'
 import { pageMetadata } from './utils/metadata'
 
 const Collection = lazy(() => import('./pages/Collection'))
+const CustomOrder = lazy(() => import('./pages/CustomOrder'))
 const About = lazy(() => import('./pages/About'))
 const ProductDetails = lazy(() => import('./pages/ProductDetails'))
 const Admin = lazy(() => import('./pages/Admin'))
@@ -36,7 +37,7 @@ export default function App() {
   const isAdmin = path === '/admin' || path.startsWith('/admin/')
   const productId = readProductId(path)
   const staticPage = path === '/' || path === '/collection' || path === '/about'
-  usePageMetadata(isAdmin ? pageMetadata['/admin'] : staticPage ? pageMetadata[path] : null)
+  usePageMetadata(isAdmin ? pageMetadata['/admin'] : pageMetadata[path])
 
   const restoreScroll = useCallback(() => {
     const hash = window.location.hash.slice(1)
@@ -120,6 +121,8 @@ export default function App() {
             <Collection selectedCategory={category} onFilterChange={selectCategory} onNavigate={navigateTo} />
           ) : path === '/about' ? (
             <About onExplore={explore} />
+          ) : path === '/custom-order' ? (
+            <CustomOrder />
           ) : productId ? (
             <ProductDetails key={productId} productId={productId} onNavigate={navigateTo} />
           ) : (
